@@ -14,14 +14,14 @@ int ParseParams::parseParams(int argc, char **argv)
 	int bilions;
 	singleTone = singleTone->instance();
 	CLI::App app{"App description"};
-	forwardMethod = app.add_flag("-F,--Forward", "Run a forward method(base - 1 bilion)")->group("Methods");
-	backwardMethod = app.add_flag("-B,--Backward", "Run a backward method(base - 16 milions)")->group("Methods");
+	forwardMethod = app.add_flag("-F,--Forward", "Run a forward method")->group("Methods");
+	backwardMethod = app.add_flag("-B,--Backward", "Run a backward method")->group("Methods");
 	csv = app.add_flag("-c,--csv", "Output will be in .csv");
-	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value");
+	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value(s)");
 	CLI::Option *kset = app.add_option("-K,--K0", newK, "Set K to new value(cm^2/s)");
 	CLI::Option *vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
 	CLI::Option *destination = app.add_option("-p,--path", newDestination, "Set destination folder name");
-	CLI::Option *setBilions = app.add_option("-N,--Bilions", bilions, "Set number of iteration in base units for each method");
+	CLI::Option *setBilions = app.add_option("-N,--Millions", bilions, "Set number of simulations in millions(round up due to GPU execution)");
 	backwardMethod->excludes(forwardMethod);
 	forwardMethod->excludes(backwardMethod);
 	CLI11_PARSE(app, argc, argv);
@@ -60,10 +60,10 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		if (bilions <= 0)
 		{
-			printf("Number of iteration must be greater than 0!");
+			printf("Number of simulations must be greater than 0!");
 			return -1;
 		}
-		singleTone->putInt("bilions", bilions);
+		singleTone->putInt("millions", bilions);
 	}
 	if (*vset)
 	{

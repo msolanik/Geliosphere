@@ -133,30 +133,27 @@ void runFWMethod(simulationInput *simulation)
 	FILE *file = fopen("log.dat", "w");
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
-	int iterations = singleTone->getInt("bilions", 10);
+	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
 		cudaFuncSetAttribute(trajectorySimulation, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
-		for (int i = 0; i < 31; ++i)
+		nullCount<<<1, 1>>>();
+		gpuErrchk(cudaDeviceSynchronize());
+		wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->w, simulation->pinj, k);
+		gpuErrchk(cudaDeviceSynchronize());
+		trajectorySimulation<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
+		gpuErrchk(cudaDeviceSynchronize());
+		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+		if (counter != 0)
 		{
-			nullCount<<<1, 1>>>();
-			gpuErrchk(cudaDeviceSynchronize());
-			wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->w, simulation->pinj, i);
-			gpuErrchk(cudaDeviceSynchronize());
-			trajectorySimulation<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, i, simulation->state);
-			gpuErrchk(cudaDeviceSynchronize());
-			cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
-			if (counter != 0)
+			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistory), cudaMemcpyDeviceToHost));
+			for (int j = 0; j < counter; ++j)
 			{
-				gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistory), cudaMemcpyDeviceToHost));
-				for (int j = 0; j < counter; ++j)
-				{
-					fprintf(file, " %g  %g  %g  %g %g \n", simulation->pinj[simulation->local_history[j].id], simulation->local_history[j].p,
-							simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], simulation->local_history[j].sumac);
-				}
+				fprintf(file, " %g  %g  %g  %g %g \n", simulation->pinj[simulation->local_history[j].id], simulation->local_history[j].p,
+						simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], simulation->local_history[j].sumac);
 			}
 		}
 	}

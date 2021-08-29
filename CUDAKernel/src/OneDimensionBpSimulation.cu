@@ -10,6 +10,7 @@
  */
 
 #include <stdio.h>
+#include <math.h>
 #include <string>
 
 #include "ParamsCarrier.hpp"
@@ -134,30 +135,27 @@ void runBPMethod(simulationInputBP *simulation)
 	FILE *file = fopen("log.dat", "w");
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
-	int iterations = singleTone->getInt("bilions", 1);
+	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
 		cudaFuncSetAttribute(trajectorySimulationBP, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
-		for (int i = 0; i < 31; ++i)
+		nullCount<<<1, 1>>>();
+		gpuErrchk(cudaDeviceSynchronize());
+		wCalcBP<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, k);
+		gpuErrchk(cudaDeviceSynchronize());
+		trajectorySimulationBP<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
+		gpuErrchk(cudaDeviceSynchronize());
+		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+		if (counter != 0)
 		{
-			nullCount<<<1, 1>>>();
-			gpuErrchk(cudaDeviceSynchronize());
-			wCalcBP<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, i);
-			gpuErrchk(cudaDeviceSynchronize());
-			trajectorySimulationBP<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, i, simulation->state);
-			gpuErrchk(cudaDeviceSynchronize());
-			cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
-			if (counter != 0)
+			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryBP), cudaMemcpyDeviceToHost));
+			for (int j = 0; j < counter; ++j)
 			{
-				gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryBP), cudaMemcpyDeviceToHost));
-				for (int j = 0; j < counter; ++j)
-				{
-					fprintf(file, "%g %g %g %g\n", simulation->local_history[j].Tkin, simulation->Tkininj[simulation->local_history[j].id],
-							simulation->local_history[j].r, simulation->local_history[j].w);
-				}
+				fprintf(file, "%g %g %g %g\n", simulation->local_history[j].Tkin, simulation->Tkininj[simulation->local_history[j].id],
+						simulation->local_history[j].r, simulation->local_history[j].w);
 			}
 		}
 	}
