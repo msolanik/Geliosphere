@@ -37,4 +37,5 @@ Only GPUs from Nvidia Pascal and Turing architectures are supported. List of sup
 > Geforce GTX 1050
 
 Additional information about used models can be found in following articles:
+
 [Accuracy and comparasion results from GPU implementation to Crank-Nicolson model](https://pos.sissa.it/395/1320/pdf)
