@@ -1,6 +1,8 @@
 # Geliosphere
 
 Geliosphere is application that utilize GPU as a computing unit for cosmic ray modulation in Heliosphere. Contains 1D models of cosmic ray modulation in heliosphere based on [this paper.](https://agupubs.onlinelibrary.wiley.com/doi/pdfdirect/10.1002/2015JA022237)
+
+Class documentation can be found [here](https://msolanik.github.io/Geliosphere/annotated.html).
   
 
 | Parameter | Value | Description |
