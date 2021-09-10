@@ -1,0 +1,10 @@
+<map id="Algorithm/include/AbstractAlgorithm.hpp" name="Algorithm/include/AbstractAlgorithm.hpp">
+<area shape="rect" id="node1" title="Abstract definition for algorithm." alt="" coords="610,5,785,47"/>
+<area shape="rect" id="node2" href="$OneDimensionBpAlgorithm_8hpp.html" title="Implementation of 1D B&#45;p method." alt="" coords="5,95,216,136"/>
+<area shape="rect" id="node3" href="$OneDimensionBpResults_8hpp.html" title="Implementation of 1D B&#45;p method analyzer for output data." alt="" coords="240,95,451,136"/>
+<area shape="rect" id="node4" href="$OneDimensionFpAlgorithm_8hpp.html" title="Implementation of 1D F&#45;p method." alt="" coords="475,95,685,136"/>
+<area shape="rect" id="node5" href="$OneDimensionFpResults_8hpp.html" title="Implementation of 1D F&#45;p method analyzer for output data." alt="" coords="709,95,920,136"/>
+<area shape="rect" id="node6" href="$AbstractAlgorithmFactory_8hpp.html" title="Interface of Abstract Factory Pattern." alt="" coords="944,95,1107,136"/>
+<area shape="rect" id="node8" href="$main_8cpp.html" title="Main function." alt="" coords="1107,184,1181,211"/>
+<area shape="rect" id="node7" href="$CosmicFactory_8hpp.html" title="Implementation of factory pattern for Cosmic algorithms." alt="" coords="857,184,1082,211"/>
+</map>

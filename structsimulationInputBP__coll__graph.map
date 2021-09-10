@@ -1,0 +1,5 @@
+<map id="simulationInputBP" name="simulationInputBP">
+<area shape="rect" id="node1" title="Data structure responsible for holding input information for 1D B&#45;p method." alt="" coords="81,109,209,136"/>
+<area shape="rect" id="node2" href="$structtrajectoryHistoryBP.html" title="Data structure responsible for holding output data from 1D B&#45;p simulations." alt="" coords="5,5,140,32"/>
+<area shape="rect" id="node3" href="$classParamsCarrier.html" title="ParamsCarrier is responsible for storing parameters for simulations." alt="" coords="164,5,269,32"/>
+</map>

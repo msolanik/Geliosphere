@@ -1,0 +1,4 @@
+<map id="CosmicFactory" name="CosmicFactory">
+<area shape="rect" id="node1" title="Class represents implementation of Factory Pattern for cosmic algorithms." alt="" coords="35,80,145,107"/>
+<area shape="rect" id="node2" href="$classAbstractAlgorithmFactory.html" title="Interface representing functionality to implement Factory Pattern." alt="" coords="5,5,175,32"/>
+</map>

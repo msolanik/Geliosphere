@@ -1,0 +1,5 @@
+<map id="CUDAKernel/include/CosmicUtils.cuh" name="CUDAKernel/include/CosmicUtils.cuh">
+<area shape="rect" id="node1" title="Common functions for simulations." alt="" coords="153,5,294,47"/>
+<area shape="rect" id="node2" href="$OneDimensionBpSimulation_8cu.html" title="Implementation of 1D B&#45;p method." alt="" coords="5,95,212,136"/>
+<area shape="rect" id="node3" href="$OneDimensionFpSimulation_8cu.html" title="Implementation of 1D F&#45;p method." alt="" coords="236,95,443,136"/>
+</map>

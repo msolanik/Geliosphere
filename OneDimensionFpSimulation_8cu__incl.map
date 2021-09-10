@@ -1,0 +1,20 @@
+<map id="CUDAKernel/src/OneDimensionFpSimulation.cu" name="CUDAKernel/src/OneDimensionFpSimulation.cu">
+<area shape="rect" id="node1" title="Implementation of 1D F&#45;p method." alt="" coords="328,5,535,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="811,244,871,271"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,244,60,271"/>
+<area shape="rect" id="node4" href="$ParamsCarrier_8hpp.html" title=" " alt="" coords="96,169,225,196"/>
+<area shape="rect" id="node8" href="$FileUtils_8hpp.html" title="Utilities for manipulating with directories." alt="" coords="64,95,159,121"/>
+<area shape="rect" id="node9" href="$OneDimensionFpSimulation_8cuh.html" title="Definition of data structures needed for 1D F&#45;p method." alt="" coords="235,95,441,121"/>
+<area shape="rect" id="node14" href="$CosmicConstants_8cuh.html" title="Constants needed for simulations." alt="" coords="607,95,757,121"/>
+<area shape="rect" id="node15" href="$CudaErrorCheck_8cuh.html" title="Utility for checking errors." alt="" coords="781,95,921,121"/>
+<area shape="rect" id="node18" href="$CosmicUtils_8cuh.html" title="Common functions for simulations." alt="" coords="466,95,583,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="255,244,325,271"/>
+<area shape="rect" id="node6" title=" " alt="" coords="85,244,159,271"/>
+<area shape="rect" id="node7" title=" " alt="" coords="184,244,231,271"/>
+<area shape="rect" id="node10" title=" " alt="" coords="481,169,592,196"/>
+<area shape="rect" id="node11" title=" " alt="" coords="617,169,803,196"/>
+<area shape="rect" id="node12" title=" " alt="" coords="387,169,457,196"/>
+<area shape="rect" id="node13" title=" " alt="" coords="249,169,363,196"/>
+<area shape="rect" id="node16" title=" " alt="" coords="879,169,941,196"/>
+<area shape="rect" id="node17" title=" " alt="" coords="966,169,1027,196"/>
+</map>

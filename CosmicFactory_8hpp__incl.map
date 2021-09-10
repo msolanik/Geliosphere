@@ -1,0 +1,11 @@
+<map id="Factory/include/CosmicFactory.hpp" name="Factory/include/CosmicFactory.hpp">
+<area shape="rect" id="node1" title="Implementation of factory pattern for Cosmic algorithms." alt="" coords="11,5,236,32"/>
+<area shape="rect" id="node2" href="$AbstractAlgorithmFactory_8hpp.html" title="Interface of Abstract Factory Pattern." alt="" coords="27,80,220,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,304,60,331"/>
+<area shape="rect" id="node4" href="$AbstractAlgorithm_8hpp.html" title="Abstract definition for algorithm." alt="" coords="123,155,273,181"/>
+<area shape="rect" id="node5" href="$ParamsCarrier_8hpp.html" title=" " alt="" coords="141,229,271,256"/>
+<area shape="rect" id="node6" title=" " alt="" coords="85,304,154,331"/>
+<area shape="rect" id="node7" title=" " alt="" coords="178,304,253,331"/>
+<area shape="rect" id="node8" title=" " alt="" coords="277,304,324,331"/>
+<area shape="rect" id="node9" title=" " alt="" coords="348,304,408,331"/>
+</map>

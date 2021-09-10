@@ -1,0 +1,5 @@
+<map id="CUDAKernel/include/OneDimensionBpSimulation.cuh" name="CUDAKernel/include/OneDimensionBpSimulation.cuh">
+<area shape="rect" id="node1" title="Definition of data structures needed for 1D B&#45;p method." alt="" coords="121,5,333,47"/>
+<area shape="rect" id="node2" href="$OneDimensionBpAlgorithm_8hpp.html" title="Implementation of 1D B&#45;p method." alt="" coords="5,95,216,136"/>
+<area shape="rect" id="node3" href="$OneDimensionBpSimulation_8cu.html" title="Implementation of 1D B&#45;p method." alt="" coords="241,95,447,136"/>
+</map>

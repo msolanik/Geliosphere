@@ -1,0 +1,5 @@
+<map id="simulationInput" name="simulationInput">
+<area shape="rect" id="node1" title="Data structure responsible for holding input information for 1D F&#45;p method." alt="" coords="75,109,185,136"/>
+<area shape="rect" id="node2" href="$structtrajectoryHistory.html" title="Data structure responsible for holding output data from 1D F&#45;p simulations." alt="" coords="5,5,121,32"/>
+<area shape="rect" id="node3" href="$classParamsCarrier.html" title="ParamsCarrier is responsible for storing parameters for simulations." alt="" coords="145,5,251,32"/>
+</map>
