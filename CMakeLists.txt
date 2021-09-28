@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 set( CMAKE_VERBOSE_MAKEFILE on )
 # set the project name
-project(Geliospheric)
+project(Geliosphere)
 
 add_subdirectory (Algorithm)
 add_subdirectory (Constants)
@@ -9,6 +9,7 @@ add_subdirectory (CUDAKernel)
 add_subdirectory (Factory)
 add_subdirectory (lib)
 add_subdirectory (Utils)
+
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)

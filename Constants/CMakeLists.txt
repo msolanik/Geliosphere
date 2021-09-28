@@ -10,10 +10,20 @@ set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
 add_library(Constants SHARED ${SOURCES}) 
 add_library(Constants::Basic ALIAS ${PROJECT_NAME})
 
+include(FetchContent)
+FetchContent_Declare(
+  rapidcsv
+  GIT_REPOSITORY https://github.com/d99kris/rapidcsv
+  GIT_TAG        v8.53
+)
+
+FetchContent_MakeAvailable(rapidcsv)
+
+
 target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
 
 target_link_libraries(${PROJECT_NAME}
-    cli_dependencies
+    cli_dependencies rapidcsv
 )
