@@ -1,0 +1,6 @@
+
+[DefaultValues]
+K0 = 5e22
+V = 400.0
+dt = 5.0
+Default_method = "1DBp"
