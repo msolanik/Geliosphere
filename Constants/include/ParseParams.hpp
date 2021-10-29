@@ -46,6 +46,8 @@ private:
 	 * 
 	 */
 	ParamsCarrier *singleTone;
+
+	void printParameters(ParamsCarrier *params);
 };
 
 #endif

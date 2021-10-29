@@ -5,7 +5,6 @@ project(Cuda-kernel CUDA CXX)
 include_directories(include)
 
 find_package(CUDA REQUIRED)
-add_compile_options(-std=c++11)
 
 file(GLOB SOURCES "src/*.cu")
 

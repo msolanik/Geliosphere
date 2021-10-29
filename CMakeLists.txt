@@ -10,7 +10,6 @@ add_subdirectory (Factory)
 add_subdirectory (lib)
 add_subdirectory (Utils)
 
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")

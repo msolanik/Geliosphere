@@ -12,18 +12,30 @@ add_library(Constants::Basic ALIAS ${PROJECT_NAME})
 
 include(FetchContent)
 FetchContent_Declare(
-  rapidcsv
-  GIT_REPOSITORY https://github.com/d99kris/rapidcsv
-  GIT_TAG        v8.53
+    rapidcsv
+    GIT_REPOSITORY https://github.com/d99kris/rapidcsv
+    GIT_TAG        v8.53
 )
-
 FetchContent_MakeAvailable(rapidcsv)
 
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG        v1.9.2
+)
+FetchContent_MakeAvailable(spdlog)
+
+FetchContent_Declare(
+    toml11
+    GIT_REPOSITORY https://github.com/ToruNiina/toml11
+    GIT_TAG        v3.7.0
+)
+FetchContent_MakeAvailable(toml11)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
 
 target_link_libraries(${PROJECT_NAME}
-    cli_dependencies rapidcsv
+    cli_dependencies rapidcsv toml11 spdlog::spdlog_header_only
 )

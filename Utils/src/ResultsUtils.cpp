@@ -14,7 +14,7 @@ int ResultsUtils::countLines(FILE *const fin)
 
 int ResultsUtils::writeSpectrum(struct spectrumOutput *spectrumOutput, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType)
 {
-    std::string fileName = spectrumOutput->fileName + (spectrumOutput->isCsv) ? ".csv" : ".dat";
+    std::string fileName = spectrumOutput->fileName.append((spectrumOutput->isCsv) ? ".csv" : ".dat");
     FILE *outputFile = fopen(fileName.c_str(), "w");
     if (spectrumOutput->isCsv)
     {

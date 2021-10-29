@@ -51,6 +51,8 @@ private:
 	 * 
 	 */
     std::string pathToUsoskinTable;
+
+	std::string getMonthName(int month);
 };
 
 #endif

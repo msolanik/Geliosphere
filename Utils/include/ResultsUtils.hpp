@@ -37,7 +37,7 @@ enum spectrumType
  */
 struct spectrumOutput
 {
-    char *fileName;
+    std::string fileName;
     int size;
     int tkinPortion;
     bool isCsv;
