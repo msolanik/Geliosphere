@@ -3,39 +3,48 @@
 #include <cuda_runtime.h>
 #include "CudaErrorCheck.cuh"
 #include "OneDimensionFpResults.hpp"
+#include "OneDimensionFpCpuSimulation.hpp"
 
 void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
-	simulationInput simulation;
-	setThreadBlockSize();
-	curandState_t *state;
-	double *w;
-	float *pinj;
-	trajectoryHistory *history, *local_history;
+	if (!singleTone->getInt("isCpu", 0))
+	{
+		simulationInput simulation;
+		setThreadBlockSize();
+		curandState_t *state;
+		double *w;
+		float *pinj;
+		trajectoryHistory *history, *local_history;
 
-	gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
-	gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
-	gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-	gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
-	gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
+		gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
+		gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
+		gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
+		gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
+		gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
 
-	simulation.singleTone = singleTone;
-	simulation.history = history;
-	simulation.local_history = local_history;
-	simulation.pinj = pinj;
-	simulation.state = state;
-	simulation.w = w;
-	simulation.threadSize = threadSize;
-	simulation.blockSize = blockSize;
+		simulation.singleTone = singleTone;
+		simulation.history = history;
+		simulation.local_history = local_history;
+		simulation.pinj = pinj;
+		simulation.state = state;
+		simulation.w = w;
+		simulation.threadSize = threadSize;
+		simulation.blockSize = blockSize;
 
-	setConstants(singleTone, false);
-	runFWMethod(&simulation);
+		setConstants(singleTone, false);
+		runFWMethod(&simulation);
 
-	gpuErrchk(cudaFree(w));
-	gpuErrchk(cudaFree(pinj));
-	gpuErrchk(cudaFree(state));
-	gpuErrchk(cudaFree(history));
-	gpuErrchk(cudaFreeHost(local_history));
+		gpuErrchk(cudaFree(w));
+		gpuErrchk(cudaFree(pinj));
+		gpuErrchk(cudaFree(state));
+		gpuErrchk(cudaFree(history));
+		gpuErrchk(cudaFreeHost(local_history));
+	}
+	else
+	{
+		OneDimensionFpCpuSimulation *oneDimensionFpCpuSimulation = new OneDimensionFpCpuSimulation();
+		oneDimensionFpCpuSimulation->runSimulation(singleTone);
+	}
 
 	AbstractAlgorithm *result;
 	result = new OneDimensionFpResults();

@@ -19,7 +19,9 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::App app{"App description"};
 	CLI::Option *forwardMethod = app.add_flag("-F,--Forward", "Run a forward method")->group("Methods");
 	CLI::Option *backwardMethod = app.add_flag("-B,--Backward", "Run a backward method")->group("Methods");
+	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--TwoDimensionBackward", "Run a 2D backward method")->group("Methods");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
+	CLI::Option *cpuOnly = app.add_flag("--cpu_only", "Use only CPU for calculaions");
 	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value(s)");
 	CLI::Option *kset = app.add_option("-K,--K0", newK, "Set K to new value(cm^2/s)");
 	CLI::Option *vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
@@ -36,13 +38,18 @@ int ParseParams::parseParams(int argc, char **argv)
 	vset->excludes(yearOption);
 
 	backwardMethod->excludes(forwardMethod);
+	backwardMethod->excludes(twoDimensionBackwardMethod);
 	forwardMethod->excludes(backwardMethod);
+	forwardMethod->excludes(twoDimensionBackwardMethod);
+	twoDimensionBackwardMethod->excludes(backwardMethod);
+	twoDimensionBackwardMethod->excludes(forwardMethod);
+
 
 	monthOption->requires(yearOption);
 
 	spdlog::info("Started to parsing input parameters");
 	CLI11_PARSE(app, argc, argv);
-	if (!*forwardMethod && !*backwardMethod)
+	if (!*forwardMethod && !*backwardMethod && !*twoDimensionBackwardMethod)
 	{
 		spdlog::error("At least one method must be selected!");
 		return -1;
@@ -107,6 +114,11 @@ int ParseParams::parseParams(int argc, char **argv)
 		tomlSettings->parseFromSettings(singleTone);
 	}
 
+	if (*cpuOnly)
+	{
+		singleTone->putInt("isCpu", 1);
+	}
+
 	if (*destination)
 	{
 		singleTone->putString("destination", newDestination);
@@ -119,6 +131,10 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		singleTone->putString("algorithm", "BPMethod");
 	}
+	else if (*twoDimensionBackwardMethod)
+	{
+		singleTone->putString("algorithm", "TwoDimensionBp");
+	}
 	printParameters(singleTone);
 	return 1;
 }
@@ -130,7 +146,7 @@ ParamsCarrier *ParseParams::getParams()
 
 void ParseParams::printParameters(ParamsCarrier *params) 
 {
-	spdlog::info("Choosed model:" + singleTone->getString("algorithm", "FWMethod"));
+	spdlog::info("Chosen model:" + singleTone->getString("algorithm", "FWMethod"));
 	spdlog::info("K0:" + std::to_string(params->getFloat("K0", params->getFloat("K0_default", 5e22 * 4.4683705e-27))) + " au^2 / s");
 	spdlog::info("V:" + std::to_string(params->getFloat("V", params->getFloat("V_default", 400 * 6.68458712e-9))) + " au / s");
 	spdlog::info("dt:" + std::to_string(params->getFloat("dt", params->getFloat("dt_default", 5.0f))) + " s");

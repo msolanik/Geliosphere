@@ -41,6 +41,9 @@ void ResultsUtils::printCsvHeader(FILE *outputFile, enum spectrumType spectrumTy
     case SPECTRUM_4E2:
         fprintf(outputFile, "%s,%s,%s\n", "Tkin", "spe4e2N", "spe4e2");
         break;
+    case SPECTRUM_SOLARPROP:
+        fprintf(outputFile, "%s,%s\n", "bin", "tkin");
+        break;
     }
 }
 

@@ -5,6 +5,7 @@ project(Geliosphere)
 
 add_subdirectory (Algorithm)
 add_subdirectory (Constants)
+add_subdirectory (CpuImplementations)
 add_subdirectory (CUDAKernel)
 add_subdirectory (Factory)
 add_subdirectory (lib)

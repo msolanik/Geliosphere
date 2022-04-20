@@ -19,6 +19,7 @@ target_include_directories( ${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     Constants::Basic
+    cpu_implementations::cpu_implementations
     Cuda-kernel::Cuda-kernel
     ${CUDA_LIBRARIES}
 )
