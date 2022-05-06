@@ -4,6 +4,11 @@
 #include "CudaErrorCheck.cuh"
 #include "OneDimensionBpResults.hpp"
 
+OneDimensionBpAlgorithm::OneDimensionBpAlgorithm(InteractiveMode *interactiveMode)
+{
+	this->interactiveMode = interactiveMode;
+}
+
 void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
 	simulationInputBP simulation;
@@ -16,7 +21,10 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
 	gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
 	gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
-	gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
+	if (!singleTone->getInt("interactive", 0))
+	{
+		gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
+	}
 	gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
 	gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
 
@@ -25,7 +33,14 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	simulation.pinj = pinj;
 	simulation.local_history = local_history;
 	simulation.Tkininj = Tkininj;
-	simulation.state = state;
+	if (!singleTone->getInt("interactive", 0))
+	{
+		simulation.state = state;
+	}
+	else
+	{
+		simulation.state = interactiveMode->getRNGStateStructure();
+	}
 	simulation.w = w;
 	simulation.threadSize = threadSize;
 	simulation.blockSize = blockSize;
@@ -36,7 +51,10 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	gpuErrchk(cudaFree(w));
 	gpuErrchk(cudaFree(Tkininj));
 	gpuErrchk(cudaFree(pinj));
-	gpuErrchk(cudaFree(state));
+	if (!singleTone->getInt("interactive", 0))
+	{
+		gpuErrchk(cudaFree(state));
+	}
 	gpuErrchk(cudaFree(history));
 	gpuErrchk(cudaFreeHost(local_history));
 

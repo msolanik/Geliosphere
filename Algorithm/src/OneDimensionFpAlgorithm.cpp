@@ -5,6 +5,11 @@
 #include "OneDimensionFpResults.hpp"
 #include "OneDimensionFpCpuSimulation.hpp"
 
+OneDimensionFpAlgorithm::OneDimensionFpAlgorithm(InteractiveMode *interactiveMode)
+{
+	this->interactiveMode = interactiveMode;
+}
+
 void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
 	if (!singleTone->getInt("isCpu", 0))
@@ -18,7 +23,10 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 
 		gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
 		gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
-		gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
+		if (!singleTone->getInt("interactive", 0))
+		{
+			gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
+		}
 		gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
 		gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
 
@@ -26,7 +34,14 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 		simulation.history = history;
 		simulation.local_history = local_history;
 		simulation.pinj = pinj;
-		simulation.state = state;
+		if (!singleTone->getInt("interactive", 0))
+		{
+			simulation.state = state;
+		}
+		else
+		{
+			simulation.state = interactiveMode->getRNGStateStructure();
+		}
 		simulation.w = w;
 		simulation.threadSize = threadSize;
 		simulation.blockSize = blockSize;
@@ -36,7 +51,10 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 
 		gpuErrchk(cudaFree(w));
 		gpuErrchk(cudaFree(pinj));
-		gpuErrchk(cudaFree(state));
+		if (!singleTone->getInt("interactive", 0))
+		{
+			gpuErrchk(cudaFree(state));
+		}
 		gpuErrchk(cudaFree(history));
 		gpuErrchk(cudaFreeHost(local_history));
 	}
@@ -60,11 +78,11 @@ void OneDimensionFpAlgorithm::setThreadBlockSize()
 	switch (computeCapability)
 	{
 	case 610:
-		blockSize = 65536;
+		blockSize = 32768;
 		threadSize = 512;
 		break;
 	case 750:
-		blockSize = 32768;
+		blockSize = 16384;
 		threadSize = 1024;
 		break;
 	default:

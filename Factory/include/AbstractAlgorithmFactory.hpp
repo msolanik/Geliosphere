@@ -15,6 +15,7 @@
 #include <string>
 
 #include "AbstractAlgorithm.hpp"
+#include "InteractiveMode.hpp"
 
 /**
  * @brief Interface representing functionality to implement Factory Pattern.
@@ -37,7 +38,7 @@ public:
 	 * @param name 
 	 * @return AbstractAlgorithm* 
 	 */
-	virtual AbstractAlgorithm* getAlgorithm(std::string name) = 0; 
+	virtual AbstractAlgorithm* getAlgorithm(std::string name, InteractiveMode* interactiveMode) = 0; 
 
 	/**
 	 * @brief Create a Factory object

@@ -14,6 +14,7 @@
 
 #include "AbstractAlgorithm.hpp"
 #include "OneDimensionFpSimulation.cuh"
+#include "InteractiveMode.hpp"
 
 extern "C" void runFWMethod(simulationInput *simulation);
 
@@ -25,6 +26,8 @@ extern "C" void runFWMethod(simulationInput *simulation);
 class OneDimensionFpAlgorithm : public AbstractAlgorithm
 {
 public:
+	OneDimensionFpAlgorithm(InteractiveMode *interactiveMode = NULL);
+
 	/**
 	 * @brief Encapsulates GPU implementation of 1D F-p method and set input 
 	 * paramaters.  
@@ -34,6 +37,9 @@ public:
 	void runAlgorithm(ParamsCarrier *singleTone);
 
 private:
+
+	InteractiveMode *interactiveMode;
+
 	/**
 	 * @brief Define number of threads in block.  
 	 * 

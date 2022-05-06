@@ -20,6 +20,8 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *forwardMethod = app.add_flag("-F,--Forward", "Run a forward method")->group("Methods");
 	CLI::Option *backwardMethod = app.add_flag("-B,--Backward", "Run a backward method")->group("Methods");
 	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--TwoDimensionBackward", "Run a 2D backward method")->group("Methods");
+	CLI::Option *interactiveMod = app.add_flag("-I,--Interactive", "Run Geliosphere in interactive mode")->group("Methods");
+	CLI::Option *quitInteractiveMod = app.add_flag("-Q,--Quit", "Quit interactive mode")->group("Methods");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
 	CLI::Option *cpuOnly = app.add_flag("--cpu_only", "Use only CPU for calculaions");
 	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value(s)");
@@ -39,10 +41,24 @@ int ParseParams::parseParams(int argc, char **argv)
 
 	backwardMethod->excludes(forwardMethod);
 	backwardMethod->excludes(twoDimensionBackwardMethod);
+	backwardMethod->excludes(interactiveMod);
+	backwardMethod->excludes(quitInteractiveMod);
 	forwardMethod->excludes(backwardMethod);
 	forwardMethod->excludes(twoDimensionBackwardMethod);
+	forwardMethod->excludes(interactiveMod);
+	forwardMethod->excludes(quitInteractiveMod);
 	twoDimensionBackwardMethod->excludes(backwardMethod);
 	twoDimensionBackwardMethod->excludes(forwardMethod);
+	twoDimensionBackwardMethod->excludes(interactiveMod);
+	twoDimensionBackwardMethod->excludes(quitInteractiveMod);
+	interactiveMod->excludes(backwardMethod);
+	interactiveMod->excludes(forwardMethod);
+	interactiveMod->excludes(twoDimensionBackwardMethod);
+	interactiveMod->excludes(quitInteractiveMod);
+	quitInteractiveMod->excludes(backwardMethod);
+	quitInteractiveMod->excludes(forwardMethod);
+	quitInteractiveMod->excludes(twoDimensionBackwardMethod);
+	quitInteractiveMod->excludes(interactiveMod);
 
 
 	monthOption->requires(yearOption);
@@ -134,6 +150,16 @@ int ParseParams::parseParams(int argc, char **argv)
 	else if (*twoDimensionBackwardMethod)
 	{
 		singleTone->putString("algorithm", "TwoDimensionBp");
+	} 
+	else if (*interactiveMod)
+	{
+		singleTone->putInt("interactive", 1);
+		singleTone->putString("algorithm", "None");
+	}
+	else if (*quitInteractiveMod)
+	{
+		singleTone->putInt("quit", 1);
+		singleTone->putString("algorithm", "None");
 	}
 	printParameters(singleTone);
 	return 1;

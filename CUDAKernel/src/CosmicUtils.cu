@@ -12,6 +12,8 @@
 #include "CosmicUtils.cuh"
 #include "CosmicConstants.cuh"
 
+extern "C" void initRNG(curandState_t *state, int blockSize, int threadSize);
+
 __device__ int outputCounter = 0;
 
 __device__ float getTkinInjection(unsigned long long state)
@@ -42,4 +44,9 @@ __global__ void curandInitialization(curandState_t *state)
 {
 	int execID = blockIdx.x * blockDim.x + threadIdx.x;
 	curand_init(clock(), execID, 0, &state[execID]);
+}
+
+void initRNG(curandState_t *state, int blockSize, int threadSize)
+{
+	curandInitialization<<<blockSize, threadSize>>>(state);
 }

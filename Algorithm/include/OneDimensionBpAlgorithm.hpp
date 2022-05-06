@@ -14,6 +14,7 @@
 
 #include "AbstractAlgorithm.hpp"
 #include "OneDimensionBpSimulation.cuh"
+#include "InteractiveMode.hpp"
 
 extern "C" void runBPMethod(simulationInputBP *simulation);
 
@@ -25,6 +26,8 @@ extern "C" void runBPMethod(simulationInputBP *simulation);
 class OneDimensionBpAlgorithm : public AbstractAlgorithm
 {
 public:
+	OneDimensionBpAlgorithm(InteractiveMode *interactiveMode = NULL);
+
 	/**
 	 * @brief GPU implementation of 1D B-p method and set input 
 	 * paramaters.  
@@ -34,6 +37,9 @@ public:
 	void runAlgorithm(ParamsCarrier *singleTone);
 
 private:
+	
+	InteractiveMode *interactiveMode;
+	
 	/**
 	 * @brief Define number of threads in block.  
 	 * 

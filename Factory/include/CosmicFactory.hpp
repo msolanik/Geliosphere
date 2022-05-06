@@ -27,7 +27,7 @@ public:
 	 * @param name Name of algorithm
 	 * @return AbstractAlgorithm* Created algorithm by given name.
 	 */
-	AbstractAlgorithm* getAlgorithm(std::string name); 
+	AbstractAlgorithm* getAlgorithm(std::string name, InteractiveMode* interactiveMode); 
 };
 
 #endif // !COSMIC_FACTORY_H

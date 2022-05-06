@@ -131,8 +131,11 @@ void runFWMethod(simulationInput *simulation)
 	}
 
 	FILE *file = fopen("log.dat", "w");
-	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
-	gpuErrchk(cudaDeviceSynchronize());
+	if (!singleTone->getInt("interactive", 0))
+	{
+		curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
+		gpuErrchk(cudaDeviceSynchronize());
+	}
 	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
