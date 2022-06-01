@@ -62,3 +62,6 @@ test/test_runner
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 **/.history
+
+_deps/
+Geliosphere
