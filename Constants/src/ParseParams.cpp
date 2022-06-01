@@ -64,8 +64,13 @@ int ParseParams::parseParams(int argc, char **argv)
 	monthOption->requires(yearOption);
 
 	spdlog::info("Started to parsing input parameters");
+	for(int i = 0; i < argc; i++)
+	{
+		spdlog::info(argv[i]);
+	}
+
 	CLI11_PARSE(app, argc, argv);
-	if (!*forwardMethod && !*backwardMethod && !*twoDimensionBackwardMethod)
+	if (!*forwardMethod && !*backwardMethod && !*twoDimensionBackwardMethod && !*interactiveMod && !*quitInteractiveMod)
 	{
 		spdlog::error("At least one method must be selected!");
 		return -1;
@@ -141,10 +146,12 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*forwardMethod)
 	{
+		spdlog::info("Selected 1D F-p");
 		singleTone->putString("algorithm", "FWMethod");
 	}
 	else if (*backwardMethod)
 	{
+		spdlog::info("Selected 1D B-p");
 		singleTone->putString("algorithm", "BPMethod");
 	}
 	else if (*twoDimensionBackwardMethod)
@@ -153,11 +160,13 @@ int ParseParams::parseParams(int argc, char **argv)
 	} 
 	else if (*interactiveMod)
 	{
+		spdlog::info("Selected interactive mod");
 		singleTone->putInt("interactive", 1);
 		singleTone->putString("algorithm", "None");
 	}
 	else if (*quitInteractiveMod)
 	{
+		spdlog::info("Selected quit");
 		singleTone->putInt("quit", 1);
 		singleTone->putString("algorithm", "None");
 	}

@@ -19,6 +19,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include "CudaErrorCheck.cuh"
+
 /**
  * @brief Counter pointing at current position in output structure.
  * 

@@ -158,6 +158,7 @@ public:
 	 */
 	void putString(std::string key, std::string value)
 	{
+		m.erase(key);
 		any a;
 		a.type = any_t::string_t;
 		new (&(a.str)) std::string(value);
@@ -172,6 +173,7 @@ public:
 	 */
 	void putFloat(std::string key, float value)
 	{
+		m.erase(key);
 		any a;
 		a.type = any_t::float_t;
 		a.f = value;
@@ -186,6 +188,7 @@ public:
 	 */
 	void putInt(std::string key, int value)
 	{
+		m.erase(key);
 		any a;
 		a.type = any_t::int_t;
 		a.i = value;
@@ -200,6 +203,7 @@ public:
 	 */
 	void putDouble(std::string key, double value)
 	{
+		m.erase(key);
 		any a;
 		a.type = any_t::double_t;
 		a.d = value;

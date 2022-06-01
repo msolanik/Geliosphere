@@ -38,10 +38,13 @@ void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         binc[i] = sqrt(binb[i] * exp((tem + dlT) * log(10.0)));
         binw[i] = larg * binc[i];
     }
+    printf("Bp-results-1\n");
     FILE *inputFile = fopen("log.dat", "r");
+    printf("Bp-results-2\n");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
     FILE *outputFile;
+    printf("Bp-results-3\n");
     for (int j = 0; j < 1; ++j)
     {
         rewind(inputFile);
@@ -98,12 +101,19 @@ void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     }
     fclose(inputFile);
 
-    struct spectrumOutput *spectrumOutput;
+    printf("Bp-results-4\n");
+    SpectrumOutput *spectrumOutput = new SpectrumOutput();
+    printf("Bp-results-4a\n");
     spectrumOutput->fileName = "output_1e3bin";
+    printf("Bp-results-4b\n");
     spectrumOutput->size = 1000;
+    printf("Bp-results-4c\n");
     spectrumOutput->tkinPortion = 10;
+    printf("Bp-results-4d\n");
     spectrumOutput->isCsv = singleTone->getInt("csv", 0);
+    printf("Bp-results-4e\n");
     resultsUtils->writeSpectrum(spectrumOutput, spe1e3N, spe1e3, SPECTRUM_1E3);
+    printf("Bp-results-5\n");
 
     spectrumOutput->fileName = "output_1e2bin";
     spectrumOutput->size = 100;
@@ -117,4 +127,6 @@ void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     spectrumOutput->size = 400;
     spectrumOutput->tkinPortion = 4;
     resultsUtils->writeSpectrum(spectrumOutput, spe4e2N, spe4e2, SPECTRUM_4E2);
+
+    delete spectrumOutput;
 }

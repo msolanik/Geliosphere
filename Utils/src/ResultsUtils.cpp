@@ -12,15 +12,18 @@ int ResultsUtils::countLines(FILE *const fin)
     return count;
 }
 
-int ResultsUtils::writeSpectrum(struct spectrumOutput *spectrumOutput, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType)
+int ResultsUtils::writeSpectrum(SpectrumOutput *spectrumOutput, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType)
 {
+    printf("Results-0");
     std::string fileName = spectrumOutput->fileName.append((spectrumOutput->isCsv) ? ".csv" : ".dat");
     FILE *outputFile = fopen(fileName.c_str(), "w");
+    printf("Results-1");
     if (spectrumOutput->isCsv)
     {
         printCsvHeader(outputFile, spectrumType);
     }
     writeSpectrumToFile(spectrumOutput, outputFile, spectrumCount, spectrumValue, spectrumType);
+    printf("Results-2");
     fclose(outputFile);
     return 0;
 }
@@ -47,7 +50,7 @@ void ResultsUtils::printCsvHeader(FILE *outputFile, enum spectrumType spectrumTy
     }
 }
 
-void ResultsUtils::writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FILE *outputFile, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType)
+void ResultsUtils::writeSpectrumToFile(SpectrumOutput *spectrumOutput, FILE *outputFile, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType)
 {
     if (spectrumType == SPECTRUM_LOG)
     {

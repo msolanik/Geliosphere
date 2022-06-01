@@ -12,6 +12,7 @@
 #ifndef INTERACTIVE_MODE_H
 #define INTERACTIVE_MODE_H
 
+#include <cstdio>
 #include <cuda_runtime.h>
 #include "ParamsCarrier.hpp"
 #include "CosmicUtils.cuh"

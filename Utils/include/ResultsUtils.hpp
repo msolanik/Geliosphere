@@ -36,7 +36,7 @@ enum spectrumType
  * spectra output.
  * 
  */
-struct spectrumOutput
+struct SpectrumOutput
 {
     std::string fileName;
     int size;
@@ -70,7 +70,7 @@ class ResultsUtils
          * @param spectrumType Type of energetic spectra.
          * @return 0 in the case of success write to file.
          */
-        int writeSpectrum(struct spectrumOutput *spectrumOutput, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType);
+        int writeSpectrum(SpectrumOutput *spectrumOutput, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType);
 
         /**
          * @brief Count lines in given file.
@@ -90,7 +90,7 @@ class ResultsUtils
          * @param spectrumValue Array of kinetic energies on individual bins.
          * @param spectrumType Type of energetic spectra.
          */
-        void writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FILE *outputFile, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType);
+        void writeSpectrumToFile(SpectrumOutput *spectrumOutput, FILE *outputFile, double *spectrumCount, double *spectrumValue, enum spectrumType spectrumType);
 
         /**
          * @brief Get the format for writing to file.

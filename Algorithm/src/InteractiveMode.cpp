@@ -3,9 +3,11 @@
 
 InteractiveMode::InteractiveMode()
 {
+	printf("Initializing RNG");
 	setThreadBlockSize();
     gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
     initRNG(state, blockSize, threadSize);
+	printf("Initializing RNG");
 }
 
 InteractiveMode::~InteractiveMode()

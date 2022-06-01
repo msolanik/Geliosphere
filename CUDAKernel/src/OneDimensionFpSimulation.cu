@@ -133,14 +133,18 @@ void runFWMethod(simulationInput *simulation)
 	FILE *file = fopen("log.dat", "w");
 	if (!singleTone->getInt("interactive", 0))
 	{
+		printf("Initializing RNG\n");
+		printf("%d %d\\n", simulation->blockSize, simulation->threadSize);
 		curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 	}
-	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
+	printf("F-p-1\n");
+	int iterations = ceil((float)singleTone->getInt("millions", 1) * (1000000.0f) / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
 		cudaFuncSetAttribute(trajectorySimulation, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
 	}
+	printf("F-p-2 - %d\n", iterations);
 	for (int k = 0; k < iterations; ++k)
 	{
 		nullCount<<<1, 1>>>();
@@ -161,4 +165,5 @@ void runFWMethod(simulationInput *simulation)
 		}
 	}
 	fclose(file);
+	printf("F-p-3\n");
 }

@@ -18,6 +18,8 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	float *Tkininj, *pinj;
 	trajectoryHistoryBP *history, *local_history;
 
+	printf("Bp-1\n");
+
 	gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
 	gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
 	gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
@@ -28,6 +30,7 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
 	gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
 
+	printf("Bp-2\n");
 	simulation.singleTone = singleTone;
 	simulation.history = history;
 	simulation.pinj = pinj;
@@ -44,10 +47,12 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	simulation.w = w;
 	simulation.threadSize = threadSize;
 	simulation.blockSize = blockSize;
+	printf("Bp-3\n");
 
 	setConstants(singleTone, true);
 	runBPMethod(&simulation);
 
+	printf("Bp-4\n");
 	gpuErrchk(cudaFree(w));
 	gpuErrchk(cudaFree(Tkininj));
 	gpuErrchk(cudaFree(pinj));
@@ -57,10 +62,12 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	}
 	gpuErrchk(cudaFree(history));
 	gpuErrchk(cudaFreeHost(local_history));
+	printf("Bp-5\n");
 
 	AbstractAlgorithm *result;
 	result = new OneDimensionBpResults();
 	result->runAlgorithm(singleTone);
+	printf("Bp-6\n");
 }
 
 // Compute capability actual device

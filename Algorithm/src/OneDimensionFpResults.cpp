@@ -91,7 +91,7 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
     }
     fclose(inputFile);
 
-    struct spectrumOutput *spectrumOutput;
+    SpectrumOutput *spectrumOutput = new SpectrumOutput();
     spectrumOutput->fileName = "output_1e3bin";
     spectrumOutput->size = 1000;
     spectrumOutput->tkinPortion = 10;
@@ -110,4 +110,6 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
     spectrumOutput->size = 400;
     spectrumOutput->tkinPortion = 4;
     resultsUtils->writeSpectrum(spectrumOutput, spe4e2N, spe4e2, SPECTRUM_4E2);
+    
+    delete spectrumOutput;
 }

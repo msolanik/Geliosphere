@@ -61,7 +61,7 @@ void runInteractiveMode(AbstractAlgorithmFactory *factory, InteractiveMode *inte
 										short with network byte order*/
 	addr.sin_addr.s_addr = inet_addr(DESIRED_ADDRESS);
 
-	int sock = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int sock = socket (AF_INET, SOCK_STREAM, 0);
 	if (sock == -1) {
 		perror("Socket creation error");
 		return;
@@ -78,35 +78,47 @@ void runInteractiveMode(AbstractAlgorithmFactory *factory, InteractiveMode *inte
 		return;
 	}
 
+	kill(getppid(), SIGUSR1);
 	int client_sock = accept(sock, NULL, NULL); /* 2nd and 3rd argument may be NULL. */
 	if (client_sock == -1) {
 		perror("Accept error");
 		close(sock);
 		return;
 	}
-
-	kill(getppid(), SIGUSR1);
 	char buf[1024];
 	do
 	{
 		bzero(buf, 1024);
-		ssize_t readden = recv(sock, buf, 1024, 0);
+		ssize_t readden = recv(client_sock, buf, 1024, 0);
 		if (readden < 0) {
-			close(sock);
-			return; 
+			printf("No data received\n");
+		//	close(sock);
+		//	return; 
 		}
-		char **argv;
-   	 	int argc;
-		if (parse->parseParams(argc, argv) != 1)
+		else 
 		{
-			close(sock);
-			return;
+			printf("%s\n", buf);
+			char **argv;
+			int argc;
+			makeargs(buf, &argc, &argv);
+			if (parse->parseParams(argc, argv) != 1)
+			{
+				printf("Cannot parse data\n");
+				close(sock);
+				return;
+			}
+			singleTone = parse->getParams();
+			if(singleTone->getInt("quit", 0))
+			{
+				kill(getppid(), SIGUSR2);
+				close(sock);
+				return;
+			}
+			AbstractAlgorithm *actualAlgorithm;
+			actualAlgorithm = factory->getAlgorithm(singleTone->getString("algorithm", "FWMethod"), interactiveMode);
+			actualAlgorithm->runAlgorithm(singleTone);
+			kill(getppid(), SIGUSR2);
 		}
-		singleTone = parse->getParams();
-		AbstractAlgorithm *actualAlgorithm;
-		actualAlgorithm = factory->getAlgorithm(singleTone->getString("algorithm", "FWMethod"), interactiveMode);
-		actualAlgorithm->runAlgorithm(singleTone);
-		kill(getppid(), SIGUSR2);
 	} while (singleTone->getInt("quit", 1));
 }
 
@@ -125,6 +137,7 @@ int main(int argc, char **argv)
 	{
 		interactiveMode = new InteractiveMode();
 		runInteractiveMode(factory, interactiveMode, parse, singleTone);
+		printf("Ending Geliosphere\n");
 		return 0;
 	}
 	AbstractAlgorithm *actualAlgorithm;

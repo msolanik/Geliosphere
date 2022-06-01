@@ -49,4 +49,5 @@ __global__ void curandInitialization(curandState_t *state)
 void initRNG(curandState_t *state, int blockSize, int threadSize)
 {
 	curandInitialization<<<blockSize, threadSize>>>(state);
+	gpuErrchk(cudaDeviceSynchronize());
 }
