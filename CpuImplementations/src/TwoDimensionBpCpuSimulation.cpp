@@ -73,7 +73,7 @@ void TwoDimensionBpCpuSimulation::simulation()
 	double Tkinw, p, rp, dp, pp, pinj, cfactor, sumac;
 	int m, mm;
 	double dtheta, dKttkon, dTkin, thetap;
-	double DriftR,arg,alphaH,Larmor,Bfield,f,fprime,DriftSheetR;
+	double DriftR,DriftTheta,arg,alphaH,Larmor,Bfield,f,fprime,DriftSheetR;
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
@@ -172,8 +172,10 @@ void TwoDimensionBpCpuSimulation::simulation()
 				fprime = tan(alphaH)/fprime;
 				fprime = -1.0*fprime*2.0/(Pi*alphaH);
 				DriftSheetR = polarity*konvF*(1.0/(3.0*A))*Rig*beta*r*gammma*fprime/tmp1; 
+				DriftTheta = -1.0*polarity*konvF*(2.0/(3.0*A))*Rig*beta*r*gammma*(2.0+(gammma*gammma))*f/tem2;
 
-				dr = dr - ((DriftR + DriftSheetR)*dt);
+				dr = dr + ((DriftR + DriftSheetR)*dt);
+				dtheta = dtheta + (DriftTheta*dt/r);
 
 				rp = r; // Mirroring zapamatavanie
 				pp = p;

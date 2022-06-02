@@ -119,4 +119,30 @@ extern __device__ __constant__ float injectionMax;
  */
 extern __device__ __constant__ float quantityPerEnergy;
 
+/**
+ * @brief Value of injection for theta.
+ * 
+ */
+extern __device__ __constant__ float thetainj;
+
+/**
+ * @brief Value of omega.
+ * 
+ */
+extern __device__ __constant__ float omega;
+
+/**
+ * @brief Value of ratio.
+ * 
+ */
+extern __device__ __constant__ float ratio;
+
+extern __device__ __constant__ float alphaM;
+extern __device__ __constant__ float polarity;
+extern __device__ __constant__ float A;
+extern __device__ __constant__ float konvF;
+extern __device__ __constant__ float driftThetaConstant;
+
+
+
 #endif

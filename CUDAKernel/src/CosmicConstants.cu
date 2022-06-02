@@ -35,6 +35,14 @@ __device__ __constant__ float omega2 = 7.25445387e-12;
 __device__ __constant__ float Pi = 3.141592654;
 __device__ __constant__ float injectionMax = 150.0f;
 __device__ __constant__ float quantityPerEnergy = 10000.0f;
+__device__ __constant__ float thetainj = 3.1415926535f / 2.0f;
+__device__ __constant__ float omega = 2.866e-6f;
+__device__ __constant__ float ratio = 0.02f;
+__device__ __constant__ float alphaM = 5.75f * 3.1415926535f / 180.0f;
+__device__ __constant__ float polarity = 1.0f;
+__device__ __constant__ float A = 3.4f;
+__device__ __constant__ float konvF = 9.0e-5f/2.0f;
+__device__ __constant__ float driftThetaConstant = -1.0f*1.0f*(9.0e-5f/2.0f)*(2.0f/(3.0f*3.4f));
 
 void setConstants(ParamsCarrier *singleTone, bool isBackward)
 {
