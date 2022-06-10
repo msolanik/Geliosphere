@@ -1,19 +1,9 @@
 #include "OneDimensionBpCpuSimulation.hpp"
 #include "FileUtils.hpp"
+#include "Constants.hpp"
 
 #include <thread>
 #include <random>
-
-const double V = -2.66667e-6;
-const double dt = 5.0;
-const double K0 = 0.000222;
-const double N = 1e9;
-const double m0 = 1.67261e-27;
-const double q = 1.60219e-19;
-const double c = 2.99793e8;
-const double Pi = 3.1415926535897932384626433832795;
-const double T0 = m0 * c * c / (q * 1e9);
-const double T0w = m0 * c * c;
 
 void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
@@ -31,7 +21,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int new_MMM = ceil(1000 / nthreads) * singleTone->getInt("millions", 1);
-
+	setContants(singleTone, true);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
 		std::vector<std::thread> threads;

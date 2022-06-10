@@ -1,31 +1,9 @@
 #include "TwoDimensionBpCpuSimulation.hpp"
 #include "FileUtils.hpp"
+#include "Constants.hpp"
 
 #include <thread>
 #include <random>
-
-const double V = (8./3.)*1e-6;
-const double dt = 1000.0;
-const double K0 = 1.43831e-5;
-const double N = 1e9;
-const double m0 = 1.67261e-27;
-const double q = 1.60219e-19;
-const double c = 2.99793e8;
-const double Pi = 3.1415926535897932384626433832795;
-const double omega = 2.866e-6;
-const double T0 = m0 * c * c / (q * 1e9);
-const double T0w = m0 * c * c;
-const double ratio = 0.02;
-const double alphaM = 5.75*Pi/180.0;            // measured value from experiment
-const double polarity = 1.0;                  //  A>0 is 1.0 ; A<0 is -1.0
-const double A = 3.4;                        // units  nT AU^2, to have B = 5 nT at Earth (1AU, theta=90)
-const double konvF = 9.0e-5/2.0;
-const double SPbins[30] = { 0.01, 0.015, 0.0225, 0.03375, 0.050625,
-	0.0759375, 0.113906, 0.170859, 0.256289, 0.384434, 0.57665,
-	0.864976, 1.29746, 1.9462, 2.91929, 4.37894, 6.56841, 9.85261,
-	14.7789, 22.1684, 33.2526, 49.8789, 74.8183, 112.227, 168.341,
-	252.512, 378.768, 568.151, 852.227, 1278.34};
-
 
 void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
@@ -43,7 +21,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int new_MMM = ceil(12 / nthreads) * singleTone->getInt("millions", 1);
-
+	setContants(singleTone, true);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
 		std::vector<std::thread> threads;
