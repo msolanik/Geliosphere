@@ -21,7 +21,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int new_MMM = ceil(12 / nthreads) * singleTone->getInt("millions", 1);
-	setContants(singleTone, true);
+	setContants(singleTone, false);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
 		std::vector<std::thread> threads;
