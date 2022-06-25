@@ -56,7 +56,7 @@ void setConstants(ParamsCarrier *singleTone, bool isBackward)
 	{
 		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
 	}
-	float newV = (isBackward) ? singleTone->getFloat("V", 1.0f) * (-1.0f) : singleTone->getFloat("V", 1.0f);
+	float newV = (isBackward) ? singleTone->getFloat("V", 1.0f) * (-1.0f) : singleTone->getFloat("V", -1.0f);
 	if (newV != -1.0f)
 	{
 		cudaMemcpyToSymbol(V, &newV, sizeof(newV));

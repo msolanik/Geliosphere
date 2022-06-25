@@ -2,19 +2,25 @@
 #include "FileUtils.hpp"
 #include "Constants.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include <thread>
 #include <random>
 
 void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
+	singleTone->putFloat("K0", 1.43831e-5);
+	spdlog::info("Starting initialization of 2D B-p simulation.");
 	srand(time(NULL));
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+		spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("2DBP", destination))
 	{
+		spdlog::error("Directory for 2D B-p simulations cannot be created.");
 		return;
 	}
 
@@ -24,6 +30,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	setContants(singleTone, false);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
+		spdlog::info("Processed: {:03.2f}%", (float) mmm / ((float) new_MMM / 100.0));
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
@@ -33,6 +40,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		{
 			th.join();
 		}
+		spdlog::info("In this iteration {} particles were detected.", outputQueue.size());
 		while (!outputQueue.empty())
 		{
 			struct SimulationOutput simulationOutput = outputQueue.front();
@@ -80,7 +88,7 @@ void TwoDimensionBpCpuSimulation::simulation()
 			theta = Pi/2.;
 			thetainj = theta;
 
-			while (r < 100.0002)
+			while (r < 100.0)
 			{ /* one history */
 				tt = Tkin + T0;
 				t2 = tt + T0;
@@ -182,7 +190,12 @@ void TwoDimensionBpCpuSimulation::simulation()
 				t2 = tt + T0;
 				beta = sqrt(Tkin*t2)/tt;
 
-				if (beta > 0.001 && Tkin < 200.0 && r > 100.0)
+//				if (beta > 0.001 && Tkin < 200.0 && r > 100.0)
+				if (r < 0.0)
+				{
+					r = -1.0 * r;
+				}
+				if (r > 100.0)
 				{
 					outputMutex.lock();
 					outputQueue.push({Tkininj,Tkin,r,w,thetainj,theta});
@@ -190,16 +203,16 @@ void TwoDimensionBpCpuSimulation::simulation()
 					break;
 				}
 
-				if (beta < 0.001)
-				{
-					break;
-				}
-				if (r < 0.1)
-				{
-					r = rp;
-					p = pp;
-					theta = thetap;
-				}
+				// if (beta < 0.001)
+				// {
+				// 	break;
+				// }
+				// if (r < 0.1)
+				// {
+				// 	r = rp;
+				// 	p = pp;
+				// 	theta = thetap;
+				// }
 			} 
 		}	  
 	}		  

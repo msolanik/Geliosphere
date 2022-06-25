@@ -3,6 +3,14 @@ project (cpu_implementations)
 
 include_directories(include)
 
+include(FetchContent)
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG        v1.9.2
+)
+FetchContent_MakeAvailable(spdlog)
+
 file(GLOB SOURCES "src/*.cpp")
 set(cpu_implementations ${SOURCES})  
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
@@ -21,4 +29,5 @@ target_link_libraries(${PROJECT_NAME}
     Constants::Basic
     utils::utils
     Threads::Threads
+    spdlog::spdlog_header_only
 )

@@ -13,6 +13,9 @@
 #define TWO_DIMENSION_BP_METHOD_H
 
 #include "AbstractAlgorithm.hpp"
+#include "TwoDimensionBpSimulation.cuh"
+
+extern "C" void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation);
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 

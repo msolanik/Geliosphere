@@ -24,8 +24,7 @@ extern "C" void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulatio
 
 __global__ void wCalc(float *Tkininj, float *p, double *w, int padding) {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
-	int idx = threadIdx.x; 
-    Tkininj[id] = getTkinInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
+    Tkininj[id] = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
 	float Tkinw = Tkininj[id]*1e9f*q;
 	float Rig = sqrtf(Tkinw*(Tkinw + (2.0f * T0w))) / q;
 	float pinj = Rig*q / c;
@@ -39,15 +38,14 @@ __device__ float getRigidity(float rigidity) {
 	return (rigidity < 0.1f) ? 0.1f : rigidity;
 }
 
-__global__ void trajectorySimulationTwoDimensionBp(float *pinj, trajectoryHistoryTwoDimensionBP* history, int padding, curandState* state) {
+__global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimensionBP* history, int padding, curandState* state) {
     extern __shared__ int sharedMemory[];
 	int id = blockIdx.x * blockDim.x + threadIdx.x; 
 	int idx = threadIdx.x;
 	float r =  1.0f;
-    float p = pinj[id]; 
     float beta, Rig, dtem1, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon;
-	float Tkin = getTkinInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
-	float cosineTheta, sineTheta, previousTheta, dtheta, theta, gammaPlusOne;
+	float Tkin = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
+	float cosineTheta, sineTheta, dtheta, theta, gammaPlusOne;
 	float Bfield, Larmor, alphaH, arg, f, fprime, gamma2PlusOne2, DriftR, DriftTheta, DriftSheetR;
 	theta = thetainj;
     float2 *generated = (float2 *)sharedMemory;
@@ -121,7 +119,6 @@ __global__ void trajectorySimulationTwoDimensionBp(float *pinj, trajectoryHistor
 		dtheta += (DriftTheta*dt/r);
 
 		// add calculated parameters to simulation variables
-		previousTheta = theta;
 		r = r + dr;
         theta = theta + dtheta;
 		Tkin = Tkin - dTkin; 
@@ -136,22 +133,31 @@ __global__ void trajectorySimulationTwoDimensionBp(float *pinj, trajectoryHistor
 			theta = (2.0f*Pi) - theta;
 		}
 		
-		beta = sqrtf(Tkin*(Tkin + T0 + T0)) / (Tkin + T0);
-
-		if (r<0.1f) {
-        	r -= dr;
-    		theta = previousTheta; 
-			Tkin += dTkin;
+		if (r < 0.0f)
+		{
+			r = -1.0f * r;
 		}
-        
-		if (beta > 0.001f && Tkin < 200.0f && r > 100.0f) {
+		if (r > 100.0f)
+		{
 			count = atomicAdd(&outputCounter, 1);
 			history[count].setValues(Tkin, r, id, theta);
 			break;
 		}
-		else if (beta<0.01f) {
-			break;
-		}
+
+		// if (r<0.1f) {
+        // 	r -= dr;
+    	// 	theta = previousTheta; 
+		// 	Tkin += dTkin;
+		// }
+        
+		// if (beta > 0.001f && Tkin < 200.0f && r > 100.0f) {
+		// 	count = atomicAdd(&outputCounter, 1);
+		// 	history[count].setValues(Tkin, r, id, theta);
+		// 	break;
+		// }
+		// else if (beta<0.01f) {
+		// 	break;
+		// }
 
 
 	}
@@ -188,7 +194,7 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 		gpuErrchk(cudaDeviceSynchronize());
 		wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
 		gpuErrchk(cudaDeviceSynchronize());
-		trajectorySimulationTwoDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
+		trajectorySimulationTwoDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
 		if (counter != 0)

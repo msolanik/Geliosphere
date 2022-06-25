@@ -2,28 +2,34 @@
 #include "FileUtils.hpp"
 #include "Constants.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include <thread>
 #include <random>
 
 void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
 	srand(time(NULL));
+	spdlog::info("Starting initialization of 1D B-p simulation.");
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+		spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("BP", destination))
 	{
+		spdlog::error("Directory for 1D B-p simulations cannot be created.");
 		return;
 	}
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil(1000 / nthreads) * singleTone->getInt("millions", 1);
+	int new_MMM = ceil(singleTone->getInt("millions", 1) / nthreads);
 	setContants(singleTone, true);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
+		spdlog::info("Processed: {:03.2f}%", (float) mmm / ((float) new_MMM / 100.0));
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
@@ -33,6 +39,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		{
 			th.join();
 		}
+		spdlog::info("In this iteration {} particles were detected.", outputQueue.size());
 		while (!outputQueue.empty())
 		{
 			struct SimulationOutput simulationOutput = outputQueue.front();

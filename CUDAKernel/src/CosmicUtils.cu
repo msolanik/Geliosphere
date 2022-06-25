@@ -33,6 +33,12 @@ __device__ float getTkinInjection(unsigned long long state)
 	return ((modulo) + ((ownState - (modulo * quantityPerEnergy) + 1) / quantityPerEnergy));
 }
 
+__device__ float getSolarPropInjection(unsigned long long state)
+{
+	int modulo = state % 30;
+	return 0.01f * powf((1.0f + 0.5f), modulo); 
+}
+
 __global__ void nullCount()
 {
 	outputCounter = 0;

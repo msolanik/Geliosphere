@@ -14,7 +14,7 @@ const static double q = 1.60219e-19;
 const static double c = 2.99793e8;
 const static double T0w = m0 * c * c;
 const static double Tr = 0.938;
-const double SPbins[30] = { 0.01, 0.015, 0.0225, 0.03375, 0.050625,
+const double SPbins[31] = { 0, 0.01, 0.015, 0.0225, 0.03375, 0.050625,
 	0.0759375, 0.113906, 0.170859, 0.256289, 0.384434, 0.57665,
 	0.864976, 1.29746, 1.9462, 2.91929, 4.37894, 6.56841, 9.85261,
 	14.7789, 22.1684, 33.2526, 49.8789, 74.8183, 112.227, 168.341,
@@ -130,14 +130,14 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     }
     fclose(inputFile);
     FILE *out = fopen("JGAR.csv", "w");; 
-    for (int i = 0; i < 30; i++)
+    for (int i = 1; i < 31; i++)
     {
         fprintf(out, "%3.4f,%3.4f\n", SPbins[i], speJGR[i]);
     }
     fclose(out);
 
     out = fopen("Weber.csv", "w");; 
-    for (int i = 0; i < 30; i++)
+    for (int i = 1; i < 31; i++)
     {
         fprintf(out, "%3.4f,%3.4f\n", SPbins[i], speSP[i]);
     }

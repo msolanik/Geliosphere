@@ -34,6 +34,14 @@ extern __device__ int outputCounter;
 __device__ float getTkinInjection(unsigned long long state);
 
 /**
+ * @brief Get value of injection kinetic energy for SolarProp based simulations.
+ * 
+ * @param state State of order that is used to calculate kinetic energy
+ * @return Value of kinetic energy
+ */
+__device__ float getSolarPropInjection(unsigned long long state);
+
+/**
  * @brief Set counter to 0
  * 
  */

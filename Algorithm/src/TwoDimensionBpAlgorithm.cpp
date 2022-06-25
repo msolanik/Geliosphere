@@ -8,15 +8,48 @@
 
 void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
-	// if (!singleTone->getInt("isCpu", 0))
-	// {
+	if (!singleTone->getInt("isCpu", 0))
+	{
+		simulationInputTwoDimensionBP simulation;
+		setThreadBlockSize();
+		curandState_t *state;
+		double *w;
+		float *pinj;
+		float *Tkininj;
+		trajectoryHistoryTwoDimensionBP *history, *local_history;
 
-	// }
-	// else
-	// {
+		gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
+		gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
+		gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
+		gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
+		gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryTwoDimensionBP))));
+		gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryTwoDimensionBP))));
+
+		simulation.singleTone = singleTone;
+		simulation.history = history;
+		simulation.local_history = local_history;
+		simulation.pinj = pinj;
+		simulation.Tkininj = Tkininj;
+		simulation.state = state;
+		simulation.w = w;
+		simulation.threadSize = threadSize;
+		simulation.blockSize = blockSize;
+
+		setConstants(singleTone, true);
+		runTwoDimensionBpMethod(&simulation);
+
+		gpuErrchk(cudaFree(w));
+		gpuErrchk(cudaFree(pinj));
+		gpuErrchk(cudaFree(Tkininj));
+		gpuErrchk(cudaFree(state));
+		gpuErrchk(cudaFree(history));
+		gpuErrchk(cudaFreeHost(local_history));
+	}
+	else
+	{
 		TwoDimensionBpCpuSimulation *twoDimensionBpCpuSimulation = new TwoDimensionBpCpuSimulation();
 		twoDimensionBpCpuSimulation->runSimulation(singleTone);
-	// }
+	}
 
 	AbstractAlgorithm *result;
 	result = new TwoDimensionBpResults();

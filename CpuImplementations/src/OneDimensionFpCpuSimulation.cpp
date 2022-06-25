@@ -2,28 +2,34 @@
 #include "FileUtils.hpp"
 #include "Constants.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include <thread>
 #include <random>
 
 void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
+	spdlog::info("Starting initialization of 2D B-p simulation.");
 	srand(time(NULL));
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+		spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("FW", destination))
 	{
+		spdlog::error("Directory for 1D F-p simulations cannot be created.");
 		return;
 	}
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil(1000 / nthreads) * singleTone->getInt("millions", 1);
+	int new_MMM = ceil(singleTone->getInt("millions", 1) / nthreads);
 	setContants(singleTone, false);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
+		spdlog::info("Processed: {:03.2f}%", (float) mmm / ((float) new_MMM / 100.0));
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
