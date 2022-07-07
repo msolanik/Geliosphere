@@ -20,6 +20,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *forwardMethod = app.add_flag("-F,--Forward", "Run a forward method")->group("Methods");
 	CLI::Option *backwardMethod = app.add_flag("-B,--Backward", "Run a backward method")->group("Methods");
 	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--TwoDimensionBackward", "Run a 2D backward method")->group("Methods");
+	CLI::Option *threeDimensionBackwardMethod = app.add_flag("-T,--ThreeDimensionBackward", "Run a 3D backward method")->group("Methods");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
 	CLI::Option *cpuOnly = app.add_flag("--cpu_only", "Use only CPU for calculaions");
 	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value(s)");
@@ -39,10 +40,16 @@ int ParseParams::parseParams(int argc, char **argv)
 
 	backwardMethod->excludes(forwardMethod);
 	backwardMethod->excludes(twoDimensionBackwardMethod);
+	backwardMethod->excludes(threeDimensionBackwardMethod);
 	forwardMethod->excludes(backwardMethod);
 	forwardMethod->excludes(twoDimensionBackwardMethod);
+	forwardMethod->excludes(threeDimensionBackwardMethod);
 	twoDimensionBackwardMethod->excludes(backwardMethod);
 	twoDimensionBackwardMethod->excludes(forwardMethod);
+	twoDimensionBackwardMethod->excludes(threeDimensionBackwardMethod);
+	threeDimensionBackwardMethod->excludes(backwardMethod);
+	threeDimensionBackwardMethod->excludes(forwardMethod);
+	threeDimensionBackwardMethod->excludes(twoDimensionBackwardMethod);
 
 
 	monthOption->requires(yearOption);
@@ -134,6 +141,10 @@ int ParseParams::parseParams(int argc, char **argv)
 	else if (*twoDimensionBackwardMethod)
 	{
 		singleTone->putString("algorithm", "TwoDimensionBp");
+	}
+	else if (*twoDimensionBackwardMethod)
+	{
+		singleTone->putString("algorithm", "ThreeDimensionBp");
 	}
 	printParameters(singleTone);
 	return 1;
