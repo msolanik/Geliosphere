@@ -20,8 +20,6 @@
 #include "CosmicUtils.cuh"
 #include "CudaErrorCheck.cuh"
 
-extern "C" void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation);
-
 __global__ void wCalc(float *Tkininj, float *p, double *w, int padding) {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
     Tkininj[id] = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);

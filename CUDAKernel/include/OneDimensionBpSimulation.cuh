@@ -67,4 +67,6 @@ struct simulationInputBP
 	int threadSize;
 };
 
+void runBPMethod(simulationInputBP *simulation);
+
 #endif // !BP_DEFINES_H

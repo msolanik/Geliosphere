@@ -19,8 +19,6 @@
 #include "CudaErrorCheck.cuh"
 #include "CosmicUtils.cuh"
 
-extern "C" void runFWMethod(simulationInput *simulation);
-
 /**
  * @brief Calculate pre-simulations parameters.
  * 

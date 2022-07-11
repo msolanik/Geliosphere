@@ -17,6 +17,8 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
+#include "ParamsCarrier.hpp"
+
 /**
  * @brief Speed of the solar wind in AU/s.
  * 
@@ -143,6 +145,10 @@ extern __device__ __constant__ float A;
 extern __device__ __constant__ float konvF;
 extern __device__ __constant__ float driftThetaConstant;
 
-
+/**
+ * @brief Set constants values according to data in ParamsCarrier.
+ * 
+ */
+void setConstants(ParamsCarrier *singleTone, bool isBackward);
 
 #endif

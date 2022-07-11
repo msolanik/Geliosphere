@@ -29,25 +29,6 @@ public:
 	 * @param singleTone datastructure containing input parameters.
 	 */
 	void runAlgorithm(ParamsCarrier *singleTone);
-    
-private:
-	/**
-	 * @brief Define number of threads in block.  
-	 * 
-	 */
-	int threadSize;
-	
-	/**
-	 * @brief Define number of blocks in grid.  
-	 * 
-	 */
-	int blockSize;
-
-    /**
-	 * @brief Set size for @ref blockSize and @ref threadSize.
-	 * 
-	 */
-	void setThreadBlockSize();
 };
 
 #endif

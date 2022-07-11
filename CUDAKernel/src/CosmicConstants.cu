@@ -10,13 +10,6 @@
  */
 
 #include "CosmicConstants.cuh"
-#include "ParamsCarrier.hpp"
-
-/**
- * @brief Set constants values according to data in ParamsCarrier.
- * 
- */
-extern "C" void setConstants(ParamsCarrier *singleTone, bool isBackward);
 
 __device__ __constant__ float V = 2.66667e-6;
 __device__ __constant__ float dt = 5.0f;

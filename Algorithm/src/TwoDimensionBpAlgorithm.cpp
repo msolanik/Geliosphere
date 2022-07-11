@@ -1,49 +1,24 @@
 #include "TwoDimensionBpAlgorithm.hpp"
 
-#include <cuda_runtime.h>
-#include "CudaErrorCheck.cuh"
+#include "spdlog/spdlog.h"
 
-#include "TwoDimensionBpCpuSimulation.hpp"
 #include "TwoDimensionBpResults.hpp"
+#include "TwoDimensionBpCpuSimulation.hpp"
+#if GPU_ENABLED == 1
+#include "TwoDimensionBpGpuSimulation.hpp"
+#endif
 
 void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
 	if (!singleTone->getInt("isCpu", 0))
 	{
-		simulationInputTwoDimensionBP simulation;
-		setThreadBlockSize();
-		curandState_t *state;
-		double *w;
-		float *pinj;
-		float *Tkininj;
-		trajectoryHistoryTwoDimensionBP *history, *local_history;
-
-		gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
-		gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
-		gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
-		gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-		gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryTwoDimensionBP))));
-		gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryTwoDimensionBP))));
-
-		simulation.singleTone = singleTone;
-		simulation.history = history;
-		simulation.local_history = local_history;
-		simulation.pinj = pinj;
-		simulation.Tkininj = Tkininj;
-		simulation.state = state;
-		simulation.w = w;
-		simulation.threadSize = threadSize;
-		simulation.blockSize = blockSize;
-
-		setConstants(singleTone, true);
-		runTwoDimensionBpMethod(&simulation);
-
-		gpuErrchk(cudaFree(w));
-		gpuErrchk(cudaFree(pinj));
-		gpuErrchk(cudaFree(Tkininj));
-		gpuErrchk(cudaFree(state));
-		gpuErrchk(cudaFree(history));
-		gpuErrchk(cudaFreeHost(local_history));
+#if GPU_ENABLED == 1
+		TwoDimensionBpGpuSimulation *twoDimensionBpGpuSimulation = new TwoDimensionBpGpuSimulation();
+		twoDimensionBpGpuSimulation->prepareAndRunSimulation(singleTone);
+#else
+    	spdlog::info("GPU-based computations are disabled. Please, compile again without -DUSE_CPU_ONLY.");
+		return;
+#endif		
 	}
 	else
 	{
@@ -54,27 +29,4 @@ void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	AbstractAlgorithm *result;
 	result = new TwoDimensionBpResults();
 	result->runAlgorithm(singleTone);
-}
-
-// Compute capability actual device
-void TwoDimensionBpAlgorithm::setThreadBlockSize()
-{
-	cudaDeviceProp gpuProperties;
-	gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));
-	int computeCapability = gpuProperties.major * 100 + gpuProperties.minor * 10;
-	switch (computeCapability)
-	{
-	case 610:
-		blockSize = 65536;
-		threadSize = 512;
-		break;
-	case 750:
-		blockSize = 32768;
-		threadSize = 1024;
-		break;
-	default:
-		blockSize = 64;
-		threadSize = 64;
-		break;
-	}
 }

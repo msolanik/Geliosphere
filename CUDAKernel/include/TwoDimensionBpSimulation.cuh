@@ -67,4 +67,6 @@ struct simulationInputTwoDimensionBP
 	int threadSize;
 };
 
+void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation);
+
 #endif // !BP_DEFINES_H

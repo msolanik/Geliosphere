@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef ABSTRAT_CPU_SIMULATION_H
-#define ABSTRAT_CPU_SIMULATION_H
+#ifndef ABSTRACT_CPU_SIMULATION_H
+#define ABSTRACT_CPU_SIMULATION_H
 
 #include "ParamsCarrier.hpp"
 

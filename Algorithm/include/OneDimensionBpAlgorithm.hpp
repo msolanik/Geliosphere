@@ -13,9 +13,8 @@
 #define BP_METHOD_H
 
 #include "AbstractAlgorithm.hpp"
-#include "OneDimensionBpSimulation.cuh"
 
-extern "C" void runBPMethod(simulationInputBP *simulation);
+// extern "C" void runBPMethod(simulationInputBP *simulation);
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
@@ -32,25 +31,6 @@ public:
 	 * @param singleTone datastructure containing input parameters.
 	 */
 	void runAlgorithm(ParamsCarrier *singleTone);
-
-private:
-	/**
-	 * @brief Define number of threads in block.  
-	 * 
-	 */
-	int threadSize;
-	
-	/**
-	 * @brief Define number of blocks in grid.  
-	 * 
-	 */
-	int blockSize;
-	
-	/**
-	 * @brief Set size for @ref blockSize and @ref threadSize.
-	 * 
-	 */
-	void setThreadBlockSize();
 };
 
 #endif

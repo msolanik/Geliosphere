@@ -74,7 +74,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
             Tkin = Tkininj;
 
             Tkinw = Tkin * 1e9 * q;                      /*v Jouloch*/
-            Rig = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q; /*vo Voltoch*/
+            Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q; /*vo Voltoch*/
             p = Rig * q / c;                             /*kg m s-1*/
             pinj = p;
 
@@ -97,7 +97,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 t2 = tt + T0;
                 beta = sqrt(Tkin * t2) / tt;
                 alfa = t2 / tt;
-                Rig = sqrt(Tkin * (Tkin + (2 * T0)));
+                Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
                 r2 = r * r;
 
                 delta = delta0 / sin(theta);
@@ -122,7 +122,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
 
                 gammma = (r * omega) * sin(theta) / V; // ZMENA  ; 1 chýba sin(theta)
                 gamma2 = gammma * gammma;              // ZMENA
-                tmp1 = 1 + gamma2 + (r2 * deltarh2);   // NEW 062022
+                tmp1 = 1.0 + gamma2 + (r2 * deltarh2);   // NEW 062022
                 tem2 = tmp1 * tmp1;
                 Bfactor = (5. / 3.4) * r2 / sqrt(tmp1); // SOLARPROP
 
@@ -166,7 +166,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
                 dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
                 dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
-                dKrtt = dKrtt * (1 - (2.0 * gamma2) + (4 * r2 * deltarh2));
+                dKrtt = dKrtt * (1.0 - (2.0 * gamma2) + (4.0 * r2 * deltarh2));
 
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
@@ -200,7 +200,6 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 alphaH = alphaH - 1.0;
                 alphaH = 1.0 / alphaH;
                 alphaH = acos(alphaH);
-                ;
 
                 arg = (1. - (2. * theta / Pi)) * tan(alphaH);
                 f = atan(arg) / alphaH;

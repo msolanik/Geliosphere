@@ -66,4 +66,6 @@ struct simulationInput
 	int threadSize;
 };
 
+void runFWMethod(simulationInput *simulation);
+
 #endif // !FLOAT_FW_DEFINES_H

@@ -20,8 +20,6 @@
 #include "CosmicUtils.cuh"
 #include "CudaErrorCheck.cuh"
 
-extern "C" void runBPMethod(simulationInputBP *simulation);
-
 /**
  * @brief Calculate pre-simulations parameters.
  * 

@@ -14,8 +14,6 @@
 
 #include "ParamsCarrier.hpp"
 
-extern "C" void setConstants(ParamsCarrier *singleTone, bool isBackward);
-
 /**
  * @brief Interface that is used to define algorithm in context of application.
  * 
