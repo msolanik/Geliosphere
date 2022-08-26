@@ -5,6 +5,7 @@ project(Cuda-kernel CUDA CXX)
 include_directories(include)
 
 find_package(CUDA REQUIRED)
+include_directories("${CUDA_INCLUDE_DIRS}")
 
 file(GLOB SOURCES "src/*.cu" "src/*.cpp")
 

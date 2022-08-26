@@ -224,7 +224,7 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 	int counter;
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
-    singleTone->putFloat("K0", 5.0 * 1.43831e-5);
+    singleTone->putFloat("K0", 5.0f * 1.43831e-5f);
 
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())

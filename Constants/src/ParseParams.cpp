@@ -56,7 +56,7 @@ int ParseParams::parseParams(int argc, char **argv)
 
 	spdlog::info("Started to parsing input parameters");
 	CLI11_PARSE(app, argc, argv);
-	if (!*forwardMethod && !*backwardMethod && !*twoDimensionBackwardMethod)
+	if (!*forwardMethod && !*backwardMethod && !*twoDimensionBackwardMethod && !threeDimensionBackwardMethod)
 	{
 		spdlog::error("At least one method must be selected!");
 		return -1;
@@ -142,7 +142,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		singleTone->putString("algorithm", "TwoDimensionBp");
 	}
-	else if (*twoDimensionBackwardMethod)
+	else if (*threeDimensionBackwardMethod)
 	{
 		singleTone->putString("algorithm", "ThreeDimensionBp");
 	}
