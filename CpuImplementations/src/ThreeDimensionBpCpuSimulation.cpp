@@ -9,7 +9,7 @@
 
 void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
-    singleTone->putFloat("K0", 1.43831e-5);
+    singleTone->putFloat("K0", 5.0 * 1.43831e-5);
     spdlog::info("Starting initialization of 3D B-p simulation.");
     srand(time(NULL));
     std::string destination = singleTone->getString("destination", "");
@@ -62,6 +62,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
     double delta, delta2, deltarh, deltarh2;
     double DriftR, DriftTheta, arg, alphaH, Larmor, Bfield, f, fprime, DriftSheetR;
     double Kphph, Krt, Krph, Ktph, B111, B11, B12, B13, B22, B23;
+    double sin2,sin3,dKtt0,dKtt1,dKtt2;
     double dKrtr, dKrtt;
     thread_local std::random_device rd{};
     thread_local std::mt19937 generator(rd());
@@ -107,15 +108,15 @@ void ThreeDimensionBpCpuSimulation::simulation()
 
                 if (theta < (1.7 * Pi / 180.))
                 {
-                    delta = 0.003;
-                    delta2 = 0.000009;
+                    delta = 0.2*0.003;
+                    delta2 = 0.04*0.000009;
                     deltarh = delta / rh;
                     deltarh2 = deltarh * deltarh;
                 }
                 if (theta > (178.3 * Pi / 180.0))
                 {
-                    delta = 0.003;
-                    delta2 = 0.000009;
+                    delta = 0.2*0.003;
+                    delta2 = 0.04*0.000009;
                     deltarh = delta / rh;
                     deltarh2 = deltarh * deltarh;
                 }
@@ -126,26 +127,32 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 tem2 = tmp1 * tmp1;
                 Bfactor = (5. / 3.4) * r2 / sqrt(tmp1); // SOLARPROP
 
-                Kpar = K0 * beta * Rig * Bfactor / 3.0;
                 if (Rig < 0.1)
                 {
                     Kpar = K0 * beta * 0.1 * Bfactor / 3.0;
+                }
+                else 
+                {
+                    Kpar = K0 * beta * Rig * Bfactor / 3.0;
                 }
 
                 Kper = ratio * Kpar; // SOLARPROP
 
                 Krr = Kper + ((Kpar - Kper) / tmp1);
                 Ktt = Kper + (r2 * deltarh2 * (Kpar - Kper) / tmp1);
-                Kphph = (Kpar - Kper) * gamma2 / tmp1;
+                // Kphph = (Kpar - Kper) * gamma2 / tmp1;
+                Kphph = 1.0;
 
                 Krt = deltarh * (Kpar - Kper) * r / tmp1;
-                Krph = (Kpar - Kper) * gammma / tmp1;
-                Ktph = (Kpar - Kper) * r * deltarh * gammma / tmp1;
+                // Krph = (Kpar - Kper) * gammma / tmp1;
+                Krph = 0.0;
+                // Ktph = (Kpar - Kper) * r * deltarh * gammma / tmp1;
+                Ktph = 0.0;
 
                 B111 = (Kphph * Krt * Krt) - (2.0 * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
                 B11 = 2.0 * B111 / ((Ktph * Ktph) - (Ktt * Kphph));
                 B11 = sqrt(B11);
-                B12 = ((Krt * Ktph) - (Krt * Kphph)) / ((Ktph * Ktph) - (Ktt * Kphph));
+                B12 = ((Krph * Ktph) - (Krt * Kphph)) / ((Ktph * Ktph) - (Ktt * Kphph));
                 B12 = B12 * sqrt(2.0 * (Ktt - (Ktph * Ktph / Kphph)));
                 B13 = sqrt(2.0) * Krph / sqrt(Kphph);
                 B22 = Ktt - (Ktph * Ktph / Kphph);
@@ -157,16 +164,39 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 dKrr = ratio * K0 * beta * Rig * ((2.0 * r * sqrt(tmp1)) - (r2 * dtem1 / (2.0 * sqrt(tmp1)))) / tmp1; // par Kperp ober par r
                 dKrr = dKrr + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(tmp1, 1.5)) - (r2 * dtem1 * 3.0 * sqrt(tmp1) / 2.0)) / pow(tmp1, 3.0));
                 dKrr = dKrr * 5. / (3. * 3.4); // SOLARPROP
-                dKtt = sin(theta) * cos(theta) * (omega * omega * r2 / (V * V));
-                if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
+                // dKtt = sin(theta) * cos(theta) * (omega * omega * r2 / (V * V));
+                // if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
+                // {
+                //     dKtt = dKtt - (r2 * delta0 * delta0 * cos(theta) / (rh * rh * sin(theta) * sin(theta) * sin(theta)));
+                // }
+                // dKtt = (-1.0 * ratio * K0 * beta * Rig * r2 * dKtt) / pow(tmp1, 1.5);
+
+                sin3 = sin(theta)*sin(theta)*sin(theta);
+
+                dKtt = sin(theta)*cos(theta)*(omega*omega*r2/(V*V));
+                dKtt = dKtt - (r2*delta0*delta0*cos(theta)/(rh*rh*sin3));
+                dKtt = (-1.0*ratio*K0*beta*Rig*r2*dKtt)/pow(tmp1,1.5);
+
+                if ((theta>(1.7*Pi/180.))&&(theta<(178.3*Pi/180.0))) 
                 {
-                    dKtt = dKtt - (r2 * delta0 * delta0 * cos(theta) / (rh * rh * sin(theta) * sin(theta) * sin(theta)));
+                    dKtt0 = 3.0*(1.0-ratio)*K0*beta*Rig*r2*r2*deltarh2;
+                    dKtt1 = omega*omega*r2*sin(theta)*cos(theta)/(V*V*pow(tmp1,2.5));
+                    dKtt = dKtt - (dKtt0*dKtt1);
                 }
-                dKtt = (-1.0 * ratio * K0 * beta * Rig * r2 * dKtt) / pow(tmp1, 1.5);
+                else
+                {
+                    sin2 = sin(theta)*sin(theta);
+                    dKtt0 = (1.0-ratio)*K0*beta*Rig*r2*r2*delta0*delta0/(rh*rh);
+                    dKtt1 = -2.0*(cos(theta)/sin3)/pow(tmp1,1.5);
+                    dKtt2 = 1.5*((2.0*omega*omega*r2*sin(theta)*cos(theta)/(V*V)) - (2.0*r2*delta0*delta0*cos(theta)/(rh*rh*sin3)))/(sin2*pow(tmp1,2.5));
+                    dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
+                }
+
                 dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
                 dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
                 dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
-                dKrtt = dKrtt * (1.0 - (2.0 * gamma2) + (4.0 * r2 * deltarh2));
+                // dKrtt = dKrtt * (1.0 - (2.0 * gamma2) + (4.0 * r2 * deltarh2));
+                dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
 
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
@@ -183,7 +213,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 dr = dr + (distribution(generator) * B13 * sqrt(dt));
 
                 dtheta = (Ktt * cos(theta)) / (r2 * sin(theta));
-                dtheta = dtheta * dt / tmp1;
+                dtheta = (dtheta*dt) + (dKtt*dt/r2);
                 dtheta = dtheta + (dKrtr * dt) + (2.0 * Krt * dt / r);                                                     // NEW 062022
                 dtheta = dtheta + (distribution(generator) * B22 * sqrt(dt)) + (distribution(generator) * B23 * sqrt(dt)); // NEW 06@)@@
 
@@ -213,6 +243,9 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gammma * fprime / tmp1;
                 dr = dr + ((DriftR + DriftSheetR) * dt);
                 dtheta = dtheta + (DriftTheta * dt / r);
+                r = r + dr;
+                Tkin = Tkin - dTkin; 
+                theta = theta + dtheta;
                 if (theta < 0)
                 {
                     theta = fabs(theta);

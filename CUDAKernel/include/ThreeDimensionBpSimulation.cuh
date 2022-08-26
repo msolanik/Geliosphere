@@ -1,16 +1,16 @@
 /**
- * @file TwoDimensionBpSimulation.cuh
+ * @file ThreeDimensionBpSimulation.cuh
  * @author Michal Solanik
- * @brief Definition of data structures needed for 2D B-p method.
+ * @brief Definition of data structures needed for 3D B-p method.
  * @version 0.2
- * @date 2022-06-02
+ * @date 2022-08-15
  * 
- * @copyright Copyright (c) 2022a
+ * @copyright Copyright (c) 2022
  * 
  */
 
-#ifndef TWO_DIMENSION_BP_DEFINES_H
-#define TWO_DIMENSION_BP_DEFINES_H
+#ifndef THREE_DIMENSION_BP_DEFINES_H
+#define THREE_DIMENSION_BP_DEFINES_H
 
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
@@ -18,14 +18,14 @@
 #include <curand_kernel.h>
 
 #if (__CUDA_ARCH__ == 610)
-#define BLOCK_SIZE_TWO_BP 32768
-#define THREAD_SIZE_TWO_BP 512
+#define BLOCK_SIZE_THREE_BP 32768
+#define THREAD_SIZE_THREE_BP 512
 #elif (__CUDA_ARCH__ == 750)
-#define BLOCK_SIZE_TWO_BP 16384
-#define THREAD_SIZE_TWO_BP 1024
+#define BLOCK_SIZE_THREE_BP 16384
+#define THREAD_SIZE_THREE_BP 1024
 #else
-#define BLOCK_SIZE_TWO_BP 64
-#define THREAD_SIZE_TWO_BP 64
+#define BLOCK_SIZE_THREE_BP 64
+#define THREAD_SIZE_THREE_BP 64
 #endif
 
 /**
@@ -33,7 +33,7 @@
  * simulations.
  * 
  */
-struct trajectoryHistoryTwoDimensionBP
+struct trajectoryHistoryThreeDimensionBP
 {
 	float Tkin = -1.0f;
 	float r = -1.0f;
@@ -54,12 +54,12 @@ struct trajectoryHistoryTwoDimensionBP
  * 1D B-p method.
  * 
  */
-struct simulationInputTwoDimensionBP
+struct simulationInputThreeDimensionBP
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
-	trajectoryHistoryTwoDimensionBP *history;
-	trajectoryHistoryTwoDimensionBP *local_history;
+	trajectoryHistoryThreeDimensionBP *history;
+	trajectoryHistoryThreeDimensionBP *local_history;
 	float *Tkininj;
 	float *pinj;
 	double *w;
@@ -67,6 +67,6 @@ struct simulationInputTwoDimensionBP
 	int threadSize;
 };
 
-void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation);
+void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation);
 
 #endif // !BP_DEFINES_H

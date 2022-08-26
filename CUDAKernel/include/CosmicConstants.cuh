@@ -144,6 +144,8 @@ extern __device__ __constant__ float polarity;
 extern __device__ __constant__ float A;
 extern __device__ __constant__ float konvF;
 extern __device__ __constant__ float driftThetaConstant;
+extern __device__ __constant__ float delta0;
+extern __device__ __constant__ float rh; 
 
 /**
  * @brief Set constants values according to data in ParamsCarrier.

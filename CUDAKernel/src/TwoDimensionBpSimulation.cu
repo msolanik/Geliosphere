@@ -142,22 +142,6 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 			break;
 		}
 
-		// if (r<0.1f) {
-        // 	r -= dr;
-    	// 	theta = previousTheta; 
-		// 	Tkin += dTkin;
-		// }
-        
-		// if (beta > 0.001f && Tkin < 200.0f && r > 100.0f) {
-		// 	count = atomicAdd(&outputCounter, 1);
-		// 	history[count].setValues(Tkin, r, id, theta);
-		// 	break;
-		// }
-		// else if (beta<0.01f) {
-		// 	break;
-		// }
-
-
 	}
 	state[id] = cuState[idx];
 }

@@ -21,7 +21,7 @@ const double Pi = 3.1415926535897932384626433832795;
 const double T0 = m0 * c * c / (q * 1e9);
 const double T0w = m0 * c * c;
 const double omega = 2.866e-6;
-const double ratio = 0.02;
+const double ratio = 0.2;
 const double alphaM = 5.75*Pi/180.0;            // measured value from experiment
 const double polarity = 1.0;                  //  A>0 is 1.0 ; A<0 is -1.0
 const double A = 3.4;                        // units  nT AU^2, to have B = 5 nT at Earth (1AU, theta=90)

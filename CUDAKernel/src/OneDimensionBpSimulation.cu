@@ -66,7 +66,7 @@ __global__ void trajectorySimulationBP(float *pinj, trajectoryHistoryBP *history
 	for (; r < 100.0002f;)
 	{
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
-		Rig = (p * c / q) / 1e9;
+		Rig = (p * c / q) / 1e9f;
 		pp = p;
 		p -= (2.0f * V * pp * dt / (3.0f * r));
 		if (generate)
@@ -84,7 +84,7 @@ __global__ void trajectorySimulationBP(float *pinj, trajectoryHistoryBP *history
 		}
 		Rig = p * c / q;
 		Tkin = (sqrtf((T0 * T0 * q * q * 1e9f * 1e9f) + (q * q * Rig * Rig)) - (T0 * q * 1e9f)) / (q * 1e9f);
-		Rig = Rig / 1e9;
+		Rig = Rig / 1e9f;
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		if (beta > 0.01f && Tkin < 200.0f)
 		{

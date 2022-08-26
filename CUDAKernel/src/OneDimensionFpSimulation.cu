@@ -31,7 +31,7 @@ __global__ void wCalc(double *w, float *pinj, int padding)
 {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	float Tkinw = getTkinInjection(BLOCK_SIZE * THREAD_SIZE * padding + id) * 1e9f * q;
-	float Rig = sqrtf(Tkinw * (Tkinw + (2 * T0w))) / q;
+	float Rig = sqrtf(Tkinw * (Tkinw + (2.0f * T0w))) / q;
 	float p = Rig * q / c;
 	double newW = (m0_double * m0_double * c_double * c_double * c_double * c_double) + (p * p * c_double * c_double);
 	newW = (pow(newW, -1.85) / p) / 1e45;
