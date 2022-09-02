@@ -267,6 +267,11 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 			for (int j = 0; j < counter; ++j)
 			{
 				spdlog::info("Local history ID - {}.", simulation->local_history[j].id);
+				if (simulation->local_history[j].id >= counter)
+				{
+					spdlog::info("Local history ID is greater than counter.");
+					continue;
+				}
 				spdlog::info("Tkininj - {}.", simulation->Tkininj[simulation->local_history[j].id]);
 				spdlog::info("r - {}.", simulation->local_history[j].r);
 				spdlog::info("w - {}.", simulation->w[simulation->local_history[j].id]);
