@@ -140,7 +140,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		if (r > 100.0f)
 		{
 			count = atomicAdd(&outputCounter, 1);
-			history[count].setValues(Tkin, r, id, theta);
+			history[count].setValues(Tkin, r, theta, id);
 			break;
 		}
 
