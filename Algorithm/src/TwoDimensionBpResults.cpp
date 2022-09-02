@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstring>
 
+#include "spdlog/spdlog.h"
+
 #include "ResultsUtils.hpp"
 
 #define bufSize 1024
@@ -22,6 +24,7 @@ const double SPbins[31] = { 0, 0.01, 0.015, 0.0225, 0.03375, 0.050625,
 
 void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 {
+    spdlog::info("Started to analyze 2D/3D B-p particles.");
     ResultsUtils *resultsUtils = new ResultsUtils();
     int energy1e2, energy1e3, energy4e2;
     double w, Rig, p1AU, Tkin, r, p, Tkinw, Rig1AU, Tkininj, theta, thetainj, tt, t2, beta;
@@ -49,6 +52,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     FILE *inputFile = fopen("log.dat", "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
+    spdlog::info("Founded {} to analyze.", numberOfIterations);
     FILE *outputFile;
     for (int j = 0; j < 1; ++j)
     {

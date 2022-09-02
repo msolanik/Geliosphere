@@ -263,11 +263,13 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryThreeDimensionBP), cudaMemcpyDeviceToHost));
+    		spdlog::info("Writing {} particles to output file.", counter);
 			for (int j = 0; j < counter; ++j)
 			{
 				fprintf(file, "%g %g %g %g %g %g\n", simulation->Tkininj[simulation->local_history[j].id], simulation->local_history[j].Tkin, simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], 3.1415926535f / 2.0f, simulation->local_history[j].theta);
 			}
 		}
 	}
-	fclose(file);
+	fclose(file);	
+    spdlog::info("Simulation ended.");
 }
