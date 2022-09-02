@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <string>
 
+#include "spdlog/spdlog.h"
+
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
 #include "OneDimensionFpSimulation.cuh"
@@ -117,14 +119,17 @@ void runFWMethod(simulationInput *simulation)
 	int counter;
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
+    spdlog::info("Starting initialization of 1D F-p simulation.");
 
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+        spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("FW", destination))
 	{
+        spdlog::error("Directory for 1D F-p simulations cannot be created.");
 		return;
 	}
 
@@ -138,6 +143,7 @@ void runFWMethod(simulationInput *simulation)
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
+        spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
 		wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->w, simulation->pinj, k);
@@ -145,6 +151,7 @@ void runFWMethod(simulationInput *simulation)
 		trajectorySimulation<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+        spdlog::info("In this iteration {} particles were detected.", counter);
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistory), cudaMemcpyDeviceToHost));

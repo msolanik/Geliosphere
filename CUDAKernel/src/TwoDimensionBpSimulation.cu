@@ -13,6 +13,8 @@
 #include <math.h>
 #include <string>
 
+#include "spdlog/spdlog.h"
+
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
 #include "TwoDimensionBpSimulation.cuh"
@@ -151,14 +153,17 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 	int counter;
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
+    spdlog::info("Starting initialization of 2D B-p simulation.");
 
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+        spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("2DBP", destination))
 	{
+        spdlog::error("Directory for 2D B-p simulations cannot be created.");
 		return;
 	}
 
@@ -172,6 +177,7 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
+        spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
 		wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
@@ -179,6 +185,7 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 		trajectorySimulationTwoDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+        spdlog::info("In this iteration {} particles were detected.", counter);
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryTwoDimensionBP), cudaMemcpyDeviceToHost));

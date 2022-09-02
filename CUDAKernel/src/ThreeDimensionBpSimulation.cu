@@ -13,6 +13,8 @@
 #include <math.h>
 #include <string>
 
+#include "spdlog/spdlog.h"
+
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
 #include "ThreeDimensionBpSimulation.cuh"
@@ -225,14 +227,17 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
     singleTone->putFloat("K0", 5.0f * 1.43831e-5f);
+    spdlog::info("Starting initialization of 3D B-p simulation.");
 
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+        spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("3DBP", destination))
 	{
+        spdlog::error("Directory for 3D B-p simulations cannot be created.");
 		return;
 	}
 
@@ -246,6 +251,7 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
+        spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
 		wCalcThreeBp<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
@@ -253,6 +259,7 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 		trajectorySimulationThreeDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+        spdlog::info("In this iteration {} particles were detected.", counter);
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryThreeDimensionBP), cudaMemcpyDeviceToHost));
