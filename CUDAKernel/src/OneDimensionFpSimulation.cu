@@ -163,4 +163,5 @@ void runFWMethod(simulationInput *simulation)
 		}
 	}
 	fclose(file);
+    spdlog::info("Simulation ended.");
 }

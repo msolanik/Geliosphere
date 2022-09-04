@@ -40,7 +40,7 @@ struct trajectoryHistoryBP
 	double w = -1.0f;
 	int id = -1;
 
-	__device__ void setValues(float newTkin, float newR, float newW, int newId)
+	__device__ void setValues(float newTkin, float newR, double newW, int newId)
 	{
 		Tkin = newTkin;
 		r = newR;

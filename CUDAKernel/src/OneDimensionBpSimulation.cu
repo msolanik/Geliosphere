@@ -166,4 +166,5 @@ void runBPMethod(simulationInputBP *simulation)
 		}
 	}
 	fclose(file);
+    spdlog::info("Simulation ended.");
 }

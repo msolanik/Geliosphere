@@ -22,6 +22,15 @@
 #include "CosmicUtils.cuh"
 #include "CudaErrorCheck.cuh"
 
+/**
+ * @brief Calculate pre-simulations parameters.
+ *
+ * @param Tkininj Injecting kinetic energy.
+ * @param p Particle momentum.
+ * @param w Spectrum intensity.
+ * @param padding Support value used to calculate state for getting
+ * kinetic energy.
+ */
 __global__ void wCalcThreeBp(float *Tkininj, float *p, double *w, int padding) 
 {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -35,6 +44,14 @@ __global__ void wCalcThreeBp(float *Tkininj, float *p, double *w, int padding)
 	p[id] = pinj;
 }
 
+/**
+ * @brief Run simulations for 3D B-p method.
+ *
+ * @param history Data structure containing output records.
+ * @param padding Support value used to calculate state for getting
+ * kinetic energy.
+ * @param state Array of random number generator data structures.
+ */
 __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimensionBP* history, int padding, curandState* state) 
 {
     extern __shared__ int sharedMemory[];
@@ -221,6 +238,11 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
 	state[id] = cuState[idx];
 }
 
+/**
+ * @brief Run 3D B-p method with given parameters defines 
+ * in input simulation data structure.
+ * 
+ */
 void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 {
 	int counter;
@@ -263,15 +285,8 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryThreeDimensionBP), cudaMemcpyDeviceToHost));
-    		spdlog::info("Writing {} particles to output file.", counter);
 			for (int j = 0; j < counter; ++j)
 			{
-				// spdlog::info("Local history ID - {}.", simulation->local_history[j].id);
-				// spdlog::info("Tkininj - {}.", simulation->Tkininj[simulation->local_history[j].id]);
-				// spdlog::info("r - {}.", simulation->local_history[j].r);
-				// spdlog::info("w - {}.", simulation->w[simulation->local_history[j].id]);
-				// spdlog::info("thetainj - {}.", 3.1415926535f / 2.0f);
-				// spdlog::info("theta - {}.", simulation->local_history[j].theta);
 				fprintf(file, "%g %g %g %g %g %g\n", simulation->Tkininj[simulation->local_history[j].id], simulation->local_history[j].Tkin, simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], 3.1415926535f / 2.0f, simulation->local_history[j].theta);
 			}
 		}
