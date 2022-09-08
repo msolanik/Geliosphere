@@ -22,6 +22,7 @@ const double T0 = m0 * c * c / (q * 1e9);
 const double T0w = m0 * c * c;
 const double omega = 2.866e-6;
 const double ratio = 0.2;
+const double K0Ratio = 5.0;
 const double alphaM = 5.75*Pi/180.0;            // measured value from experiment
 const double polarity = 1.0;                  //  A>0 is 1.0 ; A<0 is -1.0
 const double A = 3.4;                        // units  nT AU^2, to have B = 5 nT at Earth (1AU, theta=90)
@@ -36,7 +37,7 @@ const double rh =  695510.0/150000000.0;
 
 static void setContants(ParamsCarrier *singleTone, bool isBackward)
 {
-	float newDT = singleTone->getFloat("dt", -1.0f);
+	float newDT = singleTone->getFloat("dt", singleTone->getFloat("dt_default", -1.0f));
 	if (newDT != -1.0f)
 	{
 		dt = newDT;
@@ -45,7 +46,7 @@ static void setContants(ParamsCarrier *singleTone, bool isBackward)
 	{
 		dt = 5.0;
 	}
-	float newK = singleTone->getFloat("K0", -1.0f);
+	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
 	if (newK != -1.0f)
 	{
 		K0 = newK;
@@ -54,7 +55,7 @@ static void setContants(ParamsCarrier *singleTone, bool isBackward)
 	{
 		K0 = 0.000222;
 	}
-	float newV = (isBackward) ? singleTone->getFloat("V", 1.0f) * (-1.0f) : singleTone->getFloat("V", -1.0f);
+	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{
 		V = newV;

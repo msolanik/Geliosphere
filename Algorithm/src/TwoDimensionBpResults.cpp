@@ -20,7 +20,6 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
     spdlog::info("Founded {} to analyze.", numberOfIterations);
-    rewind(inputFile);
     for (int i = 0; i < numberOfIterations; i++)
     {
         int reader = fscanf(inputFile, "%lf %lf %lf %lf %lf %lf\n", &Tkininj, &Tkin, &r, &w, &thetainj, &theta);
@@ -64,7 +63,6 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     }
     fclose(inputFile);
     FILE *out = fopen("JGAR.csv", "w");
-    ;
     for (int i = 1; i < 30; i++)
     {
         fprintf(out, "%3.4f,%3.4f\n", SPbins[i], speJGR[i + 1]);

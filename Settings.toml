@@ -1,6 +1,9 @@
-
 [DefaultValues]
 K0 = 5e22
 V = 400.0
 dt = 5.0
-Default_method = "1DBp"
+MilionsOfSimulations = 100
+
+[AdvancedSettings]
+ratio = 0.2
+K0_ratio = 5.0

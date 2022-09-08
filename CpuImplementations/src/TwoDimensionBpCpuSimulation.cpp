@@ -107,7 +107,6 @@ void TwoDimensionBpCpuSimulation::simulation()
 
 				Bfactor = (5.0/3.4) *  r2 / sqrt(tmp1);        // SOLARPROP
 
-
 				Kpar = K0*beta*Rig*Bfactor/3.0;
 				if (Rig<0.1)
 				{
@@ -190,7 +189,6 @@ void TwoDimensionBpCpuSimulation::simulation()
 				t2 = tt + T0;
 				beta = sqrt(Tkin*t2)/tt;
 
-//				if (beta > 0.001 && Tkin < 200.0 && r > 100.0)
 				if (r < 0.0)
 				{
 					r = -1.0 * r;
@@ -203,16 +201,6 @@ void TwoDimensionBpCpuSimulation::simulation()
 					break;
 				}
 
-				// if (beta < 0.001)
-				// {
-				// 	break;
-				// }
-				// if (r < 0.1)
-				// {
-				// 	r = rp;
-				// 	p = pp;
-				// 	theta = thetap;
-				// }
 			} 
 		}	  
 	}		  

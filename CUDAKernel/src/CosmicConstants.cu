@@ -41,17 +41,17 @@ __device__ __constant__ float rh =  0.0046367333333333f;
 
 void setConstants(ParamsCarrier *singleTone, bool isBackward)
 {
-	float newDT = singleTone->getFloat("dt", -1.0f);
+	float newDT = singleTone->getFloat("dt", singleTone->getFloat("dt_default", -1.0f));
 	if (newDT != -1.0f)
 	{
 		cudaMemcpyToSymbol(dt, &newDT, sizeof(newDT));
 	}
-	float newK = singleTone->getFloat("K0", -1.0f);
+	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
 	if (newK != -1.0f)
 	{
 		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
 	}
-	float newV = (isBackward) ? singleTone->getFloat("V", 1.0f) * (-1.0f) : singleTone->getFloat("V", -1.0f);
+	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{
 		cudaMemcpyToSymbol(V, &newV, sizeof(newV));

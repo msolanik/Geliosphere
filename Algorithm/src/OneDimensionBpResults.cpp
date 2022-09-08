@@ -31,7 +31,6 @@ void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     FILE *inputFile = fopen("log.dat", "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     spdlog::info("Founded {} to analyze.", numberOfIterations);
-    rewind(inputFile);
     for (int i = 0; i < numberOfIterations; i++)
     {
         int reader = fscanf(inputFile, "%lf %lf %lf %lf\n", &Tkininj, &Tkin, &r, &w);

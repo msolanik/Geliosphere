@@ -9,6 +9,7 @@ int ResultsUtils::countLines(FILE *const fin)
     {
         ++count;
     }
+    rewind(fin);
     return count;
 }
 

@@ -27,7 +27,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *kset = app.add_option("-K,--K0", newK, "Set K to new value(cm^2/s)");
 	CLI::Option *vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
 	CLI::Option *destination = app.add_option("-p,--path", newDestination, "Set destination folder name");
-	CLI::Option *setBilions = app.add_option("-N,--Millions", bilions, "Set number of simulations in millions(round up due to GPU execution)");
+	CLI::Option *setBilions = app.add_option("-N,--millions", bilions, "Set number of simulations in millions(round up due to GPU execution)");
 	CLI::Option *monthOption = app.add_option("-m,--month", month, "Set month for using meassured values");
 	CLI::Option *yearOption = app.add_option("-y,--year", year, "Set year for using meassured values");
 	CLI::Option *settingsOption = app.add_option("-s,--settings", settings, "");
