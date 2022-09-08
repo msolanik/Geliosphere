@@ -204,7 +204,7 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 	FILE *file = fopen("log.dat", "w");
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
-	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
+	int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000 / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
 		cudaFuncSetAttribute(trajectorySimulationTwoDimensionBp, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
