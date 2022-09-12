@@ -28,6 +28,10 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
             spdlog::error("Could not read from log.dat file.");
             return;
         }
+        if (r > 200.0)
+        {
+            continue;
+        }
         Tkinw = Tkin * 1e9 * q;
         Rig = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q;
         p = Rig * q / c;
