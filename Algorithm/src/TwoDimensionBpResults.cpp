@@ -28,10 +28,6 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
             spdlog::error("Could not read from log.dat file.");
             return;
         }
-        if (r > 200.0 || r < 0.3)
-        {
-            continue;
-        }
         Tkinw = Tkin * 1e9 * q;
         Rig = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q;
         p = Rig * q / c;
@@ -56,7 +52,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 
         wJGR = jlis / (p * p);
         wJGR = wJGR * p1AU * p1AU;
-        if (wJGR > 1000.0)
+        if (wJGR > 10000.0)
         {
             spdlog::error("W value: {}", wJGR);
             spdlog::error("{} {} {}", Tkininj, Tkin, r);
