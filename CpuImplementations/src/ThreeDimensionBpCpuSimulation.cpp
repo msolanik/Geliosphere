@@ -101,22 +101,16 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
                 r2 = r * r;
 
-                delta = delta0 / sin(theta);
+                if ((theta < (1.7 * Pi / 180.0)) || (theta > (178.3 * Pi / 180.0)))
+                {
+                    delta = 0.2*0.003;
+                }
+                else
+                {
+                    delta = delta0 / sin(theta);
+                }
                 deltarh = delta / rh;
                 deltarh2 = deltarh * deltarh;
-
-                if (theta < (1.7 * Pi / 180.))
-                {
-                    delta = 0.2*0.003;
-                    deltarh = delta / rh;
-                    deltarh2 = deltarh * deltarh;
-                }
-                if (theta > (178.3 * Pi / 180.0))
-                {
-                    delta = 0.2*0.003;
-                    deltarh = delta / rh;
-                    deltarh2 = deltarh * deltarh;
-                }
 
                 gammma = (r * omega) * sin(theta) / V; // ZMENA  ; 1 chýba sin(theta)
                 gamma2 = gammma * gammma;              // ZMENA
@@ -184,15 +178,18 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 }
 
                 dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
-                dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
-                dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
-                dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
 
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
                     dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
                     dKrtt = -1.0 * dKrtt * delta;
                     dKrtt = dKrtt * 3.0 * gamma2 * cos(theta) / sin(theta);
+                }
+                else
+                {
+                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
+                    dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
+                    dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
                 }
 
                 dr = ((-1.0 * V) + (2.0 * Krr / r) + dKrr) * dt;                  

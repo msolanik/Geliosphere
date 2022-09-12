@@ -78,17 +78,13 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         if ((theta < (1.7f * Pi / 180.0f)) || (theta > (178.3f * Pi / 180.0f)))
         {
         	delta = 0.2f * 0.003f;
-            // delta2 = 0.000009f;
-            deltarh = delta / rh;
-            deltarh2 = deltarh * deltarh;
         }
 		else 
 		{
-            delta = 0.2f * 0.003f;
-            // delta2 = 0.04*0.000009;
-			deltarh = delta / rh;
-			deltarh2 = deltarh * deltarh;
+            delta = delta0 / sinf(theta);
 		}
+		deltarh = delta / rh;
+		deltarh2 = deltarh * deltarh;
         		
 		gamma = (r * omega) * sinf(theta) / V; 
         gamma2 = gamma * gamma;     
@@ -162,16 +158,18 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         }
 
 		dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(tmp1, 2.5f);
-    	dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
-        dKrtt = -1.0f * dKrtt * delta0 * cosf(theta) / (sinf(theta) * sinf(theta));
-        // dKrtt = dKrtt * (1.0f - (2.0f * gamma2) + (4.0f * r * r * deltarh2));
-		dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
 
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
         	dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
             dKrtt = -1.0f * dKrtt * delta;
             dKrtt = dKrtt * 3.0f * gamma2 * cosf(theta) / sinf(theta);
+        }
+        else
+        {
+            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
+            dKrtt = -1.0f * dKrtt * delta0 * cosf(theta) / (sinf(theta) * sinf(theta));
+            dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
         }
 
 
