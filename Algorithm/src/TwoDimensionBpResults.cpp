@@ -54,8 +54,9 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         wJGR = wJGR * p1AU * p1AU;
         if (wJGR > 10000.0)
         {
-            spdlog::error("W value: {}", wJGR);
-            spdlog::error("{} {} {}", Tkininj, Tkin, r);
+            continue;
+            // spdlog::error("W value: {}", wJGR);
+            // spdlog::error("{} {} {}", Tkininj, Tkin, r);
         }
         for (int ii = 0; ii < 30; ii++)
         {
