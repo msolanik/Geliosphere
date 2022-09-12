@@ -15,7 +15,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     ResultsUtils *resultsUtils = new ResultsUtils();
     double w, Rig, p1AU, Tkin, r, p, Tkinw, Rig1AU, Tkininj, theta, thetainj, tt, t2, beta;
     double tem6, tem5, jlis, tem, wJGR;
-    double speSP[31] = {0}, speJGR[31] = {0};
+    double speSP[31] = {0}, speJGR[31] = {0}, speN[31] = {0};
     FILE *inputFile = fopen("log.dat", "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
@@ -36,7 +36,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         p1AU = Rig1AU * q / c;
 
         tem5 = 21.1 * exp(-2.8 * log(Tkininj));
-        tem6 = 1 + (5.85 * exp(-1.22 * log(Tkininj))) + (1.18 * exp(-2.54 * log(Tkininj)));
+        tem6 = 1.0 + (5.85 * exp(-1.22 * log(Tkininj))) + (1.18 * exp(-2.54 * log(Tkininj)));
         jlis = tem5 / tem6;
         w = jlis / (p * p);
         w = w * p1AU * p1AU;
@@ -54,10 +54,11 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         wJGR = wJGR * p1AU * p1AU;
         for (int ii = 0; ii < 30; ii++)
         {
-            if ((Tkininj > SPbins[ii] * 0.9) && (Tkininj < SPbins[ii] * 1.1))
+            if ((Tkininj > SPbins[ii] * 0.99) && (Tkininj < SPbins[ii] * 1.01))
             {
                 speSP[ii + 1] = speSP[ii + 1] + w;
                 speJGR[ii + 1] = speJGR[ii + 1] + wJGR;
+                speN[ii + 1]++;
             }
         }
     }
@@ -65,7 +66,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     FILE *out = fopen("JGAR.csv", "w");
     for (int i = 1; i < 30; i++)
     {
-        fprintf(out, "%3.4f,%3.4f\n", SPbins[i], speJGR[i + 1]);
+        fprintf(out, "%3.4f,%3.4f,%3.4f,%3.4f\n", SPbins[i], speJGR[i + 1], speJGR[i + 1]/speN[i + 1], speN[i + 1]);
     }
     fclose(out);
     spdlog::info("Spectrum based on JGAR has been written to file.");
@@ -73,7 +74,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     out = fopen("Weber.csv", "w");
     for (int i = 1; i < 30; i++)
     {
-        fprintf(out, "%3.4f,%3.4f\n", SPbins[i], speSP[i + 1]);
+        fprintf(out, "%3.4f,%3.4f,%3.4f,%3.4f\n", SPbins[i], speSP[i + 1], speSP[i + 1]/speN[i + 1], speN[i + 1]);
     }
     fclose(out);
     spdlog::info("Spectrum based on Weber has been written to file.");
