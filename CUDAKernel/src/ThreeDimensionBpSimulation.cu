@@ -71,7 +71,8 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
 	curandState *cuState = (curandState *)(&generated[THREAD_SIZE_THREE_BP]);
 	cuState[idx] = state[blockIdx.x * blockDim.x + threadIdx.x];
 	int count;
-	for (; r < 100.0002f;) {
+	while (r < 100.0f) 
+    {
 		beta = sqrtf(Tkin*(Tkin + T0 + T0)) / (Tkin + T0);
 		Rig = sqrtf(Tkin*(Tkin + (2.0f * T0)));
 

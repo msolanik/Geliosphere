@@ -28,7 +28,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
             spdlog::error("Could not read from log.dat file.");
             return;
         }
-        if (r > 200.0)
+        if (r > 200.0 || r < 0.3)
         {
             continue;
         }
@@ -56,6 +56,11 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 
         wJGR = jlis / (p * p);
         wJGR = wJGR * p1AU * p1AU;
+        if (wJGR > 1000.0)
+        {
+            spdlog::error("W value: {}", wJGR);
+            spdlog::error("{} {} {}", Tkininj, Tkin, r);
+        }
         for (int ii = 0; ii < 30; ii++)
         {
             if ((Tkininj > SPbins[ii] * 0.99) && (Tkininj < SPbins[ii] * 1.01))

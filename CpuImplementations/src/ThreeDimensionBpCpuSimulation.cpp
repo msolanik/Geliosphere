@@ -232,7 +232,7 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 r = r + dr;
                 Tkin = Tkin - dTkin; 
                 theta = theta + dtheta;
-                if (theta < 0)
+                if (theta < 0.0)
                 {
                     theta = fabs(theta);
                 }
