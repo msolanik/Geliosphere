@@ -52,12 +52,6 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 
         wJGR = jlis / (p * p);
         wJGR = wJGR * p1AU * p1AU;
-        if (wJGR > 10000.0)
-        {
-            continue;
-            // spdlog::error("W value: {}", wJGR);
-            // spdlog::error("{} {} {}", Tkininj, Tkin, r);
-        }
         for (int ii = 0; ii < 30; ii++)
         {
             if ((Tkininj > SPbins[ii] * 0.99) && (Tkininj < SPbins[ii] * 1.01))

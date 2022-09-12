@@ -131,6 +131,12 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(tmp1, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(tmp1) / 2.0f)) / powf(tmp1, 3.0f));
         dKrr = dKrr * 5.0f / (3.0f * 3.4f); // SOLARPROP
 		
+		dr = ((-1.0f*V) + (2.0f*Krr/r) + dKrr)*dt; // ZMENA - prva verzia je dKrr = 0
+       	generated[idx] = curand_box_muller(&cuState[idx]);
+		dr = dr + (generated[idx].x * B11 * sqrtf(dt));
+    	dr = dr + (generated[idx].y * B12 * sqrtf(dt));
+        dr = dr + (curand_normal(&cuState[idx]) * B13 * sqrtf(dt));
+
 		sin3 = sinf(theta)*sinf(theta)*sinf(theta);
 
         dKtt = sinf(theta)*cosf(theta)*(omega*omega*r*r/(V*V));
@@ -167,12 +173,8 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
             dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
         }
 
-        dr = ((-1.0f*V) + (2.0f*Krr/r) + dKrr)*dt; // ZMENA - prva verzia je dKrr = 0
+
        	dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
-        generated[idx] = curand_box_muller(&cuState[idx]);
-		dr = dr + (generated[idx].x * B11 * sqrtf(dt));
-    	dr = dr + (generated[idx].y * B12 * sqrtf(dt));
-        dr = dr + (curand_normal(&cuState[idx]) * B13 * sqrtf(dt));
 
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dtheta = (dtheta*dt) + (dKtt*dt/(r*r));
@@ -204,8 +206,6 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / tmp1;
         dr = dr + ((DriftR + DriftSheetR) * dt);
         dtheta = dtheta + (DriftTheta * dt / r);
-        r = r + dr;
-        Tkin = Tkin - dTkin; 
 		theta = theta + dtheta;
         if (theta < 0.0f)
         {
@@ -219,6 +219,8 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         {
         	theta = (2.0f * Pi) - theta;
         }
+        r = r + dr;
+        Tkin = Tkin - dTkin; 
         
         if (r < 0.0f)
         {
@@ -245,7 +247,6 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
 	int counter;
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
-    singleTone->putFloat("K0", 5.0f * 1.43831e-5f);
     spdlog::info("Starting initialization of 3D B-p simulation.");
 
 	std::string destination = singleTone->getString("destination", "");

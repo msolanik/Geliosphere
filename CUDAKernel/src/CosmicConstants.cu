@@ -13,8 +13,7 @@
 
 __device__ __constant__ float V = 2.66667e-6;
 __device__ __constant__ float dt = 5.0f;
-// __device__ __constant__ float K0 = 0.000222f;
-__device__ __constant__ float K0 = 5.0f * 1.43831e-5f;
+__device__ __constant__ float K0 = 0.000222f;
 __device__ __constant__ float m0 = 1.67261e-27;
 __device__ __constant__ float q = 1.60219e-19;
 __device__ __constant__ double m0_double = 1.67261e-27;
