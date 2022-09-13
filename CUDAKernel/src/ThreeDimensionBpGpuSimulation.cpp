@@ -32,7 +32,7 @@ void ThreeDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singl
     simulation.blockSize = blockSize;
     singleTone->putFloat("K0", 5.0f * 1.43831e-5f);
 
-    setConstants(singleTone, true);
+    setConstants(singleTone, false);
     runThreeDimensionBpMethod(&simulation);
 
     gpuErrchk(cudaFree(w));

@@ -31,7 +31,7 @@ void TwoDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.threadSize = threadSize;
     simulation.blockSize = blockSize;
 
-    setConstants(singleTone, true);
+    setConstants(singleTone, false);
     runTwoDimensionBpMethod(&simulation);
 
     gpuErrchk(cudaFree(w));

@@ -156,28 +156,28 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 dKrr = dKrr + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(tmp1, 1.5)) - (r2 * dtem1 * 3.0 * sqrt(tmp1) / 2.0)) / pow(tmp1, 3.0));
                 dKrr = dKrr * 5. / (3. * 3.4); // SOLARPROP
 
-                // sin3 = sin(theta)*sin(theta)*sin(theta);
+                sin3 = sin(theta)*sin(theta)*sin(theta);
 
-                // dKtt = sin(theta)*cos(theta)*(omega*omega*r2/(V*V));
-                // dKtt = dKtt - (r2*delta0*delta0*cos(theta)/(rh*rh*sin3));
-                // dKtt = (-1.0*ratio*K0*beta*Rig*r2*dKtt)/pow(tmp1,1.5);
+                dKtt = sin(theta)*cos(theta)*(omega*omega*r2/(V*V));
+                dKtt = dKtt - (r2*delta0*delta0*cos(theta)/(rh*rh*sin3));
+                dKtt = (-1.0*ratio*K0*beta*Rig*r2*dKtt)/pow(tmp1,1.5);
 
-                // if ((theta>(1.7*Pi/180.))&&(theta<(178.3*Pi/180.0))) 
-                // {
-                //     dKtt0 = 3.0*(1.0-ratio)*K0*beta*Rig*r2*r2*deltarh2;
-                //     dKtt1 = omega*omega*r2*sin(theta)*cos(theta)/(V*V*pow(tmp1,2.5));
-                //     dKtt = dKtt - (dKtt0*dKtt1);
-                // }
-                // else
-                // {
-                //     sin2 = sin(theta)*sin(theta);
-                //     dKtt0 = (1.0-ratio)*K0*beta*Rig*r2*r2*delta0*delta0/(rh*rh);
-                //     dKtt1 = -2.0*(cos(theta)/sin3)/pow(tmp1,1.5);
-                //     dKtt2 = 1.5*((2.0*omega*omega*r2*sin(theta)*cos(theta)/(V*V)) - (2.0*r2*delta0*delta0*cos(theta)/(rh*rh*sin3)))/(sin2*pow(tmp1,2.5));
-                //     dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
-                // }
+                if ((theta>(1.7*Pi/180.))&&(theta<(178.3*Pi/180.0))) 
+                {
+                    dKtt0 = 3.0*(1.0-ratio)*K0*beta*Rig*r2*r2*deltarh2;
+                    dKtt1 = omega*omega*r2*sin(theta)*cos(theta)/(V*V*pow(tmp1,2.5));
+                    dKtt = dKtt - (dKtt0*dKtt1);
+                }
+                else
+                {
+                    sin2 = sin(theta)*sin(theta);
+                    dKtt0 = (1.0-ratio)*K0*beta*Rig*r2*r2*delta0*delta0/(rh*rh);
+                    dKtt1 = -2.0*(cos(theta)/sin3)/pow(tmp1,1.5);
+                    dKtt2 = 1.5*((2.0*omega*omega*r2*sin(theta)*cos(theta)/(V*V)) - (2.0*r2*delta0*delta0*cos(theta)/(rh*rh*sin3)))/(sin2*pow(tmp1,2.5));
+                    dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
+                }
 
-                // dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
+                dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
 
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
@@ -209,26 +209,26 @@ void ThreeDimensionBpCpuSimulation::simulation()
 
                 dTkin = -2.0 * V * alfa * Tkin * dt / (3.0 * r);
 
-                // Bfield = A * sqrt(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
-                // Larmor = 0.0225 * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
+                Bfield = A * sqrt(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
+                Larmor = 0.0225 * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
 
-                // alphaH = Pi / sin(alphaM + (2.0 * Larmor * Pi / (r * 180.0))); // PREVERIT v Burgerovom clanku
-                // alphaH = alphaH - 1.0;
-                // alphaH = 1.0 / alphaH;
-                // alphaH = acos(alphaH);
+                alphaH = Pi / sin(alphaM + (2.0 * Larmor * Pi / (r * 180.0))); // PREVERIT v Burgerovom clanku
+                alphaH = alphaH - 1.0;
+                alphaH = 1.0 / alphaH;
+                alphaH = acos(alphaH);
 
-                // arg = (1. - (2. * theta / Pi)) * tan(alphaH);
-                // f = atan(arg) / alphaH;
+                arg = (1. - (2. * theta / Pi)) * tan(alphaH);
+                f = atan(arg) / alphaH;
 
-                // DriftR = polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * cos(theta) * gammma * f / (tem2 * sin(theta));
-                // DriftTheta = -1.0 * polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * gammma * (2.0 + (gammma * gammma)) * f / tem2;
-                // fprime = 1.0 + (arg * arg);
-                // fprime = tan(alphaH) / fprime;
-                // fprime = -1.0 * fprime * 2.0 / (Pi * alphaH);
+                DriftR = polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * cos(theta) * gammma * f / (tem2 * sin(theta));
+                DriftTheta = -1.0 * polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * gammma * (2.0 + (gammma * gammma)) * f / tem2;
+                fprime = 1.0 + (arg * arg);
+                fprime = tan(alphaH) / fprime;
+                fprime = -1.0 * fprime * 2.0 / (Pi * alphaH);
 
-                // DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gammma * fprime / tmp1;
-                // dr = dr + ((DriftR + DriftSheetR) * dt);
-                // dtheta = dtheta + (DriftTheta * dt / r);
+                DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gammma * fprime / tmp1;
+                dr = dr + ((DriftR + DriftSheetR) * dt);
+                dtheta = dtheta + (DriftTheta * dt / r);
                 r = r + dr;
                 Tkin = Tkin - dTkin; 
                 theta = theta + dtheta;

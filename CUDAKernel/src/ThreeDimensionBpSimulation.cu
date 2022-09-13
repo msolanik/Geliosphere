@@ -137,28 +137,28 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
     	dr = dr + (generated[idx].y * B12 * sqrtf(dt));
         dr = dr + (curand_normal(&cuState[idx]) * B13 * sqrtf(dt));
 
-		// sin3 = sinf(theta)*sinf(theta)*sinf(theta);
+		sin3 = sinf(theta)*sinf(theta)*sinf(theta);
 
-        // dKtt = sinf(theta)*cosf(theta)*(omega*omega*r*r/(V*V));
-        // dKtt = dKtt - (r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3));
-        // dKtt = (-1.0f*ratio*K0*beta*Rig*r*r*dKtt)/powf(tmp1,1.5f);
+        dKtt = sinf(theta)*cosf(theta)*(omega*omega*r*r/(V*V));
+        dKtt = dKtt - (r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3));
+        dKtt = (-1.0f*ratio*K0*beta*Rig*r*r*dKtt)/powf(tmp1,1.5f);
 
-        // if ((theta>(1.7f*Pi/180.0f))&&(theta<(178.3f*Pi/180.0f))) 
-        // {
-        // 	dKtt0 = 3.0f*(1.0f-ratio)*K0*beta*Rig*r*r*r*r*deltarh2;
-        //     dKtt1 = omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V*powf(tmp1,2.5f));
-        //     dKtt = dKtt - (dKtt0*dKtt1);
-        // }
-        // else
-        // {
-        //     sin2 = sinf(theta)*sinf(theta);
-        //     dKtt0 = (1.0f-ratio)*K0*beta*Rig*r*r*r*r*delta0*delta0/(rh*rh);
-        //     dKtt1 = -2.0f*(cosf(theta)/sin3)/powf(tmp1,1.5f);
-        //     dKtt2 = 1.5f*((2.0f*omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V)) - (2.0f*r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3)))/(sin2*powf(tmp1,2.5f));
-        //     dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
-        // }
+        if ((theta>(1.7f*Pi/180.0f))&&(theta<(178.3f*Pi/180.0f))) 
+        {
+        	dKtt0 = 3.0f*(1.0f-ratio)*K0*beta*Rig*r*r*r*r*deltarh2;
+            dKtt1 = omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V*powf(tmp1,2.5f));
+            dKtt = dKtt - (dKtt0*dKtt1);
+        }
+        else
+        {
+            sin2 = sinf(theta)*sinf(theta);
+            dKtt0 = (1.0f-ratio)*K0*beta*Rig*r*r*r*r*delta0*delta0/(rh*rh);
+            dKtt1 = -2.0f*(cosf(theta)/sin3)/powf(tmp1,1.5f);
+            dKtt2 = 1.5f*((2.0f*omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V)) - (2.0f*r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3)))/(sin2*powf(tmp1,2.5f));
+            dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
+        }
 
-		// dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(tmp1, 2.5f);
+		dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(tmp1, 2.5f);
 
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
@@ -173,9 +173,8 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
             dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
         }
 
-        // printf("%g\n", dKrtt);
        	dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
-        printf("%g\n", dr);
+
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dtheta = (dtheta*dt) + (dKtt*dt/(r*r));
         dtheta = dtheta + (dKrtr * dt) + (2.0f * Krt * dt / r);                                                     // NEW 062022
@@ -187,25 +186,25 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
 
         dTkin = -2.0f * V * ((Tkin + T0 + T0)/(Tkin + T0)) * Tkin * dt / (3.0f * r);
 
-        // Bfield = A * sqrtf(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
-    	// Larmor = 0.0225f * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
+        Bfield = A * sqrtf(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
+    	Larmor = 0.0225f * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
 
-        // alphaH = Pi / sinf(alphaM + (2.0f * Larmor * Pi / (r * 180.0f))); // PREVERIT v Burgerovom clanku
-        // alphaH = alphaH - 1.0f;
-        // alphaH = 1.0f / alphaH;
-        // alphaH = acosf(alphaH);
+        alphaH = Pi / sinf(alphaM + (2.0f * Larmor * Pi / (r * 180.0f))); // PREVERIT v Burgerovom clanku
+        alphaH = alphaH - 1.0f;
+        alphaH = 1.0f / alphaH;
+        alphaH = acosf(alphaH);
 
-        // arg = (1.0f - (2.0f * theta / Pi)) * tanf(alphaH);
-        // f = atanf(arg) / alphaH;
-		// DriftR = polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * cosf(theta) * gamma * f / (tem2 * sinf(theta));
-        // DriftTheta = -1.0f * polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * gamma * (2.0f + (gamma * gamma)) * f / tem2;
-        // fprime = 1.0f + (arg * arg);
-        // fprime = tanf(alphaH) / fprime;
-        // fprime = -1.0f * fprime * 2.0f / (Pi * alphaH);
+        arg = (1.0f - (2.0f * theta / Pi)) * tanf(alphaH);
+        f = atanf(arg) / alphaH;
+		DriftR = polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * cosf(theta) * gamma * f / (tem2 * sinf(theta));
+        DriftTheta = -1.0f * polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * gamma * (2.0f + (gamma * gamma)) * f / tem2;
+        fprime = 1.0f + (arg * arg);
+        fprime = tanf(alphaH) / fprime;
+        fprime = -1.0f * fprime * 2.0f / (Pi * alphaH);
 
-        // DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / tmp1;
-        // dr = dr + ((DriftR + DriftSheetR) * dt);
-        // dtheta = dtheta + (DriftTheta * dt / r);
+        DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / tmp1;
+        dr = dr + ((DriftR + DriftSheetR) * dt);
+        dtheta = dtheta + (DriftTheta * dt / r);
 		theta = theta + dtheta;
         if (theta < 0.0f)
         {
