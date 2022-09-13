@@ -209,26 +209,26 @@ void ThreeDimensionBpCpuSimulation::simulation()
 
                 dTkin = -2.0 * V * alfa * Tkin * dt / (3.0 * r);
 
-                Bfield = A * sqrt(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
-                Larmor = 0.0225 * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
+                // Bfield = A * sqrt(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
+                // Larmor = 0.0225 * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
 
-                alphaH = Pi / sin(alphaM + (2.0 * Larmor * Pi / (r * 180.0))); // PREVERIT v Burgerovom clanku
-                alphaH = alphaH - 1.0;
-                alphaH = 1.0 / alphaH;
-                alphaH = acos(alphaH);
+                // alphaH = Pi / sin(alphaM + (2.0 * Larmor * Pi / (r * 180.0))); // PREVERIT v Burgerovom clanku
+                // alphaH = alphaH - 1.0;
+                // alphaH = 1.0 / alphaH;
+                // alphaH = acos(alphaH);
 
-                arg = (1. - (2. * theta / Pi)) * tan(alphaH);
-                f = atan(arg) / alphaH;
+                // arg = (1. - (2. * theta / Pi)) * tan(alphaH);
+                // f = atan(arg) / alphaH;
 
-                DriftR = polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * cos(theta) * gammma * f / (tem2 * sin(theta));
-                DriftTheta = -1.0 * polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * gammma * (2.0 + (gammma * gammma)) * f / tem2;
-                fprime = 1.0 + (arg * arg);
-                fprime = tan(alphaH) / fprime;
-                fprime = -1.0 * fprime * 2.0 / (Pi * alphaH);
+                // DriftR = polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * cos(theta) * gammma * f / (tem2 * sin(theta));
+                // DriftTheta = -1.0 * polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * gammma * (2.0 + (gammma * gammma)) * f / tem2;
+                // fprime = 1.0 + (arg * arg);
+                // fprime = tan(alphaH) / fprime;
+                // fprime = -1.0 * fprime * 2.0 / (Pi * alphaH);
 
-                DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gammma * fprime / tmp1;
-                dr = dr + ((DriftR + DriftSheetR) * dt);
-                dtheta = dtheta + (DriftTheta * dt / r);
+                // DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gammma * fprime / tmp1;
+                // dr = dr + ((DriftR + DriftSheetR) * dt);
+                // dtheta = dtheta + (DriftTheta * dt / r);
                 r = r + dr;
                 Tkin = Tkin - dTkin; 
                 theta = theta + dtheta;
