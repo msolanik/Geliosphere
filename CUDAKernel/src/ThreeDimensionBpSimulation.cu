@@ -174,7 +174,9 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         }
 
         // printf("%g\n", dKrtt);
-       	dr = dr + (dKrtt*dt/r); //+ (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
+       	// dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
+
+       	dr = dr + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
 
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dtheta = (dtheta*dt) + (dKtt*dt/(r*r));
