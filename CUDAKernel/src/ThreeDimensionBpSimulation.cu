@@ -173,7 +173,7 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
             dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
         }
 
-
+        printf("%g\n", dKrtt);
        	dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
 
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
