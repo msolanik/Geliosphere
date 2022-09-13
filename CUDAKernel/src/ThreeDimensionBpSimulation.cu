@@ -137,44 +137,44 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
     	dr = dr + (generated[idx].y * B12 * sqrtf(dt));
         dr = dr + (curand_normal(&cuState[idx]) * B13 * sqrtf(dt));
 
-		sin3 = sinf(theta)*sinf(theta)*sinf(theta);
+		// sin3 = sinf(theta)*sinf(theta)*sinf(theta);
 
-        dKtt = sinf(theta)*cosf(theta)*(omega*omega*r*r/(V*V));
-        dKtt = dKtt - (r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3));
-        dKtt = (-1.0f*ratio*K0*beta*Rig*r*r*dKtt)/powf(tmp1,1.5f);
+        // dKtt = sinf(theta)*cosf(theta)*(omega*omega*r*r/(V*V));
+        // dKtt = dKtt - (r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3));
+        // dKtt = (-1.0f*ratio*K0*beta*Rig*r*r*dKtt)/powf(tmp1,1.5f);
 
-        if ((theta>(1.7f*Pi/180.0f))&&(theta<(178.3f*Pi/180.0f))) 
-        {
-        	dKtt0 = 3.0f*(1.0f-ratio)*K0*beta*Rig*r*r*r*r*deltarh2;
-            dKtt1 = omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V*powf(tmp1,2.5f));
-            dKtt = dKtt - (dKtt0*dKtt1);
-        }
-        else
-        {
-            sin2 = sinf(theta)*sinf(theta);
-            dKtt0 = (1.0f-ratio)*K0*beta*Rig*r*r*r*r*delta0*delta0/(rh*rh);
-            dKtt1 = -2.0f*(cosf(theta)/sin3)/powf(tmp1,1.5f);
-            dKtt2 = 1.5f*((2.0f*omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V)) - (2.0f*r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3)))/(sin2*powf(tmp1,2.5f));
-            dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
-        }
+        // if ((theta>(1.7f*Pi/180.0f))&&(theta<(178.3f*Pi/180.0f))) 
+        // {
+        // 	dKtt0 = 3.0f*(1.0f-ratio)*K0*beta*Rig*r*r*r*r*deltarh2;
+        //     dKtt1 = omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V*powf(tmp1,2.5f));
+        //     dKtt = dKtt - (dKtt0*dKtt1);
+        // }
+        // else
+        // {
+        //     sin2 = sinf(theta)*sinf(theta);
+        //     dKtt0 = (1.0f-ratio)*K0*beta*Rig*r*r*r*r*delta0*delta0/(rh*rh);
+        //     dKtt1 = -2.0f*(cosf(theta)/sin3)/powf(tmp1,1.5f);
+        //     dKtt2 = 1.5f*((2.0f*omega*omega*r*r*sinf(theta)*cosf(theta)/(V*V)) - (2.0f*r*r*delta0*delta0*cosf(theta)/(rh*rh*sin3)))/(sin2*powf(tmp1,2.5f));
+        //     dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
+        // }
 
-		dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(tmp1, 2.5f);
+		// dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(tmp1, 2.5f);
 
-        if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
-        {
-        	dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
-            dKrtt = -1.0f * dKrtt * delta;
-            dKrtt = dKrtt * 3.0f * gamma2 * cosf(theta) / sinf(theta);
-        }
-        else
-        {
-            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
-            dKrtt = -1.0f * dKrtt * delta0 * cosf(theta) / (sinf(theta) * sinf(theta));
-            dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
-        }
+        // if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
+        // {
+        // 	dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
+        //     dKrtt = -1.0f * dKrtt * delta;
+        //     dKrtt = dKrtt * 3.0f * gamma2 * cosf(theta) / sinf(theta);
+        // }
+        // else
+        // {
+        //     dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
+        //     dKrtt = -1.0f * dKrtt * delta0 * cosf(theta) / (sinf(theta) * sinf(theta));
+        //     dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
+        // }
 
 
-       	dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
+       	// dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
 
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dtheta = (dtheta*dt) + (dKtt*dt/(r*r));

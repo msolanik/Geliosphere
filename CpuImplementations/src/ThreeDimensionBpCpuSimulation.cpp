@@ -156,44 +156,44 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 dKrr = dKrr + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(tmp1, 1.5)) - (r2 * dtem1 * 3.0 * sqrt(tmp1) / 2.0)) / pow(tmp1, 3.0));
                 dKrr = dKrr * 5. / (3. * 3.4); // SOLARPROP
 
-                sin3 = sin(theta)*sin(theta)*sin(theta);
+                // sin3 = sin(theta)*sin(theta)*sin(theta);
 
-                dKtt = sin(theta)*cos(theta)*(omega*omega*r2/(V*V));
-                dKtt = dKtt - (r2*delta0*delta0*cos(theta)/(rh*rh*sin3));
-                dKtt = (-1.0*ratio*K0*beta*Rig*r2*dKtt)/pow(tmp1,1.5);
+                // dKtt = sin(theta)*cos(theta)*(omega*omega*r2/(V*V));
+                // dKtt = dKtt - (r2*delta0*delta0*cos(theta)/(rh*rh*sin3));
+                // dKtt = (-1.0*ratio*K0*beta*Rig*r2*dKtt)/pow(tmp1,1.5);
 
-                if ((theta>(1.7*Pi/180.))&&(theta<(178.3*Pi/180.0))) 
-                {
-                    dKtt0 = 3.0*(1.0-ratio)*K0*beta*Rig*r2*r2*deltarh2;
-                    dKtt1 = omega*omega*r2*sin(theta)*cos(theta)/(V*V*pow(tmp1,2.5));
-                    dKtt = dKtt - (dKtt0*dKtt1);
-                }
-                else
-                {
-                    sin2 = sin(theta)*sin(theta);
-                    dKtt0 = (1.0-ratio)*K0*beta*Rig*r2*r2*delta0*delta0/(rh*rh);
-                    dKtt1 = -2.0*(cos(theta)/sin3)/pow(tmp1,1.5);
-                    dKtt2 = 1.5*((2.0*omega*omega*r2*sin(theta)*cos(theta)/(V*V)) - (2.0*r2*delta0*delta0*cos(theta)/(rh*rh*sin3)))/(sin2*pow(tmp1,2.5));
-                    dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
-                }
+                // if ((theta>(1.7*Pi/180.))&&(theta<(178.3*Pi/180.0))) 
+                // {
+                //     dKtt0 = 3.0*(1.0-ratio)*K0*beta*Rig*r2*r2*deltarh2;
+                //     dKtt1 = omega*omega*r2*sin(theta)*cos(theta)/(V*V*pow(tmp1,2.5));
+                //     dKtt = dKtt - (dKtt0*dKtt1);
+                // }
+                // else
+                // {
+                //     sin2 = sin(theta)*sin(theta);
+                //     dKtt0 = (1.0-ratio)*K0*beta*Rig*r2*r2*delta0*delta0/(rh*rh);
+                //     dKtt1 = -2.0*(cos(theta)/sin3)/pow(tmp1,1.5);
+                //     dKtt2 = 1.5*((2.0*omega*omega*r2*sin(theta)*cos(theta)/(V*V)) - (2.0*r2*delta0*delta0*cos(theta)/(rh*rh*sin3)))/(sin2*pow(tmp1,2.5));
+                //     dKtt = dKtt + (dKtt0*(dKtt1 - dKtt2));
+                // }
 
-                dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
+                // dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
 
-                if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
-                {
-                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
-                    dKrtt = -1.0 * dKrtt * delta;
-                    dKrtt = dKrtt * 3.0 * gamma2 * cos(theta) / sin(theta);
-                }
-                else
-                {
-                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
-                    dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
-                    dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
-                }
+                // if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
+                // {
+                //     dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
+                //     dKrtt = -1.0 * dKrtt * delta;
+                //     dKrtt = dKrtt * 3.0 * gamma2 * cos(theta) / sin(theta);
+                // }
+                // else
+                // {
+                //     dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
+                //     dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
+                //     dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
+                // }
 
                 dr = ((-1.0 * V) + (2.0 * Krr / r) + dKrr) * dt;                  
-                dr = dr + (dKrtt * dt / r) + (Krt * cos(theta) * dt / (r * sin(theta))); 
+                // dr = dr + (dKrtt * dt / r) + (Krt * cos(theta) * dt / (r * sin(theta))); 
                 dr = dr + (distribution(generator) * B11 * sqrt(dt));
                 dr = dr + (distribution(generator) * B12 * sqrt(dt));
                 dr = dr + (distribution(generator) * B13 * sqrt(dt));
