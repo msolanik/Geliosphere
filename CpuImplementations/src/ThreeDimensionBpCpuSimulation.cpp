@@ -179,21 +179,21 @@ void ThreeDimensionBpCpuSimulation::simulation()
 
                 // dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(tmp1, 2.5);
 
-                // if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
-                // {
-                //     dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
-                //     dKrtt = -1.0 * dKrtt * delta;
-                //     dKrtt = dKrtt * 3.0 * gamma2 * cos(theta) / sin(theta);
-                // }
-                // else
-                // {
-                //     dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
-                //     dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
-                //     dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
-                // }
+                if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
+                {
+                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
+                    dKrtt = -1.0 * dKrtt * delta;
+                    dKrtt = dKrtt * 3.0 * gamma2 * cos(theta) / sin(theta);
+                }
+                else
+                {
+                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(tmp1, 2.5));
+                    dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
+                    dKrtt = dKrtt*(1.0 - (2.0*r2*deltarh2) + (4.0*gamma2)); 
+                }
 
                 dr = ((-1.0 * V) + (2.0 * Krr / r) + dKrr) * dt;                  
-                // dr = dr + (dKrtt * dt / r) + (Krt * cos(theta) * dt / (r * sin(theta))); 
+                dr = dr + (dKrtt * dt / r) + (Krt * cos(theta) * dt / (r * sin(theta))); 
                 dr = dr + (distribution(generator) * B11 * sqrt(dt));
                 dr = dr + (distribution(generator) * B12 * sqrt(dt));
                 dr = dr + (distribution(generator) * B13 * sqrt(dt));
