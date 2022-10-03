@@ -30,6 +30,7 @@ void TwoDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.w = w;
     simulation.threadSize = threadSize;
     simulation.blockSize = blockSize;
+    singleTone->putFloat("K0", 1.43831e-5f);
 
     setConstants(singleTone, false);
     runTwoDimensionBpMethod(&simulation);
