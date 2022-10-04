@@ -141,7 +141,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		DriftR = polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * cosineTheta * gamma * f / ((gamma2PlusOne2)*sineTheta);
 		DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / (1.0f + gamma2);
 		dr = dr + ((DriftR + DriftSheetR) * dt);
-		DriftTheta = driftThetaConstant * Rig * beta * r * (2.0f + (gamma2)) * f / (gamma2PlusOne2);
+		DriftTheta = driftThetaConstant * Rig * beta * r * gamma * (2.0f + (gamma2)) * f / (gamma2PlusOne2);
 		dtheta += (DriftTheta * dt / r);
 
 		r = r + dr;
