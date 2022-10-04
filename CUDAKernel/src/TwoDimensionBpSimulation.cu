@@ -80,7 +80,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 	curandState *cuState = (curandState *)(&generated[THREAD_SIZE_TWO_BP]);
 	cuState[idx] = state[blockIdx.x * blockDim.x + threadIdx.x];
 	int count;
-	for (; r < 100.0002f;)
+	while (r < 100.0f)
 	{
 		sineTheta = sinf(theta);
 		gamma = (r * omega) * sineTheta / V;
@@ -97,7 +97,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(1.0f + gamma2, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(1.0f + gamma2) / 2.0f)) / powf(1.0f + gamma2, 3.0f));
 		dKrr = dKrr * 5.0f / (3.0f * 3.4f);
 
-		Bfactor = (5.0f / 3.4f) * (r * r) / sqrt(1.0f + gamma2);
+		Bfactor = (5.0f / 3.4f) * (r * r) / sqrtf(1.0f + gamma2);
 		Kpar = K0 * beta * getRigidity(Rig) * Bfactor / 3.0f;
 		// dr
 		Kper = ratio * Kpar;
