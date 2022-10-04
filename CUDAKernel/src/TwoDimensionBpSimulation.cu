@@ -73,7 +73,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 	float r = 1.0f;
 	float beta, Rig, dtem1, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon;
 	float Tkin = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
-	float cosineTheta, sineTheta, dtheta, theta, gammaPlusOne;
+	float cosineTheta, sineTheta, dtheta, theta;
 	float Bfield, Larmor, alphaH, arg, f, fprime, gamma2PlusOne2, DriftR, DriftTheta, DriftSheetR;
 	theta = thetainj;
 	float2 *generated = (float2 *)sharedMemory;
@@ -91,7 +91,6 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		// dKrr
 		Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
 		dtem1 = 2.0f * r * omega * omega * sineTheta * sineTheta / (V * V);
-		gammaPlusOne = 1.0f + gamma2;
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(1.0f + gamma2)) - (r * r * dtem1 / (2.0f * sqrtf(1.0f + gamma2)))) / (1.0f + gamma2);
 		dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(1.0f + gamma2, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(1.0f + gamma2) / 2.0f)) / powf(1.0f + gamma2, 3.0f));
@@ -127,7 +126,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		Bfield = A * sqrtf((1.0f + gamma2)) / (r * r);
 		Larmor = 0.0225f * Rig / Bfield;
 		alphaH = Pi / sinf(alphaM + (2.0f * Larmor * Pi / (r * 180.0f)));
-		alphaH = alphaH * -1.0;
+		alphaH = alphaH - 1.0f;
 		alphaH = 1.0f / alphaH;
 		alphaH = acosf(alphaH);
 		arg = (1.0f - (2.0f * theta / Pi)) * tanf(alphaH);
