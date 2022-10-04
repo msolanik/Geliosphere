@@ -113,7 +113,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 
 		// dTheta
 		dtheta = (Ktt * cosineTheta) / (r * r * sineTheta);
-		dtheta = (dtheta * dt) + (dKtt * dt / (r * r));
+		dtheta = (dtheta * dt) / (1.0f + gamma2);
 		dtheta = dtheta + ((generated[idx].y * sqrtf(2.0f * Ktt * dt)) / r);
 
 		// dKttkon
