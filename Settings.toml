@@ -7,3 +7,4 @@ MilionsOfSimulations = 100
 [AdvancedSettings]
 ratio = 0.2
 K0_ratio = 5.0
+remove_log_files_after_simulation = true

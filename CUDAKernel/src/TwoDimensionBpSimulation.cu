@@ -93,10 +93,8 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		dtem1 = 2.0f * r * omega * omega * sineTheta * sineTheta / (V * V);
 		gammaPlusOne = 1.0f + gamma2;
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
-		dKrr = ratio * K0 * beta * Rig;
-		dKrr *= ((2.0f * r * sqrtf(gammaPlusOne)) - (r * r * dtem1 / (2.0f * sqrtf(gammaPlusOne))));
-		dKrr /= (gammaPlusOne);
-		dKrr += ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf((gammaPlusOne), 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(gammaPlusOne) / 2.0f)) / powf((gammaPlusOne), 3.0f));
+		dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(1.0f + gamma2)) - (r * r * dtem1 / (2.0f * sqrtf(1.0f + gamma2)))) / (1.0f + gamma2);
+		dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(1.0f + gamma2, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(1.0f + gamma2) / 2.0f)) / powf(1.0f + gamma2, 3.0f));
 		dKrr = dKrr * 5.0f / (3.0f * 3.4f);
 
 		Bfactor = (5.0f / 3.4f) * (r * r) / sqrt(1.0f + gamma2);
@@ -117,7 +115,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 		// dTheta
 		dtheta = (Ktt * cosineTheta) / (r * r * sineTheta);
 		dtheta = (dtheta * dt) + (dKtt * dt / (r * r));
-		dtheta = dtheta + ((generated[idx].y * sqrt(2.0f * Ktt * dt)) / r);
+		dtheta = dtheta + ((generated[idx].y * sqrtf(2.0f * Ktt * dt)) / r);
 
 		// dKttkon
 		dKttkon = (Ktt * cosineTheta) / (r * r * sineTheta);
@@ -178,9 +176,9 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 }
 
 /**
- * @brief Run 2D B-p method with given parameters defines 
+ * @brief Run 2D B-p method with given parameters defines
  * in input simulation data structure.
- * 
+ *
  */
 void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 {
