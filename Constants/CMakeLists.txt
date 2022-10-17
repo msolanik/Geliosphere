@@ -32,10 +32,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(toml11)
 
+FetchContent_Declare(
+    CLI11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11
+    GIT_TAG        v1.3.0
+)
+FetchContent_MakeAvailable(CLI11)
+
 target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
 
 target_link_libraries(${PROJECT_NAME}
-    cli_dependencies rapidcsv toml11 spdlog::spdlog_header_only
+    rapidcsv toml11 spdlog::spdlog_header_only CLI11
 )

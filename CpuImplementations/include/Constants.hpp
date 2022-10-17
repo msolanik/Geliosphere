@@ -1,8 +1,8 @@
 /**
  * @file Constants.hpp
  * @author Michal Solanik
- * @brief 
- * @version 0.1
+ * @brief Constants for CPU implementations.
+ * @version 0.2
  * @date 2022-06-02
  * 
  * @copyright Copyright (c) 2022
@@ -12,8 +12,8 @@
 #include "ParamsCarrier.hpp"
 
 static double V;
-static double dt;
-static double K0;
+static double dt = 5.0;
+static double K0 = 0.000222;
 const double m0 = 1.67261e-27;
 const double q = 1.60219e-19;
 const double c = 2.99793e8;
@@ -42,18 +42,10 @@ static void setContants(ParamsCarrier *singleTone, bool isBackward)
 	{
 		dt = newDT;
 	}
-	else
-	{
-		dt = 5.0;
-	}
 	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
 	if (newK != -1.0f)
 	{
 		K0 = newK;
-	}
-	else
-	{
-		K0 = 0.000222;
 	}
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)

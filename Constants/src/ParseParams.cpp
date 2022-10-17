@@ -22,7 +22,11 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--TwoDimensionBackward", "Run a 2D backward method")->group("Methods");
 	CLI::Option *threeDimensionBackwardMethod = app.add_flag("-T,--ThreeDimensionBackward", "Run a 3D backward method")->group("Methods");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
+#if GPU_ENABLED == 1
 	CLI::Option *cpuOnly = app.add_flag("--cpu_only", "Use only CPU for calculaions");
+#else
+	singleTone->putInt("isCpu", 1);
+#endif		
 	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value(s)");
 	CLI::Option *kset = app.add_option("-K,--K0", newK, "Set K to new value(cm^2/s)");
 	CLI::Option *vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
@@ -120,12 +124,12 @@ int ParseParams::parseParams(int argc, char **argv)
 		TomlSettings *tomlSettings = new TomlSettings(settings);
 		tomlSettings->parseFromSettings(singleTone);
 	}
-
+#if GPU_ENABLED == 1
 	if (*cpuOnly)
 	{
 		singleTone->putInt("isCpu", 1);
 	}
-
+#endif
 	if (*destination)
 	{
 		singleTone->putString("destination", newDestination);

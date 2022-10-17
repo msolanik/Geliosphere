@@ -4,7 +4,14 @@ V = 400.0
 dt = 5.0
 MilionsOfSimulations = 100
 
-[AdvancedSettings]
+[SolarPropLikeModelSettings]
+solarPropRatio = 0.02
+
+[GeliosphereModelSettings]
 ratio = 0.2
 K0_ratio = 5.0
+C_delta_ratio = 1.0
+tilt_angle = 0.1
+
+[AdvancedSettings]
 remove_log_files_after_simulation = true

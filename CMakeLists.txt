@@ -17,7 +17,6 @@ if(CPU_VERSION_ONLY MATCHES OFF)
 add_subdirectory (CUDAKernel)
 endif()
 add_subdirectory (Factory)
-add_subdirectory (lib)
 add_subdirectory (Utils)
 
 set(CMAKE_CXX_STANDARD 11)

@@ -1,3 +1,0 @@
-add_library(cli_dependencies INTERFACE)
-
-target_include_directories(cli_dependencies INTERFACE include/)
