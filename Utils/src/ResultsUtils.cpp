@@ -43,7 +43,7 @@ void ResultsUtils::printCsvHeader(FILE *outputFile, enum spectrumType spectrumTy
         fprintf(outputFile, "%s,%s,%s\n", "Tkin", "spe4e2N", "spe4e2");
         break;
     case SPECTRUM_SOLARPROP:
-        fprintf(outputFile, "%s,%s\n", "bin", "tkin");
+        fprintf(outputFile, "%s,%s,%s,%s\n", "Tkin", "spe", "speAvg", "speCount");
         break;
     }
 }
@@ -67,6 +67,13 @@ void ResultsUtils::writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FI
             fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), binc[i], spectrumValue[i] / binw[i]);
         }
     }
+    else if (spectrumType == SPECTRUM_SOLARPROP)
+    {
+        for (int i = 1; i < 30; i++)
+        {
+            fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), 0.01f * powf((1.0f + 0.5f), i - 1), spectrumValue[i + 1], spectrumValue[i + 1]/spectrumCount[i + 1], spectrumCount[i + 1]);
+        }
+    }
     else
     {
         for (int i = 0; i < spectrumOutput->size; i++)
@@ -82,6 +89,8 @@ std::string ResultsUtils::getFormat(enum spectrumType type, bool isCsv)
     {
     case SPECTRUM_LOG:
         return "%.14E" + getSeparator(isCsv) + "%.14E\n";
+    case SPECTRUM_SOLARPROP:
+        return "%3.4f" + getSeparator(isCsv) + "%3.4f" + getSeparator(isCsv) + "%3.4f" + getSeparator(isCsv) + "%3.4f\n";
     default:
         return "%3.4f" + getSeparator(isCsv) + "%.14E" + getSeparator(isCsv) + "%.14E\n";
     }

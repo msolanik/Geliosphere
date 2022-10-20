@@ -30,7 +30,7 @@ void OneDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.threadSize = threadSize;
     simulation.blockSize = blockSize;
 
-    setConstants(singleTone, true);
+    setConstants(singleTone);
     runBPMethod(&simulation);
 
     gpuErrchk(cudaFree(w));

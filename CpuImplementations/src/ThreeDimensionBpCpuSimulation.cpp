@@ -27,7 +27,7 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
     FILE *file = fopen("log.dat", "w");
     unsigned int nthreads = std::thread::hardware_concurrency();
     int new_MMM = ceil(singleTone->getInt("millions", 1) * 1000000 / (nthreads * 30 * 10000));
-    setContants(singleTone, false);
+    setContants(singleTone);
     for (int mmm = 0; mmm < new_MMM; mmm++)
     {
         spdlog::info("Processed: {:03.2f}%", (float)mmm / ((float)new_MMM / 100.0));
@@ -74,26 +74,21 @@ void ThreeDimensionBpCpuSimulation::simulation()
             Tkininj = SPbins[m];
             Tkin = Tkininj;
 
-            Tkinw = Tkin * 1e9 * q;                      /*v Jouloch*/
-            Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q; /*vo Voltoch*/
-            p = Rig * q / c;                             /*kg m s-1*/
+            Tkinw = Tkin * 1e9 * q;
+            Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;
+            p = Rig * q / c;
             pinj = p;
 
             w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
             w = pow(w, -1.85) / p;
             w = w / 1e45;
 
-            tt = Tkin + T0;
-            t2 = tt + T0;
-            beta = sqrt(Tkin * t2) / tt;
-
             r = 1.0;
 
             theta = Pi / 2.;
             thetainj = theta;
             while (r < 100.0)
-            { /* one history */
-
+            {
                 tt = Tkin + T0;
                 t2 = tt + T0;
                 beta = sqrt(Tkin * t2) / tt;
@@ -112,11 +107,11 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 deltarh = delta / rh;
                 deltarh2 = deltarh * deltarh;
 
-                gammma = (r * omega) * sin(theta) / V; // ZMENA  ; 1 chýba sin(theta)
-                gamma2 = gammma * gammma;              // ZMENA
-                tmp1 = 1.0 + gamma2 + (r2 * deltarh2);   // NEW 062022
+                gammma = (r * omega) * sin(theta) / V;
+                gamma2 = gammma * gammma;              
+                tmp1 = 1.0 + gamma2 + (r2 * deltarh2);  
                 tem2 = tmp1 * tmp1;
-                Bfactor = (5. / 3.4) * r2 / sqrt(tmp1); // SOLARPROP
+                Bfactor = (5. / 3.4) * r2 / sqrt(tmp1);
 
                 if (Rig < 0.1)
                 {
@@ -127,17 +122,14 @@ void ThreeDimensionBpCpuSimulation::simulation()
                     Kpar = K0 * beta * Rig * Bfactor / 3.0;
                 }
 
-                Kper = ratio * Kpar; // SOLARPROP
+                Kper = ratio * Kpar;
 
                 Krr = Kper + ((Kpar - Kper) / tmp1);
                 Ktt = Kper + (r2 * deltarh2 * (Kpar - Kper) / tmp1);
-                // Kphph = (Kpar - Kper) * gamma2 / tmp1;
                 Kphph = 1.0;
 
                 Krt = deltarh * (Kpar - Kper) * r / tmp1;
-                // Krph = (Kpar - Kper) * gammma / tmp1;
                 Krph = 0.0;
-                // Ktph = (Kpar - Kper) * r * deltarh * gammma / tmp1;
                 Ktph = 0.0;
 
                 B111 = (Kphph * Krt * Krt) - (2.0 * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
@@ -151,10 +143,10 @@ void ThreeDimensionBpCpuSimulation::simulation()
                 B23 = Ktph * sqrt(2.0 / Kphph) / r;
 
                 dtem1 = 2.0 * r * omega * omega * sin(theta) * sin(theta) / (V * V);
-                dtem1 = dtem1 + (2.0 * r * deltarh2);                                                                 // NEW 062022
-                dKrr = ratio * K0 * beta * Rig * ((2.0 * r * sqrt(tmp1)) - (r2 * dtem1 / (2.0 * sqrt(tmp1)))) / tmp1; // par Kperp ober par r
+                dtem1 = dtem1 + (2.0 * r * deltarh2);                                                              
+                dKrr = ratio * K0 * beta * Rig * ((2.0 * r * sqrt(tmp1)) - (r2 * dtem1 / (2.0 * sqrt(tmp1)))) / tmp1;
                 dKrr = dKrr + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(tmp1, 1.5)) - (r2 * dtem1 * 3.0 * sqrt(tmp1) / 2.0)) / pow(tmp1, 3.0));
-                dKrr = dKrr * 5. / (3. * 3.4); // SOLARPROP
+                dKrr = dKrr * 5. / (3. * 3.4);
 
                 sin3 = sin(theta)*sin(theta)*sin(theta);
 
@@ -200,19 +192,18 @@ void ThreeDimensionBpCpuSimulation::simulation()
 
                 dtheta = (Ktt * cos(theta)) / (r2 * sin(theta));
                 dtheta = (dtheta*dt) + (dKtt*dt/r2);
-                dtheta = dtheta + (dKrtr * dt) + (2.0 * Krt * dt / r);                                                     // NEW 062022
-                dtheta = dtheta + (distribution(generator) * B22 * sqrt(dt)) + (distribution(generator) * B23 * sqrt(dt)); // NEW 06@)@@
+                dtheta = dtheta + (dKrtr * dt) + (2.0 * Krt * dt / r);                                                     
+                dtheta = dtheta + (distribution(generator) * B22 * sqrt(dt)) + (distribution(generator) * B23 * sqrt(dt));
 
-                // SOLARPROP
                 dKttkon = (Ktt * cos(theta)) / (r2 * sin(theta));
                 dKttkon = dKttkon / tmp1;
 
                 dTkin = -2.0 * V * alfa * Tkin * dt / (3.0 * r);
 
-                Bfield = A * sqrt(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
-                Larmor = 0.0225 * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
+                Bfield = A * sqrt(tmp1) / (r * r);
+                Larmor = 0.0225 * Rig / Bfield;
 
-                alphaH = Pi / sin(alphaM + (2.0 * Larmor * Pi / (r * 180.0))); // PREVERIT v Burgerovom clanku
+                alphaH = Pi / sin(alphaM + (2.0 * Larmor * Pi / (r * 180.0)));
                 alphaH = alphaH - 1.0;
                 alphaH = 1.0 / alphaH;
                 alphaH = acos(alphaH);

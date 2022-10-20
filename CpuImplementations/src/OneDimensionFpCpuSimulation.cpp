@@ -26,7 +26,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int new_MMM = ceil(singleTone->getInt("millions", 1) * 1000000 / (nthreads * 101 * 10000));
-	setContants(singleTone, false);
+	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
 		spdlog::info("Processed: {:03.2f}%", (float) mmm / ((float) new_MMM / 100.0));
@@ -67,29 +67,25 @@ void OneDimensionFpCpuSimulation::simulation()
 			Tkininj = (m) + ((mm + 1) / 10000.0);
 			Tkin = Tkininj;
 
-			Tkinw = Tkin * 1e9 * q;						 /*v Jouloch*/
-			Rig = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q; /*vo Voltoch*/
-			p = Rig * q / c;							 /*kg m s-1*/
+			Tkinw = Tkin * 1e9 * q;						
+			Rig = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q;
+			p = Rig * q / c;
 			pinj = p;
 
 			w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
 			w = pow(w, -1.85) / p;
 			w = w / 1e45;
 
-			tt = Tkin + T0;
-			t2 = tt + T0;
-			beta = sqrt(Tkin * t2) / tt;
-
 			sumac = 0.0;
 			r = 100.0001;
 
 			while (r < 100.0002)
-			{ /* one history */
+			{
 				tt = Tkin + T0;
 				t2 = tt + T0;
 				beta = sqrt(Tkin * t2) / tt;
 
-				Rig = sqrt(Tkin * (Tkin + (2 * T0)));
+				Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
 
 				K = K0 * beta * Rig;
 
@@ -113,9 +109,9 @@ void OneDimensionFpCpuSimulation::simulation()
 				t2 = tt + T0;
 				beta = sqrt(Tkin * t2) / tt;
 
-				Rig = p * c / q; /*Volts*/
+				Rig = p * c / q;
 				Tkin = sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9);
-				Tkin = Tkin / (q * 1e9); /*GeV*/
+				Tkin = Tkin / (q * 1e9); 
 
 				if (beta > 0.01)
 				{

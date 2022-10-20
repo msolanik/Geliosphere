@@ -27,7 +27,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int new_MMM = ceil(singleTone->getInt("millions", 1) * 1000000 / (nthreads * 30 * 10000));
-	setContants(singleTone, false);
+	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
 		spdlog::info("Processed: {:03.2f}%", (float) mmm / ((float) new_MMM / 100.0));
@@ -56,9 +56,9 @@ void TwoDimensionBpCpuSimulation::simulation()
 	double r, K, dr, arnum, theta, thetainj, Kpar, Bfactor, dtem1;
 	double Tkin, Tkininj, Rig, tt, t2, beta, alfa, Ktt, dKrr;
 	double w, r2, gammma, gamma2, tmp1, tem2, Kper, Krr, dKtt;
-	double Tkinw, p, rp, dp, pp, pinj, cfactor, sumac;
+	double Tkinw, p, dp, pinj, cfactor, sumac;
 	int m, mm;
-	double dtheta, dKttkon, dTkin, thetap;
+	double dtheta, dKttkon, dTkin;
 	double DriftR,DriftTheta,arg,alphaH,Larmor,Bfield,f,fprime,DriftSheetR;
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
@@ -71,25 +71,21 @@ void TwoDimensionBpCpuSimulation::simulation()
 			Tkininj = SPbins[m];
 			Tkin = Tkininj;
 
-			Tkinw = Tkin * 1e9 * q;						 /*v Jouloch*/
-			Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q; /*vo Voltoch*/
-			p = Rig * q / c;							 /*kg m s-1*/
+			Tkinw = Tkin * 1e9 * q;
+			Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;
+			p = Rig * q / c;
 			pinj = p;
 
 			w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
 			w = pow(w, -1.85) / p;
 			w = w / 1e45;
 
-			tt = Tkin + T0;
-			t2 = tt + T0;
-			beta = sqrt(Tkin * t2) / tt;
-
 			r = 1.0;
 			theta = Pi/2.;
 			thetainj = theta;
 
 			while (r < 100.0)
-			{ /* one history */
+			{
 				tt = Tkin + T0;
 				t2 = tt + T0;
 				beta = sqrt(Tkin * t2) / tt;
@@ -100,36 +96,36 @@ void TwoDimensionBpCpuSimulation::simulation()
 
 				r2 = r * r;
 
-				gammma = (r * omega) * sin(theta) / V; // ZMENA  ; 1 chýba sin(theta)
-       			gamma2 = gammma*gammma; // ZMENA
-       			tmp1 = 1 + gamma2; // ZMENA
+				gammma = (r * omega) * sin(theta) / V;
+       			gamma2 = gammma*gammma;
+       			tmp1 = 1.0 + gamma2;
        			tem2 = tmp1 * tmp1;
 
-				Bfactor = (5.0/3.4) *  r2 / sqrt(tmp1);        // SOLARPROP
+				Bfactor = (5.0/3.4) *  r2 / sqrt(tmp1);
 
 				Kpar = K0*beta*Rig*Bfactor/3.0;
 				if (Rig<0.1)
 				{
 					Kpar = K0*beta*0.1*Bfactor/3.0;
 				}
-				Kper = ratio * Kpar;   // SOLARPROP
+				Kper = ratio * Kpar;
 
 				Krr = Kper + ((Kpar - Kper)/tmp1);
 				Ktt = Kper;
 
 				dtem1 = 2.0*r*omega*omega*sin(theta)*sin(theta)/(V*V);
-				dKrr = ratio*K0*beta*Rig*((2.0*r*sqrt(tmp1)) - (r2*dtem1/(2.0*sqrt(tmp1))))/tmp1; // par Kperp ober par r
+				dKrr = ratio*K0*beta*Rig*((2.0*r*sqrt(tmp1)) - (r2*dtem1/(2.0*sqrt(tmp1))))/tmp1;
 				dKrr = dKrr +  ((1.0-ratio)*K0*beta*Rig*((2.0*r*pow(tmp1,1.5))-(r2*dtem1*3.0*sqrt(tmp1)/2.0))/pow(tmp1,3.0));
-				dKrr = dKrr*5.0/(3.0*3.4);     // SOLARPROP
+				dKrr = dKrr*5.0/(3.0*3.4);
 				
 				dKtt = (-1.0*ratio*K0*beta*Rig*r2*sin(theta)*cos(theta)*(omega*omega*r2/(V*V)))/pow(tmp1,1.5);
 
-				dr = ((-1.0*V) + (2.0*Krr/r) + dKrr)*dt; // ZMENA - prva verzia je dKrr = 0
+				dr = ((-1.0*V) + (2.0*Krr/r) + dKrr)*dt;
 				dr = dr + (distribution(generator)*sqrt(2.0*Krr*dt));
 
 				dtheta = (Ktt*cos(theta)) / (r2 * sin(theta));
 				dtheta = dtheta*dt/tmp1;
-				dtheta = dtheta +  ((distribution(generator)*sqrt(2.0*Ktt*dt)) / r); // ZMENA 8.11.2020
+				dtheta = dtheta +  ((distribution(generator)*sqrt(2.0*Ktt*dt)) / r);
 
 				dKttkon = (Ktt*cos(theta)) / (r2 * sin(theta));
 				dKttkon = dKttkon +  (dKtt/r2); 
@@ -139,11 +135,11 @@ void TwoDimensionBpCpuSimulation::simulation()
 
 				dTkin = -2.0*V*alfa*Tkin*dt/(3.0*r);  
 				
-				Bfield = A*sqrt(tmp1)/(r*r);    // Parker field in nanoTesla, because A is in nanotesla
+				Bfield = A*sqrt(tmp1)/(r*r);
 
-				Larmor = 0.0225*Rig/Bfield;     // SOLARPROP, maly ROZDIEL, PRECO?
+				Larmor = 0.0225*Rig/Bfield;
 
-				alphaH = Pi / sin(alphaM + (2.0*Larmor*Pi/(r*180.0)));   // PREVERIT v Burgerovom clanku 
+				alphaH = Pi / sin(alphaM + (2.0*Larmor*Pi/(r*180.0)));
 				alphaH = alphaH -1.0;
 				alphaH = 1.0/alphaH;
 				alphaH = acos(alphaH);;
@@ -162,12 +158,8 @@ void TwoDimensionBpCpuSimulation::simulation()
 				dr = dr + ((DriftR + DriftSheetR)*dt);
 				dtheta = dtheta + (DriftTheta*dt/r);
 
-				rp = r; // Mirroring zapamatavanie
-				pp = p;
-				thetap = theta;  // ZMENA PB
-
 				r = r + dr;
-				theta = theta + dtheta;   //  ZMENA PB
+				theta = theta + dtheta;
 
 				if (theta<0.0) 
 				{
@@ -182,12 +174,7 @@ void TwoDimensionBpCpuSimulation::simulation()
 					theta = (2.0*Pi) - theta;
 				}
 
-
 				Tkin = Tkin - dTkin; 
-
-				tt = Tkin + T0;
-				t2 = tt + T0;
-				beta = sqrt(Tkin*t2)/tt;
 
 				if (r < 0.0)
 				{

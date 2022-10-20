@@ -35,7 +35,7 @@ const double SPbins[30] = { 0.01, 0.015, 0.0225, 0.03375, 0.050625,
 const double delta0 = 8.7e-5;
 const double rh =  695510.0/150000000.0; 
 
-static void setContants(ParamsCarrier *singleTone, bool isBackward)
+static void setContants(ParamsCarrier *singleTone)
 {
 	float newDT = singleTone->getFloat("dt", singleTone->getFloat("dt_default", -1.0f));
 	if (newDT != -1.0f)
@@ -47,6 +47,7 @@ static void setContants(ParamsCarrier *singleTone, bool isBackward)
 	{
 		K0 = newK;
 	}
+	bool isBackward = (singleTone->getString("algorithm", "FWMethod").compare("BPMethod") == 0);
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{

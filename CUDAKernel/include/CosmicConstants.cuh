@@ -151,6 +151,6 @@ extern __device__ __constant__ float rh;
  * @brief Set constants values according to data in ParamsCarrier.
  * 
  */
-void setConstants(ParamsCarrier *singleTone, bool isBackward);
+void setConstants(ParamsCarrier *singleTone);
 
 #endif

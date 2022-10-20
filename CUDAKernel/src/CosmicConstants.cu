@@ -39,7 +39,7 @@ __device__ __constant__ float driftThetaConstant = -1.0f*1.0f*(9.0e-5f/2.0f)*(2.
 __device__ __constant__ float delta0 = 8.7e-5f;
 __device__ __constant__ float rh =  0.0046367333333333f; 
 
-void setConstants(ParamsCarrier *singleTone, bool isBackward)
+void setConstants(ParamsCarrier *singleTone)
 {
 	float newDT = singleTone->getFloat("dt", singleTone->getFloat("dt_default", -1.0f));
 	if (newDT != -1.0f)
@@ -51,6 +51,7 @@ void setConstants(ParamsCarrier *singleTone, bool isBackward)
 	{
 		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
 	}
+	bool isBackward = (singleTone->getString("algorithm", "FWMethod").compare("BPMethod") == 0);
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{

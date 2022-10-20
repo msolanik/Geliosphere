@@ -63,19 +63,15 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         }
     }
     fclose(inputFile);
-    FILE *out = fopen("JGAR.csv", "w");
-    for (int i = 1; i < 30; i++)
-    {
-        fprintf(out, "%3.4f,%3.4f,%3.4f,%3.4f\n", SPbins[i], speJGR[i + 1], speJGR[i + 1]/speN[i + 1], speN[i + 1]);
-    }
-    fclose(out);
+
+    struct spectrumOutput *spectrumOutput;
+    spectrumOutput->fileName = "JGAR.csv";
+    spectrumOutput->isCsv = singleTone->getInt("csv", 0);
+    resultsUtils->writeSpectrum(spectrumOutput, speJGR, speN, SPECTRUM_SOLARPROP);
     spdlog::info("Spectrum based on JGAR has been written to file.");
 
-    out = fopen("Weber.csv", "w");
-    for (int i = 1; i < 30; i++)
-    {
-        fprintf(out, "%3.4f,%3.4f,%3.4f,%3.4f\n", SPbins[i], speSP[i + 1], speSP[i + 1]/speN[i + 1], speN[i + 1]);
-    }
-    fclose(out);
+    spectrumOutput->fileName = "Weber.csv";
+    spectrumOutput->isCsv = singleTone->getInt("csv", 0);
+    resultsUtils->writeSpectrum(spectrumOutput, speSP, speN, SPECTRUM_SOLARPROP);
     spdlog::info("Spectrum based on Weber has been written to file.");
 }

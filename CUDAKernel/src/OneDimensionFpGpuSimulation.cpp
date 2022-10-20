@@ -28,7 +28,7 @@ void OneDimensionFpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.threadSize = threadSize;
     simulation.blockSize = blockSize;
 
-    setConstants(singleTone, false);
+    setConstants(singleTone);
     runFWMethod(&simulation);
 
     gpuErrchk(cudaFree(w));
