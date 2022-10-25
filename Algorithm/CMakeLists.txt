@@ -1,5 +1,4 @@
 # Set the project name
-# project (Algorithm CUDA CXX)
 project (Algorithm)
 
 include_directories(include)

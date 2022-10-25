@@ -14,8 +14,6 @@
 
 #include "AbstractAlgorithm.hpp"
 
-// extern "C" void runBPMethod(simulationInputBP *simulation);
-
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
  * to define support functions for running implementation of 1D B-p simulation.
