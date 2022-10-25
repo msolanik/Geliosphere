@@ -11,7 +11,7 @@
 
 void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
 {
-    spdlog::info("Started to analyze 1D B-p particles.");
+    spdlog::info("Started to analyze 1D F-p particles.");
     ResultsUtils *resultsUtils = new ResultsUtils();
     int energy1e2, energy1e3, energy4e2;
     double Rig, p1AU, Tkin, w0, w, p100AU, r, sumac;

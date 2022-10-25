@@ -9,7 +9,7 @@
 
 void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
-	spdlog::info("Starting initialization of 2D B-p simulation.");
+	spdlog::info("Starting initialization of 1D F-p simulation.");
 	srand(time(NULL));
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())

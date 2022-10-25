@@ -20,17 +20,22 @@ void TomlSettings::parseFromSettings(ParamsCarrier *paramsCarrier)
     paramsCarrier->putFloat("V_default", V * 6.68458712e-9);
     paramsCarrier->putFloat("dt_default", dt);
 
+    const auto& solarPropSettings = toml::find(data, "SolarPropLikeModelSettings");
+    const auto solarPropRatio = toml::find<double>(solarPropSettings, "solarPropRatio");
+
+    const auto& geliosphereSettings = toml::find(data, "GeliosphereModelSettings");
+    const auto geliosphereRatio = toml::find<double>(geliosphereSettings, "geliosphereRatio");
+    const auto K0Ratio = toml::find<double>(geliosphereSettings, "K0_ratio");
+    const auto delta0Ratio = toml::find<double>(geliosphereSettings, "C_delta");
+    const auto tiltAngle = toml::find<double>(geliosphereSettings, "tilt_angle");
+
     const auto& advancedSettings = toml::find(data, "AdvancedSettings");
-    
-    const auto solarPropRatio = toml::find<double>(advancedSettings, "solarPropRatio");
-    const auto ratio = toml::find<double>(advancedSettings, "ratio");
-    const auto K0Ratio = toml::find<double>(advancedSettings, "K0_ratio");
-    const auto delta0Ratio = toml::find<double>(advancedSettings, "delta0_ratio");
     const auto removeLogFilesAfterSimulation = toml::find<bool>(advancedSettings, "remove_log_files_after_simulation");
 
     paramsCarrier->putFloat("solarPropRatio", solarPropRatio);
-    paramsCarrier->putFloat("ratio", ratio);
+    paramsCarrier->putFloat("geliosphereRatio", geliosphereRatio);
     paramsCarrier->putFloat("K0_ratio", K0Ratio);
-    paramsCarrier->putFloat("delta0_ratio", delta0Ratio);
+    paramsCarrier->putFloat("C_delta", delta0Ratio);
+    paramsCarrier->putFloat("tilt_angle", tiltAngle);
     paramsCarrier->putInt("remove_log_files_after_simulation", removeLogFilesAfterSimulation);
 }

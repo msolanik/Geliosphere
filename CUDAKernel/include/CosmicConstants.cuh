@@ -26,7 +26,7 @@
 extern __device__ __constant__ float V;
 
 /**
- * @brief Time step in seconds. 
+ * @brief Time step of simulation in seconds. 
  * 
  */
 extern __device__ __constant__ float dt;
@@ -38,13 +38,13 @@ extern __device__ __constant__ float dt;
 extern __device__ __constant__ float K0;
 
 /**
- * @brief Proton mass.
+ * @brief Proton rest mass.
  * 
  */
 extern __device__ __constant__ float m0;
 
 /**
- * @brief The fundamental electrical charge.
+ * @brief The fundamental elementary charge.
  * 
  */
 extern __device__ __constant__ float q;
@@ -56,25 +56,25 @@ extern __device__ __constant__ float q;
 extern __device__ __constant__ float c;
 
 /**
- * @brief 
+ * @brief Rest energy in [GeV].
  * 
  */
 extern __device__ __constant__ float T0;
 
 /**
- * @brief T0 in double precision.
+ * @brief Rest energy in double precision.
  * 
  */
 extern __device__ __constant__ double T0_double;
 
 /**
- * @brief m0 in double precision.
+ * @brief Proton rest mass in double precision.
  * 
  */
 extern __device__ __constant__ double m0_double;
 
 /**
- * @brief q in double precision.
+ * @brief The fundamental elementary charge in double precision.
  * 
  */
 extern __device__ __constant__ double q_double;
@@ -92,19 +92,13 @@ extern __device__ __constant__ double q_double_pow;
 extern __device__ __constant__ double c_double;
 
 /**
- * @brief 
+ * @brief Rest energy in [J].
  * 
  */
 extern __device__ __constant__ float T0w;
 
 /**
- * @brief 
- * 
- */
-extern __device__ __constant__ float omega2;
-
-/**
- * @brief Value of Pi
+ * @brief Value of Pi.
  * 
  */
 extern __device__ __constant__ float Pi;
@@ -128,23 +122,57 @@ extern __device__ __constant__ float quantityPerEnergy;
 extern __device__ __constant__ float thetainj;
 
 /**
- * @brief Value of omega.
+ * @brief Angular velocity of the Sun for rotation period.
  * 
  */
 extern __device__ __constant__ float omega;
 
 /**
- * @brief Value of ratio.
+ * @brief Ratio of perpendicular and parallel diffusion.
  * 
  */
 extern __device__ __constant__ float ratio;
 
+/**
+ * @brief Tilt angle in radians.
+ * 
+ */
 extern __device__ __constant__ float alphaM;
+
+/**
+ * @brief Sun polarity.
+ * 
+ */
 extern __device__ __constant__ float polarity;
+
+/**
+ * @brief Scaling of heliospheric magnetic field to value 5 nT at Earth position (1AU, theta=90).
+ * 
+ */
 extern __device__ __constant__ float A;
+
+/**
+ * @brief Units scaling constant.
+ * 
+ */
 extern __device__ __constant__ float konvF;
+
+/**
+ * @brief Constant part of calculating drift for theta. 
+ * 
+ */
 extern __device__ __constant__ float driftThetaConstant;
+
+/**
+ * @brief Constant for polar field correction delta.
+ * 
+ */
 extern __device__ __constant__ float delta0;
+
+/**
+ * @brief Equatoria radius of sun. 
+ * 
+ */
 extern __device__ __constant__ float rh; 
 
 /**
@@ -152,5 +180,17 @@ extern __device__ __constant__ float rh;
  * 
  */
 void setConstants(ParamsCarrier *singleTone);
+
+/**
+ * @brief Set contants for SolarProp-like Backward-in-time model.
+ * 
+ */
+void setSolarPropConstants(ParamsCarrier *singleTone);
+
+/**
+ * @brief Set contants for Geliosphere Backward-in-time model.
+ * 
+ */
+void setGeliosphereModelConstants(ParamsCarrier *singleTone);
 
 #endif

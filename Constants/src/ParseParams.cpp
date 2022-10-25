@@ -90,6 +90,7 @@ int ParseParams::parseParams(int argc, char **argv)
 		singleTone->putString("K0input", buffer);
 		newK = newK * 4.4683705e-27;
 		singleTone->putFloat("K0", newK);
+		singleTone->putInt("K0_entered_by_user", 1);
 	}
 	if (*setBilions)
 	{

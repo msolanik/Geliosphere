@@ -31,13 +31,13 @@ static double q = 1.60219e-19;
 static double c = 2.99793e8;
 
 /**
- * @brief 
+ * @brief Rest energy in [J].
  * 
  */
 static double T0w = m0 * c * c;
 
 /**
- * @brief 
+ * @brief Rest energy in [GeV].
  * 
  */
 static double T0 = m0 * c * c / (q * 1e9);
@@ -60,13 +60,11 @@ static double Tmin = 0.01;
  */
 static double Tmax = 200.0;
 
-
 /**
  * @brief 
  * 
  */
 static double dlT = log10(Tmax / Tmin) / NT;
-
 
 /**
  * @brief 
@@ -85,7 +83,6 @@ static double larg = exp((dlT / 2.0) * log(10.0)) - exp((-1.0 * dlT / 2.0) * log
  * 
  */
 const static double Tr = 0.938;
-
 
 /**
  * @brief Array of bins for 2D models.

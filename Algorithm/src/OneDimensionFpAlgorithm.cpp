@@ -29,4 +29,9 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	AbstractAlgorithm *result;
 	result = new OneDimensionFpResults();
 	result->runAlgorithm(singleTone);
+
+	if (singleTone->getInt("remove_log_files_after_simulation", 1))
+	{
+		unlink("log.dat");
+	}
 }
