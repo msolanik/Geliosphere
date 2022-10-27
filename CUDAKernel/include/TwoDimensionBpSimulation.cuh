@@ -5,7 +5,7 @@
  * @version 0.2
  * @date 2022-06-02
  * 
- * @copyright Copyright (c) 2022a
+ * @copyright Copyright (c) 2022
  * 
  */
 
@@ -17,12 +17,24 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-#if (__CUDA_ARCH__ == 610)
+#if (__CUDA_ARCH__ == 600)
+#define BLOCK_SIZE_TWO_BP 32768
+#define THREAD_SIZE_TWO_BP 512
+#elif (__CUDA_ARCH__ == 610)
+#define BLOCK_SIZE_TWO_BP 32768
+#define THREAD_SIZE_TWO_BP 512
+#elif (__CUDA_ARCH__ == 700)
 #define BLOCK_SIZE_TWO_BP 32768
 #define THREAD_SIZE_TWO_BP 512
 #elif (__CUDA_ARCH__ == 750)
 #define BLOCK_SIZE_TWO_BP 16384
 #define THREAD_SIZE_TWO_BP 1024
+#elif (__CUDA_ARCH__ == 800)
+#define BLOCK_SIZE_TWO_BP 32768
+#define THREAD_SIZE_TWO_BP 512
+#elif (__CUDA_ARCH__ == 860)
+#define BLOCK_SIZE_TWO_BP 32768
+#define THREAD_SIZE_TWO_BP 512
 #else
 #define BLOCK_SIZE_TWO_BP 64
 #define THREAD_SIZE_TWO_BP 64

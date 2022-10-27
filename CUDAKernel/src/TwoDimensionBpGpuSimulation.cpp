@@ -51,12 +51,16 @@ void TwoDimensionBpGpuSimulation::setThreadBlockSize()
     int computeCapability = gpuProperties.major * 100 + gpuProperties.minor * 10;
     switch (computeCapability)
     {
+    case 600:
     case 610:
-        blockSize = 65536;
+    case 700:
+    case 800:
+    case 860:
+        blockSize = 32768;
         threadSize = 512;
         break;
     case 750:
-        blockSize = 32768;
+        blockSize = 16384;
         threadSize = 1024;
         break;
     default:

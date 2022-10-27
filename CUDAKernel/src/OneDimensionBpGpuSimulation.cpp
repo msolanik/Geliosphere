@@ -47,19 +47,23 @@ void OneDimensionBpGpuSimulation::setThreadBlockSize()
 	cudaDeviceProp gpuProperties;
 	gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));
 	int computeCapability = gpuProperties.major * 100 + gpuProperties.minor * 10;
-	switch (computeCapability)
-	{
-	case 610:
-		blockSize = 32768;
-		threadSize = 512;
-		break;
-	case 750:
-		blockSize = 16384;
-		threadSize = 1024;
-		break;
-	default:
-		blockSize = 64;
-		threadSize = 64;
-		break;
-	}
+    switch (computeCapability)
+    {
+    case 600:
+    case 610:
+    case 700:
+    case 800:
+    case 860:
+        blockSize = 32768;
+        threadSize = 512;
+        break;
+    case 750:
+        blockSize = 16384;
+        threadSize = 1024;
+        break;
+    default:
+        blockSize = 64;
+        threadSize = 64;
+        break;
+    }
 }
