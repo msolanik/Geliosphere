@@ -26,7 +26,7 @@ struct SimulationOutput {
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
- * to define support functions for running implementation of 1D B-p simulation.
+ * to define support functions for running implementation of 1D B-p model.
  * 
  */
 class OneDimensionBpCpuSimulation : public AbstractCpuSimulation

@@ -29,7 +29,7 @@ struct SimulationOutput
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface
- * to define support functions for running implementation of 2D B-p simulation.
+ * to define support functions for running implementation of SolarProp-like 2D B-p model.
  *
  */
 class TwoDimensionBpCpuSimulation : public AbstractCpuSimulation

@@ -2,7 +2,6 @@
 K0 = 5e22
 V = 400.0
 dt = 50.0
-MilionsOfSimulations = 100
 
 [SolarPropLikeModelSettings]
 solarPropRatio = 0.02

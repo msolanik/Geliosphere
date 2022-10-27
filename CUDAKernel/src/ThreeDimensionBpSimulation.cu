@@ -89,9 +89,9 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         		
 		gamma = (r * omega) * sinf(theta) / V; 
         gamma2 = gamma * gamma;     
-		tmp1 = 1.0f + gamma2 + (r * r * deltarh2);   // NEW 062022
+		tmp1 = 1.0f + gamma2 + (r * r * deltarh2);
         tem2 = tmp1 * tmp1;
-        Bfactor = (5.0f / 3.4f) * r * r / sqrtf(tmp1); // SOLARPROP
+        Bfactor = (5.0f / 3.4f) * r * r / sqrtf(tmp1);
 
         if (Rig < 0.1f)
         {
@@ -102,17 +102,14 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
             Kpar = K0 * beta * Rig * Bfactor / 3.0f;
         }        
 
-		Kper = ratio * Kpar; // SOLARPROP
+		Kper = ratio * Kpar;
 
         Krr = Kper + ((Kpar - Kper) / tmp1);
         Ktt = Kper + (r * r * deltarh2 * (Kpar - Kper) / tmp1);
-        // Kphph = (Kpar - Kper) * gamma2 / tmp1;
 		Kphph = 1.0f;
 
         Krt = deltarh * (Kpar - Kper) * r / tmp1;
-        // Krph = (Kpar - Kper) * gamma / tmp1;
         Krph = 0.0f;
-		// Ktph = (Kpar - Kper) * r * deltarh * gamma / tmp1;
 		Ktph = 0.0f;
 		
 		B111 = (Kphph * Krt * Krt) - (2.0f * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
@@ -126,12 +123,12 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         B23 = Ktph * sqrtf(2.0f / Kphph) / r;
 
 		dtem1 = 2.0f * r * omega * omega * sinf(theta) * sinf(theta) / (V * V);
-        dtem1 = dtem1 + (2.0f * r * deltarh2);                                                                 // NEW 062022
-        dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(tmp1)) - (r * r * dtem1 / (2.0f * sqrtf(tmp1)))) / tmp1; // par Kperp ober par r
+        dtem1 = dtem1 + (2.0f * r * deltarh2);                                                                 
+        dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(tmp1)) - (r * r * dtem1 / (2.0f * sqrtf(tmp1)))) / tmp1;
         dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(tmp1, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(tmp1) / 2.0f)) / powf(tmp1, 3.0f));
-        dKrr = dKrr * 5.0f / (3.0f * 3.4f); // SOLARPROP
+        dKrr = dKrr * 5.0f / (3.0f * 3.4f);
 		
-		dr = ((-1.0f*V) + (2.0f*Krr/r) + dKrr)*dt; // ZMENA - prva verzia je dKrr = 0
+		dr = ((-1.0f*V) + (2.0f*Krr/r) + dKrr)*dt;
        	generated[idx] = curand_box_muller(&cuState[idx]);
 		dr = dr + (generated[idx].x * B11 * sqrtf(dt));
     	dr = dr + (generated[idx].y * B12 * sqrtf(dt));
