@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(spdlog)
 
 file(GLOB SOURCES "src/*.cpp")
 set(cpu_implementations ${SOURCES})  
-# set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)

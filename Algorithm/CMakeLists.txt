@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(spdlog)
 
 file(GLOB SOURCES "src/*.cpp")
 set(Algorithm ${SOURCES})  
-# set(CMAKE_CXX_FLAGS_DEBUG_INIT "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-O3")
 
 add_library(Algorithm SHARED ${SOURCES}) 
 add_library(Algorithm::Algorithm ALIAS ${PROJECT_NAME})

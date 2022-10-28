@@ -30,7 +30,7 @@ void ThreeDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singl
     simulation.w = w;
     simulation.threadSize = threadSize;
     simulation.blockSize = blockSize;
-    singleTone->putFloat("K0", 5.0f * 1.43831e-5f);
+    singleTone->putFloat("K0", 1.43831e-5f);
 
     setConstants(singleTone);
     runThreeDimensionBpMethod(&simulation);

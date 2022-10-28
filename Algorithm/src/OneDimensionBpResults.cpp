@@ -77,27 +77,27 @@ void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     }
     fclose(inputFile);
 
-    struct spectrumOutput *spectrumOutput;
-    spectrumOutput->fileName = "output_1e3bin";
-    spectrumOutput->size = 1000;
-    spectrumOutput->tkinPortion = 10;
-    spectrumOutput->isCsv = singleTone->getInt("csv", 0);
-    resultsUtils->writeSpectrum(spectrumOutput, spe1e3N, spe1e3, SPECTRUM_1E3);
+    struct spectrumOutput spectrumOutput;
+    spectrumOutput.fileName = "output_1e3bin";
+    spectrumOutput.size = 1000;
+    spectrumOutput.tkinPortion = 10;
+    spectrumOutput.isCsv = singleTone->getInt("csv", 0);
+    resultsUtils->writeSpectrum(&spectrumOutput, spe1e3N, spe1e3, SPECTRUM_1E3);
     spdlog::info("Spectrum has been written to file containing 1e3 bins.");
 
-    spectrumOutput->fileName = "output_1e2bin";
-    spectrumOutput->size = 100;
-    spectrumOutput->tkinPortion = 1;
-    resultsUtils->writeSpectrum(spectrumOutput, spe1e2N, spe1e2, SPECTRUM_1E2);
+    spectrumOutput.fileName = "output_1e2bin";
+    spectrumOutput.size = 100;
+    spectrumOutput.tkinPortion = 1;
+    resultsUtils->writeSpectrum(&spectrumOutput, spe1e2N, spe1e2, SPECTRUM_1E2);
     spdlog::info("Spectrum has been written to file containing 1e2 bins.");
 
-    spectrumOutput->fileName = "output_logbin";
-    resultsUtils->writeSpectrum(spectrumOutput, NULL, spelog, SPECTRUM_LOG);
+    spectrumOutput.fileName = "output_logbin";
+    resultsUtils->writeSpectrum(&spectrumOutput, NULL, spelog, SPECTRUM_LOG);
     spdlog::info("Spectrum has been written to file containing logarithmic bins.");
 
-    spectrumOutput->fileName = "output_4e2bin";
-    spectrumOutput->size = 400;
-    spectrumOutput->tkinPortion = 4;
-    resultsUtils->writeSpectrum(spectrumOutput, spe4e2N, spe4e2, SPECTRUM_4E2);
+    spectrumOutput.fileName = "output_4e2bin";
+    spectrumOutput.size = 400;
+    spectrumOutput.tkinPortion = 4;
+    resultsUtils->writeSpectrum(&spectrumOutput, spe4e2N, spe4e2, SPECTRUM_4E2);
     spdlog::info("Spectrum has been written to file containing 4e2 bins.");
 }
