@@ -8,6 +8,6 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
 RUN apt-get install -y cmake && apt-get clean
 
 COPY . /geliosphere
-RUN cd /geliosphere && cmake --clean-first -DCMAKE_BUILD_TYPE=Release --install ./ && make
+RUN cd /geliosphere && cmake --clean-first -DCMAKE_BUILD_TYPE=Debug --install ./ && make
 
 CMD ["bash"]
