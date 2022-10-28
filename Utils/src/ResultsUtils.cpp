@@ -1,5 +1,6 @@
 #include <math.h>
 #include "ResultsUtils.hpp"
+#include "spdlog/spdlog.h"
 
 int ResultsUtils::countLines(FILE *const fin)
 {
@@ -71,8 +72,9 @@ void ResultsUtils::writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FI
     {
         for (int i = 1; i < 30; i++)
         {
+            spdlog::info("{:03.4}% {:03.4}% {:03.4}%", 0.01f * powf((1.0f + 0.5f), i - 1), spectrumValue[i + 1], spectrumCount[i + 1]);
             fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), 0.01f * powf((1.0f + 0.5f), i - 1), spectrumValue[i + 1], 
-                (spectrumCount[i + 1] != 0) ? spectrumValue[i + 1]/spectrumCount[i + 1] : 0.0, spectrumCount[i + 1]);
+                (spectrumCount[i + 1] != 0.0) ? spectrumValue[i + 1]/spectrumCount[i + 1] : 0.0, spectrumCount[i + 1]);
         }
     }
     else
