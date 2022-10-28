@@ -65,8 +65,11 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     fclose(inputFile);
 
     struct spectrumOutput *spectrumOutput;
+    spdlog::info("1.");
     spectrumOutput->fileName = "JGAR.csv";
+    spdlog::info("2.");
     spectrumOutput->isCsv = singleTone->getInt("csv", 0);
+    spdlog::info("3.");
     resultsUtils->writeSpectrum(spectrumOutput, speJGR, speN, SPECTRUM_SOLARPROP);
     spdlog::info("Spectrum based on JGAR has been written to file.");
 
