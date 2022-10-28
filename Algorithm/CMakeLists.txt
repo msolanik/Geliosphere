@@ -27,6 +27,7 @@ if(CPU_VERSION_ONLY)
     Constants::Basic
     cpu_implementations::cpu_implementations
     spdlog::spdlog_header_only
+    utils::utils
     )
 else()
     target_link_libraries(${PROJECT_NAME}
@@ -34,5 +35,6 @@ else()
     cpu_implementations::cpu_implementations
     Cuda-kernel::Cuda-kernel
     spdlog::spdlog_header_only
+    utils::utils
     )
 endif()
