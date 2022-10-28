@@ -1,20 +1,20 @@
 #include "MeasureValuesTransformation.hpp"
 #include "rapidcsv.h"
 
-MeasureValuesTransformation::MeasureValuesTransformation(std::string pathToUsoskinTable)
+MeasureValuesTransformation::MeasureValuesTransformation(std::string pathToTransformationTable)
 {
-    this->pathToUsoskinTable = pathToUsoskinTable;
+    this->pathToTransformationTable = pathToTransformationTable;
 }
 
 float MeasureValuesTransformation::getSolarWindSpeedValue(int month, int year)
 {
-    rapidcsv::Document doc(pathToUsoskinTable, rapidcsv::LabelParams(0, 0));
+    rapidcsv::Document doc(pathToTransformationTable, rapidcsv::LabelParams(0, 0));
     return doc.GetCell<float>("V", std::to_string(year).append(".").append(getMonthName(month)));
 }
 
 float MeasureValuesTransformation::getDiffusionCoefficientValue(int month, int year)
 {
-    rapidcsv::Document doc(pathToUsoskinTable, rapidcsv::LabelParams(0, 0));
+    rapidcsv::Document doc(pathToTransformationTable, rapidcsv::LabelParams(0, 0));
     return doc.GetCell<float>("k0_au2/s", std::to_string(year).append(".").append(getMonthName(month)));
 }
 

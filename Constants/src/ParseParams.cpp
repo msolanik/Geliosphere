@@ -113,13 +113,6 @@ int ParseParams::parseParams(int argc, char **argv)
 		singleTone->putFloat("V", newV);
 	}
 
-	if (*monthOption && *yearOption)
-	{
-		MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation("K0_phi_table.csv");
-		singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
-		singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year));
-	}
-
 	if (*settingsOption)
 	{
 		TomlSettings *tomlSettings = new TomlSettings(settings);
@@ -137,20 +130,29 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*forwardMethod)
 	{
-		singleTone->putString("algorithm", "FWMethod");
+		singleTone->putString("model", "FWMethod");
 	}
 	else if (*backwardMethod)
 	{
-		singleTone->putString("algorithm", "BPMethod");
+		singleTone->putString("model", "BPMethod");
 	}
 	else if (*twoDimensionBackwardMethod)
 	{
-		singleTone->putString("algorithm", "TwoDimensionBp");
+		singleTone->putString("model", "TwoDimensionBp");
 	}
 	else if (*threeDimensionBackwardMethod)
 	{
-		singleTone->putString("algorithm", "ThreeDimensionBp");
+		singleTone->putString("model", "ThreeDimensionBp");
 	}
+
+	if (*monthOption && *yearOption)
+	{
+		MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
+			getTransformationTableName(singleTone->getString("model", "FWMethod")));
+		singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
+		singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year));
+	}
+
 	printParameters(singleTone);
 	return 1;
 }
@@ -162,8 +164,21 @@ ParamsCarrier *ParseParams::getParams()
 
 void ParseParams::printParameters(ParamsCarrier *params) 
 {
-	spdlog::info("Chosen model:" + singleTone->getString("algorithm", "FWMethod"));
+	spdlog::info("Chosen model:" + singleTone->getString("model", "FWMethod"));
 	spdlog::info("K0:" + std::to_string(params->getFloat("K0", params->getFloat("K0_default", 5e22 * 4.4683705e-27))) + " au^2 / s");
 	spdlog::info("V:" + std::to_string(params->getFloat("V", params->getFloat("V_default", 400 * 6.68458712e-9))) + " au / s");
 	spdlog::info("dt:" + std::to_string(params->getFloat("dt", params->getFloat("dt_default", 5.0f))) + " s");
+}
+
+std::string ParseParams::getTransformationTableName(std::string modelName)
+{
+	if ((modelName.compare("TwoDimensionBp") == 0) || (modelName.compare("ThreeDimensionBp") == 0))
+	{
+		return "SolarProp_K0_phi_table.csv";
+	}
+	else 
+	{
+		return "K0_phi_table.csv";
+	}
+	return NULL;
 }

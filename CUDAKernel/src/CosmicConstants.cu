@@ -40,11 +40,11 @@ __device__ __constant__ float rh =  0.0046367333333333f;
 
 void setConstants(ParamsCarrier *singleTone)
 {
-	if (singleTone->getString("algorithm", "FWMethod").compare("TwoDimensionBp") == 0)
+	if (singleTone->getString("model", "FWMethod").compare("TwoDimensionBp") == 0)
 	{
 		setSolarPropConstants(singleTone);
 	}
-	if (singleTone->getString("algorithm", "FWMethod").compare("ThreeDimensionBp") == 0)
+	if (singleTone->getString("model", "FWMethod").compare("ThreeDimensionBp") == 0)
 	{
 		setGeliosphereModelConstants(singleTone);
 	}
@@ -58,7 +58,7 @@ void setConstants(ParamsCarrier *singleTone)
 	{
 		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
 	}
-	bool isBackward = (singleTone->getString("algorithm", "FWMethod").compare("BPMethod") == 0);
+	bool isBackward = (singleTone->getString("model", "FWMethod").compare("BPMethod") == 0);
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{

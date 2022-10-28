@@ -47,7 +47,20 @@ private:
 	 */
 	ParamsCarrier *singleTone;
 
+	/**
+	 * @brief Print basic parameters which are used in simulation.
+	 * 
+	 * @param params Data structure holding input data.
+	 */
 	void printParameters(ParamsCarrier *params);
+
+	/**
+	 * @brief Get name for transformation table.
+	 * 
+	 * @param params Data structure holding input data.
+	 * @return Name of the file containing transformation table. 
+	 */
+	std::string getTransformationTableName(std::string modelName);
 };
 
 #endif

@@ -1,7 +1,7 @@
 /**
  * @file MeasureValuesTransformation.hpp
  * @author Michal Solanik
- * @brief Calculate real life 
+ * @brief Extract measured parameters for simulation from table
  * @version 0.1
  * @date 2021-09-25
  * 
@@ -24,11 +24,11 @@ class MeasureValuesTransformation
 {
 public:
     /**
-	 * @brief Construct MeasureValuesTransformation object with path to table with Usoskin's table. 
+	 * @brief Construct MeasureValuesTransformation object with path to table containing measured data for simulations. 
 	 * 
-	 * @param pathToUsoskinTable Path to .csv file with Usoskin's table.
+	 * @param pathToTransformationTable Path to .csv file containing transformation table.
 	 */
-    MeasureValuesTransformation(std::string pathToUsoskinTable);
+    MeasureValuesTransformation(std::string pathToTransformationTable);
 
     /**
 	 * @brief Calculate solar wind speed based on month and year. 
@@ -47,11 +47,17 @@ public:
     float getDiffusionCoefficientValue(int month, int year);
 private:
     /**
-	 * @brief Path to table with Usoskin's table. 
+	 * @brief Path to file containing transformation table. 
 	 * 
 	 */
-    std::string pathToUsoskinTable;
+    std::string pathToTransformationTable;
 
+	/**
+	 * @brief Get transformed value for given month.
+	 * 
+	 * @param month Month number
+	 * @return Transformed value for given month.
+	 */
 	std::string getMonthName(int month);
 };
 

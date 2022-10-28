@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	ParamsCarrier *singleTone;
 	singleTone = parse->getParams();
 	AbstractAlgorithm *actualAlgorithm;
-	actualAlgorithm = factory->getAlgorithm(singleTone->getString("algorithm", "FWMethod"));
+	actualAlgorithm = factory->getAlgorithm(singleTone->getString("model", "FWMethod"));
 	actualAlgorithm->runAlgorithm(singleTone);
 	return 0;
 }
