@@ -65,14 +65,14 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 
     struct spectrumOutput *spectrumOutput;
     spdlog::info("1.");
-    spectrumOutput->fileName = "JGAR";
+    spectrumOutput->fileName = std::string("JGAR");
     spdlog::info("2.");
     spectrumOutput->isCsv = singleTone->getInt("csv", 0);
     spdlog::info("3.");
     resultsUtils->writeSpectrum(spectrumOutput, speJGR, speN, SPECTRUM_SOLARPROP);
     spdlog::info("Spectrum based on JGAR has been written to file.");
 
-    spectrumOutput->fileName = "Weber";
+    spectrumOutput->fileName = std::string("Weber");
     spectrumOutput->isCsv = singleTone->getInt("csv", 0);
     resultsUtils->writeSpectrum(spectrumOutput, speSP, speN, SPECTRUM_SOLARPROP);
     spdlog::info("Spectrum based on Weber has been written to file.");
