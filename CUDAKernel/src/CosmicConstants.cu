@@ -91,5 +91,4 @@ void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 		newK *= singleTone->getFloat("K0_ratio", 5.0f);
 		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
 	}
-	printf("%g %g %g %g", newK, newRatio, newDelta0, tiltAngle);
 }

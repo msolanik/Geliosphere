@@ -9,7 +9,6 @@
 
 void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
-    singleTone->putFloat("K0", 1.43831e-5);
     spdlog::info("Starting initialization of 3D B-p simulation.");
     srand(time(NULL));
     std::string destination = singleTone->getString("destination", "");

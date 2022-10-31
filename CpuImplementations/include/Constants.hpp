@@ -146,7 +146,6 @@ static void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 	{
 		K0 = singleTone->getFloat("K0_ratio", 5.0f) * newK;
 	}
-	printf("%g %g %g %g", K0, ratio, delta0, alphaM);
 }
 
 /**
