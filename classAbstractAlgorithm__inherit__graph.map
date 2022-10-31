@@ -1,7 +1,0 @@
-<map id="AbstractAlgorithm" name="AbstractAlgorithm">
-<area shape="rect" id="node1" title="Interface that is used to define algorithm in context of application." alt="" coords="5,81,132,108"/>
-<area shape="rect" id="node2" href="$classOneDimensionBpAlgorithm.html" title="Class implements AbstractAlgorithm interface to define support functions for running implementation o..." alt="" coords="180,5,359,32"/>
-<area shape="rect" id="node3" href="$classOneDimensionBpResults.html" title="Class implements AbstractAlgorithm interface to define analyzer for 1D B&#45;p method for creating output..." alt="" coords="186,56,353,83"/>
-<area shape="rect" id="node4" href="$classOneDimensionFpAlgorithm.html" title="Class implements AbstractAlgorithm interface to define support functions for running implementation o..." alt="" coords="181,107,358,133"/>
-<area shape="rect" id="node5" href="$classOneDimensionFpResults.html" title="Class implements AbstractAlgorithm interface to define analyzer for 1D F&#45;p method for creating output..." alt="" coords="186,157,353,184"/>
-</map>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: Main Page</title>
+<title>Geliosphere: Geliosphere</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">Geliosphere
    </div>
   </td>
  </tr>
@@ -60,11 +60,49 @@ $(function() {
 </iframe>
 </div>
 
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">My Project Documentation</div>  </div>
+<div class="title">Geliosphere </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md_README"></a> Geliosphere is application that utilize GPU as a computing unit for cosmic ray modulation in Heliosphere. Contains 1D models of cosmic ray modulation in heliosphere based on <a href="https://agupubs.onlinelibrary.wiley.com/doi/pdfdirect/10.1002/2015JA022237">this paper.</a></p>
+<p>Class documentation can be found <a href="https://msolanik.github.io/Geliosphere/annotated.html">here</a>.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadLeft">Parameter   </th><th class="markdownTableHeadCenter">Value   </th><th class="markdownTableHeadRight">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-F   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run forward-in-time simulation    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-B   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run backward-in-time simulation    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-E   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run SolarpropLike 2D backward-in-time simulation    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-T   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run Geliosphere 2D backward-in-time simulation    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-c   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Set .csv output    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-h   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Print help for Geliosphere    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-d   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set time step (default value 5.0s)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-K   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set K0 (default value 5∗10^22cm2/s)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-V   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set solar wind speed (default value 400 km/s)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-p   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set custom path for output in output directory    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-N   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set amount of simulations in millions    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-m   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set month for using meassured values    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-y   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set year for using meassured values    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-s   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set path to settings toml file (default Settings.tml in root folder)   </td></tr>
+</table>
+<p>All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.</p>
+<p>Additional information about used models can be found in following articles:</p>
+<p><a href="https://pos.sissa.it/395/1320/pdf">Accuracy and comparasion results from GPU implementation to Crank-Nicolson model</a> </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

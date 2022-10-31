@@ -1,6 +1,0 @@
-<map id="CUDAKernel/include/CosmicConstants.cuh" name="CUDAKernel/include/CosmicConstants.cuh">
-<area shape="rect" id="node1" title="Constants needed for simulations." alt="" coords="299,5,453,47"/>
-<area shape="rect" id="node2" href="$CosmicConstants_8cu.html" title="File contains implementation of manipulation with constants." alt="" coords="5,102,248,129"/>
-<area shape="rect" id="node3" href="$OneDimensionBpSimulation_8cu.html" title="Implementation of 1D B&#45;p method." alt="" coords="273,95,479,136"/>
-<area shape="rect" id="node4" href="$OneDimensionFpSimulation_8cu.html" title="Implementation of 1D F&#45;p method." alt="" coords="503,95,710,136"/>
-</map>
