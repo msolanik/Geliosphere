@@ -43,43 +43,43 @@ static double T0w = m0 * c * c;
 static double T0 = m0 * c * c / (q * 1e9);
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins. 
  * 
  */
 static int NT = 80;
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins. 
  * 
  */
 static double Tmin = 0.01;
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins.  
  * 
  */
 static double Tmax = 200.0;
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins.  
  * 
  */
 static double dlT = log10(Tmax / Tmin) / NT;
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins.  
  * 
  */
 static double X = log10(Tmax);
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins.  
  * 
  */
 static double larg = exp((dlT / 2.0) * log(10.0)) - exp((-1.0 * dlT / 2.0) * log(10.0));
 
 /**
- * @brief 
+ * @brief Constant for calculating log bins.  
  * 
  */
 const static double Tr = 0.938;
