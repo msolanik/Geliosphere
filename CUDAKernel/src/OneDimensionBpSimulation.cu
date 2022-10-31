@@ -13,14 +13,14 @@
 #include <math.h>
 #include <string>
 
+#include "spdlog/spdlog.h"
+
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
 #include "OneDimensionBpSimulation.cuh"
 #include "CosmicConstants.cuh"
 #include "CosmicUtils.cuh"
 #include "CudaErrorCheck.cuh"
-
-extern "C" void runBPMethod(simulationInputBP *simulation);
 
 /**
  * @brief Calculate pre-simulations parameters.
@@ -68,7 +68,7 @@ __global__ void trajectorySimulationBP(float *pinj, trajectoryHistoryBP *history
 	for (; r < 100.0002f;)
 	{
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
-		Rig = (p * c / q) / 1e9;
+		Rig = (p * c / q) / 1e9f;
 		pp = p;
 		p -= (2.0f * V * pp * dt / (3.0f * r));
 		if (generate)
@@ -86,7 +86,7 @@ __global__ void trajectorySimulationBP(float *pinj, trajectoryHistoryBP *history
 		}
 		Rig = p * c / q;
 		Tkin = (sqrtf((T0 * T0 * q * q * 1e9f * 1e9f) + (q * q * Rig * Rig)) - (T0 * q * 1e9f)) / (q * 1e9f);
-		Rig = Rig / 1e9;
+		Rig = Rig / 1e9f;
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		if (beta > 0.01f && Tkin < 200.0f)
 		{
@@ -122,26 +122,31 @@ void runBPMethod(simulationInputBP *simulation)
 	int counter;
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
+    spdlog::info("Starting initialization of 1D B-p simulation.");
+	
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+        spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("BP", destination))
 	{
+        spdlog::error("Directory for 1D B-p simulations cannot be created.");
 		return;
 	}
 
 	FILE *file = fopen("log.dat", "w");
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
-	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
+	int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000 / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
 		cudaFuncSetAttribute(trajectorySimulationBP, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
+        spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
 		wCalcBP<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, k);
@@ -149,6 +154,7 @@ void runBPMethod(simulationInputBP *simulation)
 		trajectorySimulationBP<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+        spdlog::info("In this iteration {} particles were detected.", counter);
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryBP), cudaMemcpyDeviceToHost));
@@ -160,4 +166,5 @@ void runBPMethod(simulationInputBP *simulation)
 		}
 	}
 	fclose(file);
+    spdlog::info("Simulation ended.");
 }

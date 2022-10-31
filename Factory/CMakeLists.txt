@@ -7,9 +7,6 @@ file(GLOB SOURCES "src/*.cpp")
 set(factory ${SOURCES})  
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
 
-find_package(CUDA REQUIRED)
-include_directories("${CUDA_INCLUDE_DIRS}")
-
 add_library(factory SHARED ${SOURCES}) 
 add_library(factory::factory ALIAS ${PROJECT_NAME})
 

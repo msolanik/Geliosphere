@@ -12,14 +12,14 @@
 #include <stdio.h>
 #include <string>
 
+#include "spdlog/spdlog.h"
+
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
 #include "OneDimensionFpSimulation.cuh"
 #include "CosmicConstants.cuh"
 #include "CudaErrorCheck.cuh"
 #include "CosmicUtils.cuh"
-
-extern "C" void runFWMethod(simulationInput *simulation);
 
 /**
  * @brief Calculate pre-simulations parameters.
@@ -33,7 +33,7 @@ __global__ void wCalc(double *w, float *pinj, int padding)
 {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	float Tkinw = getTkinInjection(BLOCK_SIZE * THREAD_SIZE * padding + id) * 1e9f * q;
-	float Rig = sqrtf(Tkinw * (Tkinw + (2 * T0w))) / q;
+	float Rig = sqrtf(Tkinw * (Tkinw + (2.0f * T0w))) / q;
 	float p = Rig * q / c;
 	double newW = (m0_double * m0_double * c_double * c_double * c_double * c_double) + (p * p * c_double * c_double);
 	newW = (pow(newW, -1.85) / p) / 1e45;
@@ -119,27 +119,31 @@ void runFWMethod(simulationInput *simulation)
 	int counter;
 	ParamsCarrier *singleTone;
 	singleTone = simulation->singleTone;
+    spdlog::info("Starting initialization of 1D F-p simulation.");
 
 	std::string destination = singleTone->getString("destination", "");
 	if (destination.empty())
 	{
 		destination = getDirectoryName(singleTone);
+        spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
 	if (!createDirectory("FW", destination))
 	{
+        spdlog::error("Directory for 1D F-p simulations cannot be created.");
 		return;
 	}
 
 	FILE *file = fopen("log.dat", "w");
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
-	int iterations = ceil((float)singleTone->getInt("millions", 1) / ((float)simulation->blockSize * (float)simulation->threadSize));
+	int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000  / ((float)simulation->blockSize * (float)simulation->threadSize));
 	if (simulation->threadSize == 1024)
 	{
 		cudaFuncSetAttribute(trajectorySimulation, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
+        spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
 		wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->w, simulation->pinj, k);
@@ -147,6 +151,7 @@ void runFWMethod(simulationInput *simulation)
 		trajectorySimulation<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
+        spdlog::info("In this iteration {} particles were detected.", counter);
 		if (counter != 0)
 		{
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistory), cudaMemcpyDeviceToHost));
@@ -158,4 +163,5 @@ void runFWMethod(simulationInput *simulation)
 		}
 	}
 	fclose(file);
+    spdlog::info("Simulation ended.");
 }

@@ -9,34 +9,20 @@ Class documentation can be found [here](https://msolanik.github.io/Geliosphere/a
 | :--- | :----: | ---: |
 | -F | - | Run forward-in-time simulation |
 | -B | - | Run backward-in-time simulation |
+| -E | - | Run SolarpropLike 2D backward-in-time simulation |
+| -T | - | Run Geliosphere 2D backward-in-time simulation |
 | -c | - | Set .csv output |
+| -h | - | Print help for Geliosphere |
 | -d | float | Set time step (default value 5.0s) |
 | -K | float | Set K0 (default value 5∗10^22cm2/s) |
 | -V | float | Set solar wind speed (default value 400 km/s)|
 | -p | string | Set custom path for output in output directory |
 | -N | int | Set amount of simulations in millions |
+| -m | int | Set month for using meassured values |
+| -y | int | Set year for using meassured values |
+| -s | string | Set path to settings toml file (default Settings.tml in root folder) |
 
-Only GPUs from Nvidia Pascal and Turing architectures are supported. List of supported GPUs:
-
-> Nvidia T4
-> Nvidia P100
-> Tesla P100
-> Tesla P40
-> Tesla P4
-> Geforce GTX 1650 Ti
-> Nvidia Titan RTX
-> Geforce RTX 2080Ti
-> Geforce RTX 2080
-> Geforce RTX 2070
-> Geforce RTX 2060
-> Nvidia Titan Xp
-> Nvidia Titan X
-> Geforce GTX 1080 Ti
-> Geforce GTX 1080
-> Geforce GTX 1070 Ti
-> Geforce GTX 1070
-> Geforce GTX 1060
-> Geforce GTX 1050
+All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.
 
 Additional information about used models can be found in following articles:
 

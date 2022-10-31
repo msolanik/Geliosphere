@@ -27,7 +27,8 @@ enum spectrumType
     SPECTRUM_LOG = 1,
     SPECTRUM_1E2 = 2,
     SPECTRUM_1E3 = 3,
-    SPECTRUM_4E2 = 4
+    SPECTRUM_4E2 = 4,
+    SPECTRUM_SOLARPROP = 5
 };
 
 /**
@@ -37,7 +38,7 @@ enum spectrumType
  */
 struct spectrumOutput
 {
-    char *fileName;
+    std::string fileName;
     int size;
     int tkinPortion;
     bool isCsv;

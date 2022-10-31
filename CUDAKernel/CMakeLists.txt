@@ -5,12 +5,12 @@ project(Cuda-kernel CUDA CXX)
 include_directories(include)
 
 find_package(CUDA REQUIRED)
-add_compile_options(-std=c++11)
+include_directories("${CUDA_INCLUDE_DIRS}")
 
-file(GLOB SOURCES "src/*.cu")
+file(GLOB SOURCES "src/*.cu" "src/*.cpp")
 
 set(Cuda-kernel ${SOURCES}) 
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xptxas -O3 -Xcompiler -O3 --use_fast_math -std=c++11")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xptxas -O3 -Xcompiler -O3 --use_fast_math")
 set(cpulib "cpu")
 set(gpulib "gpu")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")

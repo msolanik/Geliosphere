@@ -17,12 +17,24 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-#if (__CUDA_ARCH__ == 610)
+#if (__CUDA_ARCH__ == 600)
+#define BLOCK_SIZE_BP 32768
+#define THREAD_SIZE_BP 512
+#elif (__CUDA_ARCH__ == 610)
+#define BLOCK_SIZE_BP 32768
+#define THREAD_SIZE_BP 512
+#elif (__CUDA_ARCH__ == 700)
 #define BLOCK_SIZE_BP 32768
 #define THREAD_SIZE_BP 512
 #elif (__CUDA_ARCH__ == 750)
 #define BLOCK_SIZE_BP 16384
 #define THREAD_SIZE_BP 1024
+#elif (__CUDA_ARCH__ == 800)
+#define BLOCK_SIZE_BP 32768
+#define THREAD_SIZE_BP 512
+#elif (__CUDA_ARCH__ == 860)
+#define BLOCK_SIZE_BP 32768
+#define THREAD_SIZE_BP 512
 #else
 #define BLOCK_SIZE_BP 64
 #define THREAD_SIZE_BP 64
@@ -40,7 +52,7 @@ struct trajectoryHistoryBP
 	double w = -1.0f;
 	int id = -1;
 
-	__device__ void setValues(float newTkin, float newR, float newW, int newId)
+	__device__ void setValues(float newTkin, float newR, double newW, int newId)
 	{
 		Tkin = newTkin;
 		r = newR;
@@ -66,5 +78,7 @@ struct simulationInputBP
 	int blockSize;
 	int threadSize;
 };
+
+void runBPMethod(simulationInputBP *simulation);
 
 #endif // !BP_DEFINES_H

@@ -1,69 +1,37 @@
 #include "OneDimensionBpAlgorithm.hpp"
 
-#include <cuda_runtime.h>
-#include "CudaErrorCheck.cuh"
+#include "spdlog/spdlog.h"
+
 #include "OneDimensionBpResults.hpp"
+#include "OneDimensionBpCpuSimulation.hpp"
+#if GPU_ENABLED == 1
+#include "OneDimensionBpGpuSimulation.hpp"
+#endif
 
 void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
-	simulationInputBP simulation;
-	setThreadBlockSize();
-	curandState_t *state;
-	double *w;
-	float *Tkininj, *pinj;
-	trajectoryHistoryBP *history, *local_history;
-
-	gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
-	gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
-	gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
-	gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-	gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
-	gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
-
-	simulation.singleTone = singleTone;
-	simulation.history = history;
-	simulation.pinj = pinj;
-	simulation.local_history = local_history;
-	simulation.Tkininj = Tkininj;
-	simulation.state = state;
-	simulation.w = w;
-	simulation.threadSize = threadSize;
-	simulation.blockSize = blockSize;
-
-	setConstants(singleTone, true);
-	runBPMethod(&simulation);
-
-	gpuErrchk(cudaFree(w));
-	gpuErrchk(cudaFree(Tkininj));
-	gpuErrchk(cudaFree(pinj));
-	gpuErrchk(cudaFree(state));
-	gpuErrchk(cudaFree(history));
-	gpuErrchk(cudaFreeHost(local_history));
+	if (!singleTone->getInt("isCpu", 0))
+	{
+#if GPU_ENABLED == 1
+    	OneDimensionBpGpuSimulation *oneDimensionBpGpuSimulation = new OneDimensionBpGpuSimulation();
+		oneDimensionBpGpuSimulation->prepareAndRunSimulation(singleTone);
+#else
+    	spdlog::info("GPU-based computations are disabled. Please, compile again without -DUSE_CPU_ONLY.");
+		return;
+#endif		
+	}
+	else
+	{
+		OneDimensionBpCpuSimulation *oneDimensionBpCpuSimulation = new OneDimensionBpCpuSimulation();
+		oneDimensionBpCpuSimulation->runSimulation(singleTone);
+	}
 
 	AbstractAlgorithm *result;
 	result = new OneDimensionBpResults();
 	result->runAlgorithm(singleTone);
-}
 
-// Compute capability actual device
-void OneDimensionBpAlgorithm::setThreadBlockSize()
-{
-	cudaDeviceProp gpuProperties;
-	gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));
-	int computeCapability = gpuProperties.major * 100 + gpuProperties.minor * 10;
-	switch (computeCapability)
+	if (singleTone->getInt("remove_log_files_after_simulation", 1))
 	{
-	case 610:
-		blockSize = 32768;
-		threadSize = 512;
-		break;
-	case 750:
-		blockSize = 16384;
-		threadSize = 1024;
-		break;
-	default:
-		blockSize = 64;
-		threadSize = 64;
-		break;
+		unlink("log.dat");
 	}
 }

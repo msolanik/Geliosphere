@@ -1,0 +1,16 @@
+[DefaultValues]
+K0 = 5e22
+V = 400.0
+dt = 50.0
+
+[SolarPropLikeModelSettings]
+solarPropRatio = 0.02
+
+[GeliosphereModelSettings]
+geliosphereRatio = 0.2
+K0_ratio = 5.0
+C_delta = 8.7e-5
+tilt_angle = 0.1
+
+[AdvancedSettings]
+remove_log_files_after_simulation = true

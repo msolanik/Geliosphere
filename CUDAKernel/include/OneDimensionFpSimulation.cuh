@@ -17,12 +17,24 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-#if (__CUDA_ARCH__ == 610)
-#define BLOCK_SIZE 65536
+#if (__CUDA_ARCH__ == 600)
+#define BLOCK_SIZE 32768
+#define THREAD_SIZE 512
+#elif (__CUDA_ARCH__ == 610)
+#define BLOCK_SIZE 32768
+#define THREAD_SIZE 512
+#elif (__CUDA_ARCH__ == 700)
+#define BLOCK_SIZE 32768
 #define THREAD_SIZE 512
 #elif (__CUDA_ARCH__ == 750)
-#define BLOCK_SIZE 32768
+#define BLOCK_SIZE 16384
 #define THREAD_SIZE 1024
+#elif (__CUDA_ARCH__ == 800)
+#define BLOCK_SIZE 32768
+#define THREAD_SIZE 512
+#elif (__CUDA_ARCH__ == 860)
+#define BLOCK_SIZE 32768
+#define THREAD_SIZE 512
 #else
 #define BLOCK_SIZE 64
 #define THREAD_SIZE 64
@@ -65,5 +77,7 @@ struct simulationInput
 	int blockSize;
 	int threadSize;
 };
+
+void runFWMethod(simulationInput *simulation);
 
 #endif // !FLOAT_FW_DEFINES_H
