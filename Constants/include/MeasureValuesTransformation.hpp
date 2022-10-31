@@ -45,6 +45,14 @@ public:
      * @param year Year ranging between 1951 - 2016
 	 */
     float getDiffusionCoefficientValue(int month, int year);
+
+	/**
+	 * @brief Calculate diffusion coefficient based on month and year. 
+	 * 
+	 * @param month Month of the year.
+	 * @param year Year ranging between 1976 - 2015
+	 */
+	float getTiltAngle(int month, int year);
 private:
     /**
 	 * @brief Path to file containing transformation table. 

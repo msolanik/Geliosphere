@@ -18,6 +18,12 @@ float MeasureValuesTransformation::getDiffusionCoefficientValue(int month, int y
     return doc.GetCell<float>("k0_au2/s", std::to_string(year).append(".").append(getMonthName(month)));
 }
 
+float MeasureValuesTransformation::getTiltAngle(int month, int year)
+{
+    rapidcsv::Document doc(pathToTransformationTable, rapidcsv::LabelParams(0, 0));
+    return doc.GetCell<float>("tilt_angle", std::to_string(year).append(".").append(getMonthName(month)));
+}
+
 std::string MeasureValuesTransformation::getMonthName(int month) 
 {
     switch (month)

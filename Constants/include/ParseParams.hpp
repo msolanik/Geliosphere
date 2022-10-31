@@ -61,6 +61,13 @@ private:
 	 * @return Name of the file containing transformation table. 
 	 */
 	std::string getTransformationTableName(std::string modelName);
+
+	/**
+	 * @brief Return true for 2D models.
+	 * 
+	 * @param modelName Name of the model.
+	 */
+	bool isInput2DModel(std::string modelName);
 };
 
 #endif

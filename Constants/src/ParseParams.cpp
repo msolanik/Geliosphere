@@ -147,10 +147,24 @@ int ParseParams::parseParams(int argc, char **argv)
 
 	if (*monthOption && *yearOption)
 	{
-		MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
+		try
+		{
+			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
 			getTransformationTableName(singleTone->getString("model", "FWMethod")));
-		singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
-		singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year));
+			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
+			if (isInput2DModel(singleTone->getString("model", "FWMethod")))
+			{
+				singleTone->putFloat("tilt_angle", measureValuesTransformation->getTiltAngle(month, year));
+			}
+			else
+			{
+				singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year));
+			}
+		}
+		catch(const std::out_of_range&)
+		{
+			spdlog::error("Combination for entered date was not found in input table.");
+		}
 	}
 
 	printParameters(singleTone);
@@ -172,7 +186,7 @@ void ParseParams::printParameters(ParamsCarrier *params)
 
 std::string ParseParams::getTransformationTableName(std::string modelName)
 {
-	if ((modelName.compare("TwoDimensionBp") == 0) || (modelName.compare("ThreeDimensionBp") == 0))
+	if (isInput2DModel(modelName))
 	{
 		return "SolarProp_K0_phi_table.csv";
 	}
@@ -181,4 +195,13 @@ std::string ParseParams::getTransformationTableName(std::string modelName)
 		return "K0_phi_table.csv";
 	}
 	return NULL;
+}
+
+bool ParseParams::isInput2DModel(std::string modelName)
+{
+	if ((modelName.compare("TwoDimensionBp") == 0) || (modelName.compare("ThreeDimensionBp") == 0))
+	{
+		return true;
+	}
+	return false;
 }
