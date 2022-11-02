@@ -73,13 +73,13 @@ void setConstants(ParamsCarrier *singleTone)
 
 void setSolarPropConstants(ParamsCarrier *singleTone)
 {
-	float newRatio = singleTone->getFloat("solarPropRatio", 0.2f);
+	float newRatio = singleTone->getFloat("solarPropRatio", 0.02f);
 	cudaMemcpyToSymbol(ratio, &newRatio, sizeof(newRatio));
 }
 
 void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 {
-	float newRatio = singleTone->getFloat("geliosphereRatio", 0.02f);
+	float newRatio = singleTone->getFloat("geliosphereRatio", 0.2f);
 	cudaMemcpyToSymbol(ratio, &newRatio, sizeof(newRatio));
 	float newDelta0 = singleTone->getFloat("C_delta", 8.7e-5f);
 	cudaMemcpyToSymbol(delta0, &newDelta0, sizeof(newDelta0));
