@@ -170,23 +170,23 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
             dKrtt = dKrtt*(1.0f - (2.0f*r*r*deltarh2) + (4.0f*gamma2)); 
         }
 
-       	dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));   // NEW 062022
+       	dr = dr + (dKrtt*dt/r) + (Krt*cosf(theta)*dt/(r*sinf(theta)));
 
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dtheta = (dtheta*dt) + (dKtt*dt/(r*r));
-        dtheta = dtheta + (dKrtr * dt) + (2.0f * Krt * dt / r);                                                     // NEW 062022
+        dtheta = dtheta + (dKrtr * dt) + (2.0f * Krt * dt / r);                                                    
 		generated[idx] = curand_box_muller(&cuState[idx]);
-        dtheta = dtheta + (generated[idx].x * B22 * sqrtf(dt)) + (generated[idx].y * B23 * sqrtf(dt)); // NEW 06@)@@
+        dtheta = dtheta + (generated[idx].x * B22 * sqrtf(dt)) + (generated[idx].y * B23 * sqrtf(dt));
 
 		dKttkon = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dKttkon = dKttkon / tmp1;
 
         dTkin = -2.0f * V * ((Tkin + T0 + T0)/(Tkin + T0)) * Tkin * dt / (3.0f * r);
 
-        Bfield = A * sqrtf(tmp1) / (r * r); // Parker field in nanoTesla, because A is in nanotesla
-    	Larmor = 0.0225f * Rig / Bfield;    // SOLARPROP, maly ROZDIEL, PRECO?
+        Bfield = A * sqrtf(tmp1) / (r * r);
+    	Larmor = 0.0225f * Rig / Bfield;
 
-        alphaH = Pi / sinf(alphaM + (2.0f * Larmor * Pi / (r * 180.0f))); // PREVERIT v Burgerovom clanku
+        alphaH = Pi / sinf(alphaM + (2.0f * Larmor * Pi / (r * 180.0f)));
         alphaH = alphaH - 1.0f;
         alphaH = 1.0f / alphaH;
         alphaH = acosf(alphaH);
