@@ -1,4 +1,5 @@
 #include <string>
+#include <regex>
 
 #include "CLI/App.hpp"
 #include "CLI/Option.hpp"
@@ -11,6 +12,7 @@
 
 int ParseParams::parseParams(int argc, char **argv)
 {
+	std::string currentApplicationPath = getApplicationPath(argv);
 	float newDT, newK, newV, newKparKper, newMu;
 	int month, year;
 	std::string newDestination, settings;
@@ -118,6 +120,11 @@ int ParseParams::parseParams(int argc, char **argv)
 		TomlSettings *tomlSettings = new TomlSettings(settings);
 		tomlSettings->parseFromSettings(singleTone);
 	}
+	else 
+	{
+		TomlSettings *tomlSettings = new TomlSettings(currentApplicationPath + "Settings.toml");
+		tomlSettings->parseFromSettings(singleTone);
+	}
 #if GPU_ENABLED == 1
 	if (*cpuOnly)
 	{
@@ -150,7 +157,7 @@ int ParseParams::parseParams(int argc, char **argv)
 		try
 		{
 			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
-			getTransformationTableName(singleTone->getString("model", "FWMethod")));
+				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "FWMethod")));
 			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
 			if (isInput2DModel(singleTone->getString("model", "FWMethod")))
 			{
@@ -204,4 +211,12 @@ bool ParseParams::isInput2DModel(std::string modelName)
 		return true;
 	}
 	return false;
+}
+
+std::string ParseParams::getApplicationPath(char **argv)
+{
+	std::regex regexp(R"(.*\/)"); 
+    std::cmatch m; 
+    std::regex_search(argv[0], m, regexp); 
+    return m[0]; 
 }
