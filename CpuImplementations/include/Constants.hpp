@@ -129,7 +129,7 @@ const double rh =  695510.0/150000000.0;
  */
 static void setSolarPropConstants(ParamsCarrier *singleTone)
 {
-	ratio = singleTone->getFloat("solarPropRatio", 0.2f);
+	ratio = singleTone->getFloat("solarPropRatio", 0.02f);
 }
 
 /**
@@ -138,7 +138,7 @@ static void setSolarPropConstants(ParamsCarrier *singleTone)
  */
 static void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 {
-	ratio = singleTone->getFloat("geliosphereRatio", 0.02f);
+	ratio = singleTone->getFloat("geliosphereRatio", 0.2f);
 	delta0 = singleTone->getFloat("C_delta", 8.7e-5f);
 	alphaM = singleTone->getFloat("tilt_angle", 0.1f);
 	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));

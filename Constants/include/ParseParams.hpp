@@ -68,6 +68,14 @@ private:
 	 * @param modelName Name of the model.
 	 */
 	bool isInput2DModel(std::string modelName);
+
+	/**
+	 * @brief Return path where Geliosphere is located.
+	 * 
+	 * @param argv Geliosphere parameters
+	 * @return Path where Geliosphere is located
+	 */
+	std::string getApplicationPath(char **argv);
 };
 
 #endif
