@@ -44,6 +44,11 @@ After installation is complete, an optimized version of the tool can be built vi
   cmake --clean-first -DCMAKE_BUILD_TYPE=Release --install ./ && make
   ```
 
+After build is complete successfully, executable is placed in root directory with Geliosphere. For further instruction regarding the program usage, following command will display help for the user:
+  ```
+  ./Geliosphere --help
+  ```
+
 ### Geliosphere with CPU-only support
 The packages are similar, with the exception that the CPU version naturally does not require installation of the Nvidia toolkit. CPU-only version of Geliosphere can be built via the following command:
   ```
@@ -56,6 +61,12 @@ We also included runner scripts(<em>runner.sh</em> and <em>runner_cpu_only.sh</e
   ```
   ./runner.sh -f
   ./runner_cpu_only.sh -f
+  ```
+
+Help for Geliosphere can be displayed via following command:
+  ```
+  ./runner.sh --help
+  ./runner_cpu_only.sh --help
   ```
 </details>
 
