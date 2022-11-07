@@ -157,7 +157,7 @@ int ParseParams::parseParams(int argc, char **argv)
 		try
 		{
 			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
-				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "FWMethod")));
+				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "FWMethod")), singleTone->getString("model", "FWMethod"));
 			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
 			if (isInput2DModel(singleTone->getString("model", "FWMethod")))
 			{

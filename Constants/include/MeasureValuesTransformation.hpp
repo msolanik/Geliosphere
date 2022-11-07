@@ -27,8 +27,9 @@ public:
 	 * @brief Construct MeasureValuesTransformation object with path to table containing measured data for simulations. 
 	 * 
 	 * @param pathToTransformationTable Path to .csv file containing transformation table.
+	 * @param model Type of the model
 	 */
-    MeasureValuesTransformation(std::string pathToTransformationTable);
+    MeasureValuesTransformation(std::string pathToTransformationTable, std::string model);
 
     /**
 	 * @brief Calculate solar wind speed based on month and year. 
@@ -61,12 +62,36 @@ private:
     std::string pathToTransformationTable;
 
 	/**
+	 * @brief Type of the model.
+	 * 
+	 */
+	std::string model;
+
+	/**
 	 * @brief Get transformed value for given month.
 	 * 
 	 * @param month Month number
 	 * @return Transformed value for given month.
 	 */
 	std::string getMonthName(int month);
+
+	/**
+	 * @brief Get the string identifier for csv table based on model.
+	 * 
+	 * @param month Month number
+	 * @param year Year ranging between 1951 - 2016.
+	 * @return String identifier for csv table based on model. 
+	 */
+	std::string getRowIdentifier(int month, int year);
+	
+	/**
+	 * @brief Get the Carrington Rotation number in string.
+	 * 
+	 * @param month Month number
+	 * @param year Year ranging between 1976 - 2015
+	 * @return Carrington Rotation number in string 
+	 */
+	std::string getCarringtonRotation(int month, int year);
 };
 
 #endif
