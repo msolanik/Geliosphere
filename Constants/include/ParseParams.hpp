@@ -1,7 +1,7 @@
 /**
  * @file ParseParams.hpp
  * @author Michal Solanik
- * @brief Parser of arguements from CLI
+ * @brief Parser of arguments from CLI
  * @version 0.1
  * @date 2021-07-13
  * 

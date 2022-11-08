@@ -1,7 +1,7 @@
 /**
  * @file ParamsCarrier.hpp
  * @author Michal Solanik
- * @brief 
+ * @brief Universal map-like structure.
  * @version 0.1
  * @date 2021-07-13
  * 

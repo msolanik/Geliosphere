@@ -1,7 +1,7 @@
 /**
  * @file ResultsUtils.hpp
  * @author Michal Solanik
- * @brief Utility for analyting log files. 
+ * @brief Utilities for analyting log files. 
  * @version 0.1
  * @date 2021-07-14
  * 
