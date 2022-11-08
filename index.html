@@ -101,7 +101,250 @@ $(function() {
 </table>
 <p>All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.</p>
 <p>Additional information about used models can be found in following articles:</p>
-<p><a href="https://pos.sissa.it/395/1320/pdf">Accuracy and comparasion results from GPU implementation to Crank-Nicolson model</a> </p>
+<p><a href="https://pos.sissa.it/395/1320/pdf">Accuracy and comparasion results from GPU implementation to Crank-Nicolson model</a></p>
+<h1>Installation</h1>
+<p>&lt;details&gt;</p>
+<h2>Geliosphere with GPU support</h2>
+<p>Standard installation of the GPU version of Geliosphere requires installation of the Nvidia toolkit, g++ and cmake 3.14+. These packages can be installed via any packaging tool. The following example is provided for the apt-get packaging tool: </p><div class="fragment"><div class="line">sudo apt-get install cuda g++ cmake</div>
+</div><!-- fragment --><p>Different Linux distributions may have different approach for CUDA installation.</p>
+<p>After installation is complete, an optimized version of the tool can be built via the following command: </p><div class="fragment"><div class="line">cmake --clean-first -DCMAKE_BUILD_TYPE=Release --install ./ &amp;&amp; make</div>
+</div><!-- fragment --><p>After build is complete successfully, executable is placed in root directory with Geliosphere. For further instruction regarding the program usage, following command will display help for the user: </p><div class="fragment"><div class="line">./Geliosphere --help</div>
+</div><!-- fragment --><h2>Geliosphere with CPU-only support</h2>
+<p>The packages are similar, with the exception that the CPU version naturally does not require installation of the Nvidia toolkit. CPU-only version of Geliosphere can be built via the following command: </p><div class="fragment"><div class="line">cmake --clean-first -DCPU_VERSION_ONLY=1 -DCMAKE_BUILD_TYPE=Release --install ./ &amp;&amp; make</div>
+</div><!-- fragment --><h2>Dockerized versions</h2>
+<p>We also included runner scripts(<em>runner.sh</em> and <em>runner_cpu_only.sh</em>), that can build and run Geliosphere in Docker. They automatically build Docker image, however it can re-built via:</p>
+<div class="fragment"><div class="line">./runner.sh -f</div>
+<div class="line">./runner_cpu_only.sh -f</div>
+</div><!-- fragment --><p>Help for Geliosphere can be displayed via following command: </p><div class="fragment"><div class="line">./runner.sh --help</div>
+<div class="line">./runner_cpu_only.sh --help</div>
+</div><!-- fragment --><p> &lt;/details&gt;</p>
+<h1>Module structure</h1>
+<p>&lt;details&gt;</p>
+<p>Following image describes relations between modules in Geliosphere:</p>
+<p><img src="https://user-images.githubusercontent.com/22960818/200040994-dde685a6-9990-4a78-83e6-0975eaf230f3.png" alt="module_diagram drawio (1)" class="inline"/></p>
+<p>Modules are used to organize the logic needed for simulations in the heliosphere and to support logic for them. These modules are described as follows:</p><ul>
+<li><b>Geliosphere</b> - contains the main function and links basic logic for selecting the model, parsing input data and running the selected model,</li>
+<li><b>Algorithm</b> - contains logic used for selecting implementation of model for selected computing unit, and logic for analyzing output spectra,</li>
+<li><b>Factory</b> - contains classes based on factory and abstract factory patterns used for creating objects, <br  />
+</li>
+<li><b>Constants</b> - contains classes used for parsing input data,</li>
+<li><b>CPU Implementations</b> - contains classes used for running parallel CPU implementations of models of cosmic rays modulation in the heliosphere,</li>
+<li><b>CUDA Kernel</b> - contains classes used for running parallel GPU implementations of models of cosmic rays modulation in the heliosphere,</li>
+<li><b>Utils</b> - contains classes holding various functions used in Geliosphere. &lt;/details&gt;</li>
+</ul>
+<h1>Source file description</h1>
+<p>&lt;details&gt;</p>
+<h2>Geliosphere module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">Geliosphere</div>
+<div class="line">|</div>
+<div class="line">│    Dockerfile</div>
+<div class="line">|    Dockerfile.CPU  </div>
+<div class="line">|    main.cpp</div>
+<div class="line">└───Algorithm</div>
+<div class="line">└───Constants</div>
+<div class="line">└───CpuImplementations</div>
+<div class="line">└───CUDAKernel</div>
+<div class="line">└───Factory</div>
+<div class="line">└───Utils</div>
+</div><!-- fragment --><p><b>Geliosphere</b> module contains following source files:</p>
+<ul>
+<li><b>Dockerfile</b> - file containing defitinion for building GPU Docker image with GPU support.</li>
+<li><b>Dockerfile.CPU</b> - file containing defitinion for building GPU Docker image with CPU-only support.</li>
+<li><b>main.cpp</b> - file containing main functions with needed iteractions between modules.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>Algorithm module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">Algorithm</div>
+<div class="line">│    </div>
+<div class="line">└───include</div>
+<div class="line">|   |   AbstractAlgorithm.hpp</div>
+<div class="line">|   |   OneDimensionBpAlgorithm.hpp</div>
+<div class="line">|   |   OneDimensionBpResults.hpp</div>
+<div class="line">|   |   OneDimensionFpAlgorithm.hpp</div>
+<div class="line">|   |   OneDimensionFpResults.hpp</div>
+<div class="line">|   |   ResultConstants.hpp</div>
+<div class="line">|   |   ThreeDimensionBpAlgorithm.hpp</div>
+<div class="line">|   |   TwoDimensionBpAlgorithm.hpp</div>
+<div class="line">|   |   TwoDimensionBpResults.hpp</div>
+<div class="line">└───src</div>
+<div class="line">    |   AbstractAlgorithm.cpp</div>
+<div class="line">    |   OneDimensionBpAlgorithm.cpp</div>
+<div class="line">    |   OneDimensionBpResults.cpp</div>
+<div class="line">    |   OneDimensionFpAlgorithm.cpp</div>
+<div class="line">    |   OneDimensionFpResults.cpp</div>
+<div class="line">    |   ThreeDimensionBpAlgorithm.cpp</div>
+<div class="line">    |   TwoDimensionBpAlgorithm.cpp</div>
+<div class="line">    |   TwoDimensionBpResults.cpp</div>
+</div><!-- fragment --><p><b>Algorithm</b> module contains following source files:</p>
+<ul>
+<li><b>AbstractAlgorithm.hpp</b> - Header file of abstract definition for algorithm.</li>
+<li><b>OneDimensionBpAlgorithm.hpp</b> - Header file of implementation of 1D B-p method</li>
+<li><b>OneDimensionBpResults.hpp</b> - Header file of implementation of 1D B-p method analyzer for output data.</li>
+<li><b>OneDimensionFpAlgorithm.hpp</b> - Header file of implementation of 1D F-p method</li>
+<li><b>OneDimensionFpResults.hpp</b> - Header file of implementation of 1D F-p method analyzer for output data.</li>
+<li><b>ResultConstants.hpp</b> - Header file containing constants needed for analysis of log files for all models.</li>
+<li><b>ThreeDimensionBpAlgorithm.hpp</b> - Header file of implementation of Geliosphere 2D B-p method.</li>
+<li><b>TwoDimensionBpAlgorithm.hpp</b> - Header file of implementation of SolarProp-like 2D B-p method.</li>
+<li><b>TwoDimensionBpResults.hpp</b> - Header file of implementation of 2D B-p method analyzer for output data.</li>
+<li><b>AbstractAlgorithm.cpp</b> - Source file of abstract definition for algorithm.</li>
+<li><b>OneDimensionBpAlgorithm.cpp</b> - Source file of implementation of 1D B-p method</li>
+<li><b>OneDimensionBpResults.cpp</b> - Source file of implementation of 1D B-p method analyzer for output data.</li>
+<li><b>OneDimensionFpAlgorithm.cpp</b> - Source file of implementation of 1D F-p method</li>
+<li><b>OneDimensionFpResults.cpp</b> - Source file of implementation of 1D F-p method analyzer for output data.</li>
+<li><b>ThreeDimensionBpAlgorithm.cpp</b> - Source file of implementation of Geliosphere 2D B-p method.</li>
+<li><b>TwoDimensionBpAlgorithm.cpp</b> - Source file of implementation of SolarProp-like 2D B-p method.</li>
+<li><b>TwoDimensionBpResults.cpp</b> - Source file of implementation of 2D B-p method analyzer for output data.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>Factory module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">Factory</div>
+<div class="line">│    </div>
+<div class="line">└───include</div>
+<div class="line">|   |   AbstractAlgorithmFactory.hpp</div>
+<div class="line">|   |   CosmicFactory.hpp</div>
+<div class="line">└───src</div>
+<div class="line">    |   AbstractAlgorithmFactory.cpp</div>
+<div class="line">    |   CosmicFactory.cpp</div>
+</div><!-- fragment --><p><b>Factory</b> module contains following source files:</p>
+<ul>
+<li><b>AbstractAlgorithmFactory.hpp</b> - Interface of Abstract Factory Pattern.</li>
+<li><b>CosmicFactory.hpp</b> - Class represents implementation of Factory Pattern for cosmic algorithms.</li>
+<li><b>AbstractAlgorithmFactory.cpp</b> - Source file for interface of Abstract Factory Pattern.</li>
+<li><b>CosmicFactory.cpp</b> - Source file of class represents implementation of Factory Pattern for cosmic algorithms.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>Constants module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">Constants</div>
+<div class="line">│    </div>
+<div class="line">└───include</div>
+<div class="line">|   |   MeasureValuesTransformation.hpp</div>
+<div class="line">|   |   ParamsCarrier.hpp</div>
+<div class="line">|   |   ParseParams.hpp</div>
+<div class="line">|   |   TomlSettings.hpp</div>
+<div class="line">└───src</div>
+<div class="line">    |   MeasureValuesTransformation.cpp</div>
+<div class="line">    |   ParamsCarrier.cpp</div>
+<div class="line">    |   ParseParams.cpp</div>
+<div class="line">    |   TomlSettings.cpp</div>
+</div><!-- fragment --><p><b>Constants</b> module contains following source files:</p>
+<ul>
+<li><b>MeasureValuesTransformation.hpp</b> - Header file for class representing extraction of measured parameters for simulation from table.</li>
+<li><b>ParamsCarrier.hpp</b> - Header file for universal map-like structure.</li>
+<li><b>ParseParams.hpp</b> - Header file of parser of arguments from CLI</li>
+<li><b>TomlSettings.hpp</b> - Header file for class representing parser of values from settings.</li>
+<li><b>MeasureValuesTransformation.cpp</b> - Source file for class representing extraction of measured parameters for simulation from table.</li>
+<li><b>ParamsCarrier.cpp</b> - Source file for universal map-like structure.</li>
+<li><b>ParseParams.cpp</b> - Source file of parser of arguments from CLI</li>
+<li><b>TomlSettings.cpp</b> - Source file for class representing parser of values from settings.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>CPU Implementations module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">CpuImplementations</div>
+<div class="line">│    </div>
+<div class="line">└───include</div>
+<div class="line">|   |   AbstractCpuSimulation.hpp</div>
+<div class="line">|   |   Constants.hpp</div>
+<div class="line">|   |   OneDimensionBpCpuSimulation.hpp</div>
+<div class="line">|   |   OneDimensionFpCpuSimulation.hpp</div>
+<div class="line">|   |   ThreeDimensionBpCpuSimulation.hpp</div>
+<div class="line">|   |   TwoDimensionBpCpuSimulation.hpp</div>
+<div class="line">└───src</div>
+<div class="line">    |   OneDimensionBpCpuSimulation.cpp</div>
+<div class="line">    |   OneDimensionFpCpuSimulation.cpp</div>
+<div class="line">    |   ThreeDimensionBpCpuSimulation.cpp</div>
+<div class="line">    |   TwoDimensionBpCpuSimulation.cpp</div>
+</div><!-- fragment --><p><b>CPU Implementations</b> module contains following source files:</p>
+<ul>
+<li><b>AbstractCpuSimulation.hpp</b> - Abstract definition for implementation of model on CPU.</li>
+<li><b>Constants.hpp</b> - Header file for constants for CPU implementations.</li>
+<li><b>OneDimensionBpCpuSimulation.hpp</b> - Header file for CPU implementation for 1D B-p model.</li>
+<li><b>OneDimensionFpCpuSimulation.hpp</b> - Header file for CPU implementation for 1D F-p model.</li>
+<li><b>ThreeDimensionBpCpuSimulation.hpp</b> - Header file for CPU implementation for Geliosphere 2D B-p model.</li>
+<li><b>TwoDimensionBpCpuSimulation.hpp</b> - Header file for CPU implementation for SolarProp-like 2D B-p model.</li>
+<li><b>OneDimensionBpCpuSimulation.cpp</b> - Source file for CPU implementation for 1D B-p model.</li>
+<li><b>OneDimensionFpCpuSimulation.cpp</b> - Source file for CPU implementation for 1D F-p model.</li>
+<li><b>ThreeDimensionBpCpuSimulation.cpp</b> - Source file for CPU implementation for Geliosphere 2D B-p model.</li>
+<li><b>TwoDimensionBpCpuSimulation.cpp</b> - Source file for CPU implementation for SolarProp-like 2D B-p model.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>CUDA Kernel module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">CUDAKernel</div>
+<div class="line">│    </div>
+<div class="line">└───include</div>
+<div class="line">|   |   AbstractGpuSimulation.hpp</div>
+<div class="line">|   |   CosmicConstants.cuh</div>
+<div class="line">|   |   CosmicUtils.cuh</div>
+<div class="line">|   |   CudaErrorCheck.cuh</div>
+<div class="line">|   |   OneDimensionBpGpuSimulation.hpp</div>
+<div class="line">|   |   OneDimensionBpSimulation.cuh</div>
+<div class="line">|   |   OneDimensionFpGpuSimulation.hpp</div>
+<div class="line">|   |   OneDimensionFpSimulation.cuh</div>
+<div class="line">|   |   ThreeDimensionBpGpuSimulation.hpp</div>
+<div class="line">|   |   ThreeDimensionBpSimulation.cuh</div>
+<div class="line">|   |   TwoDimensionBpGpuSimulation.hpp</div>
+<div class="line">|   |   TwoDimensionBpSimulation.cuh</div>
+<div class="line">└───src</div>
+<div class="line">    |   CosmicConstants.cu</div>
+<div class="line">    |   CosmicUtils.cu</div>
+<div class="line">    |   OneDimensionBpGpuSimulation.cpp</div>
+<div class="line">    |   OneDimensionBpSimulation.cu</div>
+<div class="line">    |   OneDimensionFpGpuSimulation.cpp</div>
+<div class="line">    |   OneDimensionFpSimulation.cu</div>
+<div class="line">    |   ThreeDimensionBpGpuSimulation.cpp</div>
+<div class="line">    |   ThreeDimensionBpSimulation.cu</div>
+<div class="line">    |   TwoDimensionBpGpuSimulation.cpp</div>
+<div class="line">    |   TwoDimensionBpSimulation.cu</div>
+</div><!-- fragment --><p><b>CUDA Kernel</b> module contains following source files:</p>
+<ul>
+<li><b>AbstractGpuSimulation.hpp</b> - Abstract definition for implementation of model on GPU.</li>
+<li><b>CosmicConstants.cuh</b> - Header file for constants needed for simulations.</li>
+<li><b>CosmicUtils.cuh</b> - Header file for common functions for simulations.</li>
+<li><b>CudaErrorCheck.cuh</b> - Header file for utilities for checking errors.</li>
+<li><b>OneDimensionBpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionBpSimulation.cuh</b> - Header file for GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionFpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of 1D F-p model.</li>
+<li><b>OneDimensionFpSimulation.cuh</b> - Header file for GPU implementation of 1D F-p model.</li>
+<li><b>ThreeDimensionBpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>ThreeDimensionBpGpuSimulation.cuh</b> - Header file for GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>TwoDimensionBpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>TwoDimensionBpSimulation.cuh</b> - Header file for GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>CosmicConstants.cu</b> - Source file for constants needed for simulations.</li>
+<li><b>CosmicUtils.cu</b> - Source file for common functions for simulations.</li>
+<li><b>OneDimensionBpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionBpSimulation.cu</b> - Source file for GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionFpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of 1D F-p model.</li>
+<li><b>OneDimensionFpSimulation.cu</b> - Source file for GPU implementation of 1D F-p model.</li>
+<li><b>ThreeDimensionBpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>ThreeDimensionBpGpuSimulation.cu</b> - Source file for GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>TwoDimensionBpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>TwoDimensionBpSimulation.cu</b> - Source file for GPU implementation of SolarProp-like 2D B-p model.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>Utils module</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">Utils</div>
+<div class="line">│    </div>
+<div class="line">└───include</div>
+<div class="line">|   |   FileUtils.hpp</div>
+<div class="line">|   |   ResultsUtils.hpp</div>
+<div class="line">└───src</div>
+<div class="line">    |   FileUtils.cpp</div>
+<div class="line">    |   ResultsUtils.cpp</div>
+</div><!-- fragment --><p><b>Utils</b> module contains following source files:</p>
+<ul>
+<li><b>FileUtils.hpp</b> - Header file for utilities for manipulating with directories.</li>
+<li><b>ResultsUtils.hpp</b> - Header file for utilities for analyting log files.</li>
+<li><b>FileUtils.cpp</b> - Source file for utilities for manipulating with directories.</li>
+<li><b>ResultsUtils.cpp</b> - Source file for utilities for analyting log files.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<p>&lt;/details&gt; </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
