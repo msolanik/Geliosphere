@@ -19,10 +19,10 @@ int ParseParams::parseParams(int argc, char **argv)
 	int bilions;
 	singleTone = singleTone->instance();
 	CLI::App app{"App description"};
-	CLI::Option *forwardMethod = app.add_flag("-F,--Forward", "Run a forward method")->group("Methods");
-	CLI::Option *backwardMethod = app.add_flag("-B,--Backward", "Run a backward method")->group("Methods");
-	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--TwoDimensionBackward", "Run a 2D backward method")->group("Methods");
-	CLI::Option *threeDimensionBackwardMethod = app.add_flag("-T,--ThreeDimensionBackward", "Run a 3D backward method")->group("Methods");
+	CLI::Option *forwardMethod = app.add_flag("-F,--forward", "Run a 1D forward-in-time model")->group("Methods");
+	CLI::Option *backwardMethod = app.add_flag("-B,--backward", "Run a 1D backward-in-time model")->group("Methods");
+	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("Methods");
+	CLI::Option *threeDimensionBackwardMethod = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("Methods");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
 #if GPU_ENABLED == 1
 	CLI::Option *cpuOnly = app.add_flag("--cpu_only", "Use only CPU for calculaions");
@@ -33,7 +33,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *kset = app.add_option("-K,--K0", newK, "Set K to new value(cm^2/s)");
 	CLI::Option *vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
 	CLI::Option *destination = app.add_option("-p,--path", newDestination, "Set destination folder name");
-	CLI::Option *setBilions = app.add_option("-N,--millions", bilions, "Set number of simulations in millions(round up due to GPU execution)");
+	CLI::Option *setBilions = app.add_option("-N,--number-of-test-particles", bilions, "Set number of test particles in millions(round up due to GPU execution)");
 	CLI::Option *monthOption = app.add_option("-m,--month", month, "Set month for using meassured values");
 	CLI::Option *yearOption = app.add_option("-y,--year", year, "Set year for using meassured values");
 	CLI::Option *settingsOption = app.add_option("-s,--settings", settings, "");
@@ -56,7 +56,6 @@ int ParseParams::parseParams(int argc, char **argv)
 	threeDimensionBackwardMethod->excludes(backwardMethod);
 	threeDimensionBackwardMethod->excludes(forwardMethod);
 	threeDimensionBackwardMethod->excludes(twoDimensionBackwardMethod);
-
 
 	monthOption->requires(yearOption);
 
@@ -98,7 +97,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		if (bilions <= 0)
 		{
-			spdlog::error("Number of simulations must be greater than 0!");
+			spdlog::error("Number of test particles must be greater than 0!");
 			return -1;
 		}
 		singleTone->putInt("millions", bilions);
@@ -156,11 +155,14 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		try
 		{
+			singleTone->putInt("month_option", month);
+			singleTone->putInt("year_option", year);
 			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
 				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "FWMethod")), singleTone->getString("model", "FWMethod"));
 			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
 			if (isInput2DModel(singleTone->getString("model", "FWMethod")))
 			{
+				spdlog::info("Tilt angle file:" + std::to_string(measureValuesTransformation->getTiltAngle(month, year)));
 				singleTone->putFloat("tilt_angle", measureValuesTransformation->getTiltAngle(month, year));
 			}
 			else

@@ -25,7 +25,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil(singleTone->getInt("millions", 1) * 1000000 / (nthreads * 101 * 10000));
+	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 10000.0));
 	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
@@ -48,6 +48,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		}
 	}
 	fclose(file);
+	writeSimulationReportFile(singleTone);
 }
 
 void OneDimensionBpCpuSimulation::simulation()
@@ -70,7 +71,7 @@ void OneDimensionBpCpuSimulation::simulation()
 
 			Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
 			p = Rig * 1e9 * q / c;		
-			r = 1.0;
+			r = rInit;
 
 			while (r < 100.0002)
 			{

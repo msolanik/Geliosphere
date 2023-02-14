@@ -18,23 +18,23 @@
 #include <curand_kernel.h>
 
 #if (__CUDA_ARCH__ == 600)
-#define BLOCK_SIZE_THREE_BP 32768
-#define THREAD_SIZE_THREE_BP 512
+#define BLOCK_SIZE_THREE_BP 4096
+#define THREAD_SIZE_THREE_BP 256
 #elif (__CUDA_ARCH__ == 610)
-#define BLOCK_SIZE_THREE_BP 32768
-#define THREAD_SIZE_THREE_BP 512
+#define BLOCK_SIZE_THREE_BP 4096
+#define THREAD_SIZE_THREE_BP 256
 #elif (__CUDA_ARCH__ == 700)
-#define BLOCK_SIZE_THREE_BP 32768
-#define THREAD_SIZE_THREE_BP 512
+#define BLOCK_SIZE_THREE_BP 4096
+#define THREAD_SIZE_THREE_BP 256
 #elif (__CUDA_ARCH__ == 750)
-#define BLOCK_SIZE_THREE_BP 16384
-#define THREAD_SIZE_THREE_BP 1024
+#define BLOCK_SIZE_THREE_BP 4096
+#define THREAD_SIZE_THREE_BP 256
 #elif (__CUDA_ARCH__ == 800)
-#define BLOCK_SIZE_THREE_BP 32768
-#define THREAD_SIZE_THREE_BP 512
+#define BLOCK_SIZE_THREE_BP 4096
+#define THREAD_SIZE_THREE_BP 256
 #elif (__CUDA_ARCH__ == 860)
-#define BLOCK_SIZE_THREE_BP 32768
-#define THREAD_SIZE_THREE_BP 512
+#define BLOCK_SIZE_THREE_BP 4096
+#define THREAD_SIZE_THREE_BP 256
 #else
 #define BLOCK_SIZE_THREE_BP 64
 #define THREAD_SIZE_THREE_BP 64
@@ -77,6 +77,7 @@ struct simulationInputThreeDimensionBP
 	double *w;
 	int blockSize;
 	int threadSize;
+	int maximumSizeOfSharedMemory;
 };
 
 void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation);

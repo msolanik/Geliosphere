@@ -44,4 +44,12 @@ bool createDirectory(std::string methodDirectory, std::string destination);
  */
 std::string getDirectoryName(ParamsCarrier *singleTone);
 
+/**
+ * @brief Write simulation report to file
+ * 
+ * @param singleTone data structure containing all parameters.
+ * 
+ */
+void writeSimulationReportFile(ParamsCarrier *singleTone);
+
 #endif

@@ -6,6 +6,7 @@
 
 #include <thread>
 #include <random>
+#include <cmath>
 
 void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
@@ -25,7 +26,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil(singleTone->getInt("millions", 1) * 1000000 / (nthreads * 30 * 10000));
+	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 30.0 * 250.0));
 	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
@@ -48,11 +49,12 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		}
 	}
 	fclose(file);
+	writeSimulationReportFile(singleTone);
 }
 
 void TwoDimensionBpCpuSimulation::simulation()
 {
-	double r, K, dr, arnum, theta, thetainj, Kpar, Bfactor, dtem1;
+	double r, K, dr, arnum, theta, Kpar, Bfactor, dtem1;
 	double Tkin, Tkininj, Rig, tt, t2, beta, alfa, Ktt, dKrr;
 	double w, r2, gammma, gamma2, tmp1, tem2, Kper, Krr, dKtt;
 	double Tkinw, p, dp, pinj, cfactor, sumac;
@@ -64,7 +66,7 @@ void TwoDimensionBpCpuSimulation::simulation()
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
 	for (m = 0; m < 30; m++)
 	{
-		for (mm = 0; mm < 10000; mm++)
+		for (mm = 0; mm < 250; mm++)
 		{
 
 			Tkininj = SPbins[m];
@@ -79,9 +81,8 @@ void TwoDimensionBpCpuSimulation::simulation()
 			w = pow(w, -1.85) / p;
 			w = w / 1e45;
 
-			r = 1.0;
-			theta = Pi/2.;
-			thetainj = theta;
+			r = rInit;
+			theta = thetainj;
 
 			while (r < 100.0)
 			{
@@ -102,10 +103,13 @@ void TwoDimensionBpCpuSimulation::simulation()
 
 				Bfactor = (5.0/3.4) *  r2 / sqrt(tmp1);
 
-				Kpar = K0*beta*Rig*Bfactor/3.0;
 				if (Rig<0.1)
 				{
 					Kpar = K0*beta*0.1*Bfactor/3.0;
+				}
+				else 
+				{
+					Kpar = K0*beta*Rig*Bfactor/3.0;
 				}
 				Kper = ratio * Kpar;
 
@@ -119,15 +123,14 @@ void TwoDimensionBpCpuSimulation::simulation()
 				
 				dKtt = (-1.0*ratio*K0*beta*Rig*r2*sin(theta)*cos(theta)*(omega*omega*r2/(V*V)))/pow(tmp1,1.5);
 
-				dr = ((-1.0*V) + (2.0*Krr/r) + dKrr)*dt;
+				dr = ((-1.0*V) + (2.0*Krr/r) + dKrr)*dt; // ZMENA - prva verzia je dKrr = 0
 				dr = dr + (distribution(generator)*sqrt(2.0*Krr*dt));
+
 
 				dtheta = (Ktt*cos(theta)) / (r2 * sin(theta));
 				dtheta = dtheta*dt/tmp1;
-				dtheta = dtheta +  ((distribution(generator)*sqrt(2.0*Ktt*dt)) / r);
 
-				dKttkon = (Ktt*cos(theta)) / (r2 * sin(theta));
-				dKttkon = dKttkon +  (dKtt/r2); 
+				dtheta = dtheta +  ((distribution(generator)*sqrt(2.0*Ktt*dt)) / r); // ZMENA 8.11.2020
 
 				dKttkon = (Ktt*cos(theta)) / (r2 * sin(theta));
 				dKttkon = dKttkon/tmp1;
@@ -146,13 +149,13 @@ void TwoDimensionBpCpuSimulation::simulation()
 				arg = (1.-(2.*theta/Pi))*tan(alphaH);
 				f = atan(arg)/alphaH;
 
-				DriftR = polarity*konvF*(2.0/(3.0*A))*Rig*beta*r*cos(theta)*gammma*f/(tem2*sin(theta));				
+				DriftR = polarity*konvF*(2.0/(3.0*A))*Rig*beta*r*cos(theta)*gammma*f/(tem2*sin(theta));
+				DriftTheta = -1.0*polarity*konvF*(2.0/(3.0*A))*Rig*beta*r*gammma*(2.0+(gammma*gammma))*f/tem2;
 
 				fprime = 1.0+(arg*arg);
 				fprime = tan(alphaH)/fprime;
 				fprime = -1.0*fprime*2.0/(Pi*alphaH);
 				DriftSheetR = polarity*konvF*(1.0/(3.0*A))*Rig*beta*r*gammma*fprime/tmp1; 
-				DriftTheta = -1.0*polarity*konvF*(2.0/(3.0*A))*Rig*beta*r*gammma*(2.0+(gammma*gammma))*f/tem2;
 
 				dr = dr + ((DriftR + DriftSheetR)*dt);
 				dtheta = dtheta + (DriftTheta*dt/r);

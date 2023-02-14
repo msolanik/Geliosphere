@@ -70,7 +70,7 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 	extern __shared__ int sharedMemory[];
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	int idx = threadIdx.x;
-	float r = 1.0f;
+	float r = rInit;
 	float beta, Rig, dtem1, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon;
 	float Tkin = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
 	float cosineTheta, sineTheta, dtheta, theta;
@@ -202,9 +202,9 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
 	int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000 / ((float)simulation->blockSize * (float)simulation->threadSize));
-	if (simulation->threadSize == 1024)
+	if (simulation->maximumSizeOfSharedMemory != -1)
 	{
-		cudaFuncSetAttribute(trajectorySimulationTwoDimensionBp, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+		cudaFuncSetAttribute(trajectorySimulationTwoDimensionBp, cudaFuncAttributeMaxDynamicSharedMemorySize, simulation->maximumSizeOfSharedMemory);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
@@ -222,10 +222,11 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryTwoDimensionBP), cudaMemcpyDeviceToHost));
 			for (int j = 0; j < counter; ++j)
 			{
-				fprintf(file, "%g %g %g %g %g %g\n", simulation->Tkininj[simulation->local_history[j].id], simulation->local_history[j].Tkin, simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], 3.1415926535f / 2.0f, simulation->local_history[j].theta);
+				fprintf(file, "%g %g %g %g %g %g\n", simulation->Tkininj[simulation->local_history[j].id], simulation->local_history[j].Tkin, simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f, simulation->local_history[j].theta);
 			}
 		}
 	}
 	fclose(file);
+	writeSimulationReportFile(singleTone);
 	spdlog::info("Simulation ended.");
 }

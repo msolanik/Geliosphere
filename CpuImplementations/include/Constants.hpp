@@ -121,7 +121,19 @@ const double SPbins[30] = { 0.01, 0.015, 0.0225, 0.03375, 0.050625,
  * @brief Equatoria radius of sun. 
  * 
  */
-const double rh =  695510.0/150000000.0; 
+const double rh =  695510.0/150000000.0;
+
+/**
+ * @brief Initial value of r.
+ * 
+ */
+static double rInit = 1.0f;
+
+/**
+ * @brief 
+ * 
+ */
+static double thetainj = 90.0f * 3.1415926535f / 180.0f;
 
 /**
  * @brief Set contants for SolarProp-like Backward-in-time model.
@@ -130,6 +142,12 @@ const double rh =  695510.0/150000000.0;
 static void setSolarPropConstants(ParamsCarrier *singleTone)
 {
 	ratio = singleTone->getFloat("solarPropRatio", 0.02f);
+	alphaM = singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1)) * 3.1415926535f / 180.0f;
+	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
+	if (newK != -1.0f && !singleTone->getInt("K0_entered_by_user", 0))
+	{
+		K0 = newK;
+	}
 }
 
 /**
@@ -140,7 +158,7 @@ static void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 {
 	ratio = singleTone->getFloat("geliosphereRatio", 0.2f);
 	delta0 = singleTone->getFloat("C_delta", 8.7e-5f);
-	alphaM = singleTone->getFloat("tilt_angle", 0.1f);
+	alphaM = singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1)) * 3.1415926535f / 180.0f;
 	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
 	if (newK != -1.0f && !singleTone->getInt("K0_entered_by_user", 0))
 	{
@@ -172,6 +190,8 @@ static void setContants(ParamsCarrier *singleTone)
 	{
 		K0 = newK;
 	}
+	thetainj = singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f;
+	rInit = singleTone->getFloat("r_injection", 1.0f);
 	bool isBackward = (singleTone->getString("model", "FWMethod").compare("BPMethod") == 0);
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)

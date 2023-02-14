@@ -29,6 +29,7 @@ void OneDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.w = w;
     simulation.threadSize = threadSize;
     simulation.blockSize = blockSize;
+    simulation.maximumSizeOfSharedMemory = sharedMemoryMaximumSize;
 
     setConstants(singleTone);
     runBPMethod(&simulation);
@@ -54,16 +55,38 @@ void OneDimensionBpGpuSimulation::setThreadBlockSize()
     case 700:
     case 800:
     case 860:
-        blockSize = 32768;
-        threadSize = 512;
-        break;
     case 750:
-        blockSize = 16384;
-        threadSize = 1024;
+        blockSize = 4096;
+        threadSize = 256;
         break;
     default:
         blockSize = 64;
         threadSize = 64;
+        break;
+    }
+
+    switch (computeCapability)
+    {
+    case 600:
+        sharedMemoryMaximumSize = 65536;
+        break;
+    case 610:
+        sharedMemoryMaximumSize = 98304;
+        break;
+    case 700:
+        sharedMemoryMaximumSize = 98304;
+        break;
+    case 800:
+        sharedMemoryMaximumSize = 167936;
+        break;
+    case 860:
+        sharedMemoryMaximumSize = 102400;
+        break;
+    case 750:
+        sharedMemoryMaximumSize = 65536;
+        break;
+    default:
+        sharedMemoryMaximumSize = -1;
         break;
     }
 }

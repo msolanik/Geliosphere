@@ -25,7 +25,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil(singleTone->getInt("millions", 1) * 1000000 / (nthreads * 101 * 10000));
+	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 10000.0));
 	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
@@ -47,6 +47,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		}
 	}
 	fclose(file);
+	writeSimulationReportFile(singleTone);
 }
 
 void OneDimensionFpCpuSimulation::simulation()

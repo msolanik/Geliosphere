@@ -41,18 +41,20 @@ Different Linux distributions may have different approach for CUDA installation.
 
 After installation is complete, an optimized version of the tool can be built via the following command:
   ```
-  cmake --clean-first -DCMAKE_BUILD_TYPE=Release --install ./ && make
+  cmake -B build -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
   ```
 
-After build is complete successfully, executable is placed in root directory with Geliosphere. For further instruction regarding the program usage, following command will display help for the user:
+After build is complete successfully, executable is placed in build directory with Geliosphere. For further instruction regarding the program usage, following command will display help for the user:
   ```
-  ./Geliosphere --help
+  ./build/Geliosphere --help
   ```
 
 ### Geliosphere with CPU-only support
 The packages are similar, with the exception that the CPU version naturally does not require installation of the Nvidia toolkit. CPU-only version of Geliosphere can be built via the following command:
   ```
-  cmake --clean-first -DCPU_VERSION_ONLY=1 -DCMAKE_BUILD_TYPE=Release --install ./ && make
+  cmake -B build -DCMAKE_BUILD_TYPE=Release -DCPU_VERSION_ONLY=1
+  cmake --build build
   ```
 
 ### Dockerized versions

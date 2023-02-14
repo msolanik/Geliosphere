@@ -56,7 +56,7 @@ __global__ void trajectorySimulationBP(float *pinj, trajectoryHistoryBP *history
 	extern __shared__ int sharedMemory[];
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	int idx = threadIdx.x;
-	float r = 1.0f;
+	float r = rInit;
 	float p = pinj[id];
 	float beta, Rig, dr, pp;
 	float Tkin = getTkinInjection(BLOCK_SIZE_BP * THREAD_SIZE_BP * padding + id);
@@ -140,9 +140,9 @@ void runBPMethod(simulationInputBP *simulation)
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
 	int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000 / ((float)simulation->blockSize * (float)simulation->threadSize));
-	if (simulation->threadSize == 1024)
+	if (simulation->maximumSizeOfSharedMemory != -1)
 	{
-		cudaFuncSetAttribute(trajectorySimulationBP, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+		cudaFuncSetAttribute(trajectorySimulationBP, cudaFuncAttributeMaxDynamicSharedMemorySize, simulation->maximumSizeOfSharedMemory);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
@@ -166,5 +166,6 @@ void runBPMethod(simulationInputBP *simulation)
 		}
 	}
 	fclose(file);
+	writeSimulationReportFile(singleTone);
     spdlog::info("Simulation ended.");
 }

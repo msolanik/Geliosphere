@@ -37,6 +37,7 @@ __device__ __constant__ float konvF = 9.0e-5f/2.0f;
 __device__ __constant__ float driftThetaConstant = -1.0f*1.0f*(9.0e-5f/2.0f)*(2.0f/(3.0f*3.4f));
 __device__ __constant__ float delta0 = 8.7e-5f;
 __device__ __constant__ float rh =  0.0046367333333333f; 
+__device__ __constant__ float rInit =  1.0f; 
 
 void setConstants(ParamsCarrier *singleTone)
 {
@@ -48,6 +49,10 @@ void setConstants(ParamsCarrier *singleTone)
 	{
 		setGeliosphereModelConstants(singleTone);
 	}
+	float rInitForBackward = singleTone->getFloat("r_injection", 1.0f);
+	cudaMemcpyToSymbol(rInit, &rInitForBackward, sizeof(rInitForBackward));
+	float thetaInjection = singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f;
+	cudaMemcpyToSymbol(thetainj, &thetaInjection, sizeof(thetaInjection));
 	float newDT = singleTone->getFloat("dt", singleTone->getFloat("dt_default", -1.0f));
 	if (newDT != -1.0f)
 	{
@@ -75,6 +80,11 @@ void setSolarPropConstants(ParamsCarrier *singleTone)
 {
 	float newRatio = singleTone->getFloat("solarPropRatio", 0.02f);
 	cudaMemcpyToSymbol(ratio, &newRatio, sizeof(newRatio));
+	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
+	if (newK != -1.0f && !singleTone->getInt("K0_entered_by_user", 0))
+	{
+		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
+	}
 }
 
 void setGeliosphereModelConstants(ParamsCarrier *singleTone)
@@ -83,7 +93,7 @@ void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 	cudaMemcpyToSymbol(ratio, &newRatio, sizeof(newRatio));
 	float newDelta0 = singleTone->getFloat("C_delta", 8.7e-5f);
 	cudaMemcpyToSymbol(delta0, &newDelta0, sizeof(newDelta0));
-	float tiltAngle = singleTone->getFloat("tilt_angle", 0.1f);
+	float tiltAngle = singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1f)) * 3.1415926535f / 180.0f;
 	cudaMemcpyToSymbol(alphaM, &tiltAngle, sizeof(tiltAngle));
 	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
 	if (newK != -1.0f && !singleTone->getInt("K0_entered_by_user", 0))

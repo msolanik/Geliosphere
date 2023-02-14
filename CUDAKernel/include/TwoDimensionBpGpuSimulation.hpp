@@ -40,6 +40,12 @@ private:
 	 * 
 	 */
 	int blockSize;
+
+	/**
+	 * @brief Define maximum size of a shared memory.  
+	 * 
+	 */
+	int sharedMemoryMaximumSize;
 	
 	/**
 	 * @brief Set size for @ref blockSize and @ref threadSize.

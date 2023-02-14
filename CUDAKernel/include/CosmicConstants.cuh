@@ -176,6 +176,12 @@ extern __device__ __constant__ float delta0;
 extern __device__ __constant__ float rh; 
 
 /**
+ * @brief Initial value of r.
+ * 
+ */
+extern __device__ __constant__ float rInit;
+
+/**
  * @brief Set constants values according to data in ParamsCarrier.
  * 
  */

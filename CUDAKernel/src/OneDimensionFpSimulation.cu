@@ -137,9 +137,9 @@ void runFWMethod(simulationInput *simulation)
 	curandInitialization<<<simulation->blockSize, simulation->threadSize>>>(simulation->state);
 	gpuErrchk(cudaDeviceSynchronize());
 	int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000  / ((float)simulation->blockSize * (float)simulation->threadSize));
-	if (simulation->threadSize == 1024)
+	if (simulation->maximumSizeOfSharedMemory != -1)
 	{
-		cudaFuncSetAttribute(trajectorySimulation, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+		cudaFuncSetAttribute(trajectorySimulation, cudaFuncAttributeMaxDynamicSharedMemorySize, simulation->maximumSizeOfSharedMemory);
 	}
 	for (int k = 0; k < iterations; ++k)
 	{
@@ -163,5 +163,6 @@ void runFWMethod(simulationInput *simulation)
 		}
 	}
 	fclose(file);
+	writeSimulationReportFile(singleTone);
     spdlog::info("Simulation ended.");
 }
