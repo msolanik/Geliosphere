@@ -130,7 +130,7 @@ const double rh =  695510.0/150000000.0;
 static double rInit = 1.0f;
 
 /**
- * @brief 
+ * @brief Initial value of theta.
  * 
  */
 static double thetainj = 90.0f * 3.1415926535f / 180.0f;
