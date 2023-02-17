@@ -38,16 +38,17 @@ def generate_toml_file(r, theta):
 """
     Run Geliosphere for every row in input csv file.
 """
-def geliophere_batch_run(input_file, geliosphere_executable):
+def geliophere_batch_run(input_file, geliosphere_executable, start_year, end_year):
     # Input file must contains items in following order: year,month,day,angle,phi,r,theta
     with open(input_file,mode = 'r') as file:
         csvFile = csv.DictReader(file)
         for row in csvFile:
-            generate_toml_file(row['r'], row['theta'])
-            targetDirectory = row['year'] + '_' + row['month'] + '_' + row['day']
-            pathToSettings = os.path.join(os.curdir, 'Settings_batch.toml') 
-            subprocess.run([geliosphere_executable, '-T', '-c', '-s', pathToSettings, '-d', '1000', 
-                            '-m', row['month'], '-y', row['year'], '-p', targetDirectory])
+            if int(row['year']) >= int(start_year) and int(row['year']) <= int(end_year):
+                generate_toml_file(row['r'], row['theta'])
+                targetDirectory = row['year'] + '_' + row['month'] + '_' + row['day']
+                pathToSettings = os.path.join(os.curdir, 'Settings_batch.toml') 
+                subprocess.run([geliosphere_executable, '-T', '-c', '-s', pathToSettings, '-d', '1000', 
+                                '-m', row['month'], '-y', row['year'], '-p', targetDirectory])
 
 """
     Run simple utility for batch run of Geliosphere.
@@ -56,10 +57,12 @@ def main(argv):
     argParser = argparse.ArgumentParser(description='Simple utility for batch run of Geliosphere')
     argParser.add_argument('-g', '--geliosphere-executable', help='Path to Geliosphere executable', default='../build/Geliosphere')
     argParser.add_argument('-i', '--input-csv-file', help='Path to input csv file', default='solarprop_input_paramaters_1AU_theta_90.csv')
+    argParser.add_argument('-s', '--start-year', help='Start year (included)', default='1997')
+    argParser.add_argument('-e', '--end-year', help='End year (included)', default='1998')
     
     args = argParser.parse_args(argv);
 
-    geliophere_batch_run(args.input_csv_file, args.geliosphere_executable)
+    geliophere_batch_run(args.input_csv_file, args.geliosphere_executable, args.start_year, args.end_year)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
