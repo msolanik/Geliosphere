@@ -15,7 +15,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	std::string currentApplicationPath = getApplicationPath(argv);
 	float newDT, newK, newV, newKparKper, newMu;
 	int month, year;
-	std::string newDestination, settings;
+	std::string newDestination, settings, customModelString;
 	int bilions;
 	singleTone = singleTone->instance();
 	CLI::App app{"App description"};
@@ -36,7 +36,8 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *setBilions = app.add_option("-N,--number-of-test-particles", bilions, "Set number of test particles in millions(round up due to GPU execution)");
 	CLI::Option *monthOption = app.add_option("-m,--month", month, "Set month for using meassured values");
 	CLI::Option *yearOption = app.add_option("-y,--year", year, "Set year for using meassured values");
-	CLI::Option *settingsOption = app.add_option("-s,--settings", settings, "");
+	CLI::Option *settingsOption = app.add_option("-s,--settings", settings, "Path to .toml file");
+	CLI::Option *customModel = app.add_option("--custom-model", customModelString, "Run custom user-implemented model.");
 	
 	kset->excludes(monthOption);
 	kset->excludes(yearOption);
@@ -47,15 +48,23 @@ int ParseParams::parseParams(int argc, char **argv)
 	backwardMethod->excludes(forwardMethod);
 	backwardMethod->excludes(twoDimensionBackwardMethod);
 	backwardMethod->excludes(threeDimensionBackwardMethod);
+	backwardMethod->excludes(customModel);
 	forwardMethod->excludes(backwardMethod);
 	forwardMethod->excludes(twoDimensionBackwardMethod);
 	forwardMethod->excludes(threeDimensionBackwardMethod);
+	forwardMethod->excludes(customModel);
 	twoDimensionBackwardMethod->excludes(backwardMethod);
 	twoDimensionBackwardMethod->excludes(forwardMethod);
 	twoDimensionBackwardMethod->excludes(threeDimensionBackwardMethod);
+	twoDimensionBackwardMethod->excludes(customModel);
 	threeDimensionBackwardMethod->excludes(backwardMethod);
 	threeDimensionBackwardMethod->excludes(forwardMethod);
 	threeDimensionBackwardMethod->excludes(twoDimensionBackwardMethod);
+	threeDimensionBackwardMethod->excludes(customModel);
+	customModel->excludes(backwardMethod);
+	customModel->excludes(forwardMethod);
+	customModel->excludes(twoDimensionBackwardMethod);
+	customModel->excludes(threeDimensionBackwardMethod);
 
 	monthOption->requires(yearOption);
 
@@ -136,19 +145,23 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*forwardMethod)
 	{
-		singleTone->putString("model", "FWMethod");
+		singleTone->putString("model", "1D Fp");
 	}
 	else if (*backwardMethod)
 	{
-		singleTone->putString("model", "BPMethod");
+		singleTone->putString("model", "1D Bp");
 	}
 	else if (*twoDimensionBackwardMethod)
 	{
-		singleTone->putString("model", "TwoDimensionBp");
+		singleTone->putString("model", "2D SolarProp-like");
 	}
 	else if (*threeDimensionBackwardMethod)
 	{
-		singleTone->putString("model", "ThreeDimensionBp");
+		singleTone->putString("model", "2D Geliosphere");
+	}
+	else if (*customModel)
+	{
+		singleTone->putString("model", customModelString);
 	}
 
 	if (*monthOption && *yearOption)
@@ -158,9 +171,9 @@ int ParseParams::parseParams(int argc, char **argv)
 			singleTone->putInt("month_option", month);
 			singleTone->putInt("year_option", year);
 			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
-				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "FWMethod")), singleTone->getString("model", "FWMethod"));
+				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "1D Fp")), singleTone->getString("model", "1D Fp"));
 			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
-			if (isInput2DModel(singleTone->getString("model", "FWMethod")))
+			if (isInput2DModel(singleTone->getString("model", "1D Fp")))
 			{
 				spdlog::info("Tilt angle file:" + std::to_string(measureValuesTransformation->getTiltAngle(month, year)));
 				singleTone->putFloat("tilt_angle", measureValuesTransformation->getTiltAngle(month, year));
@@ -187,7 +200,7 @@ ParamsCarrier *ParseParams::getParams()
 
 void ParseParams::printParameters(ParamsCarrier *params) 
 {
-	spdlog::info("Chosen model:" + singleTone->getString("model", "FWMethod"));
+	spdlog::info("Chosen model:" + singleTone->getString("model", "1D Fp"));
 	spdlog::info("K0:" + std::to_string(params->getFloat("K0", params->getFloat("K0_default", 5e22 * 4.4683705e-27))) + " au^2 / s");
 	spdlog::info("V:" + std::to_string(params->getFloat("V", params->getFloat("V_default", 400 * 6.68458712e-9))) + " au / s");
 	spdlog::info("dt:" + std::to_string(params->getFloat("dt", params->getFloat("dt_default", 5.0f))) + " s");
@@ -208,7 +221,7 @@ std::string ParseParams::getTransformationTableName(std::string modelName)
 
 bool ParseParams::isInput2DModel(std::string modelName)
 {
-	if ((modelName.compare("TwoDimensionBp") == 0) || (modelName.compare("ThreeDimensionBp") == 0))
+	if ((modelName.compare("2D SolarProp-like") == 0) || (modelName.compare("2D Geliosphere") == 0))
 	{
 		return true;
 	}

@@ -15,14 +15,22 @@ void TomlSettings::parseFromSettings(ParamsCarrier *paramsCarrier)
     const auto k0 = toml::find<double>(defaultValues, "K0");
     const auto V = toml::find<double>(defaultValues, "V");
     const auto dt = toml::find<double>(defaultValues, "dt");
-    const auto thetaInjection = toml::find<double>(defaultValues, "theta_injection");
     const auto rInitial = toml::find<double>(defaultValues, "r_injection");
+    const auto uniformEnergyInjectionMaximum = toml::find<double>(defaultValues, "uniform_energy_injection_maximum");
     
 	paramsCarrier->putFloat("K0_default", k0 * 4.4683705e-27); 
     paramsCarrier->putFloat("V_default", V * 6.68458712e-9);
     paramsCarrier->putFloat("dt_default", dt);
-    paramsCarrier->putFloat("theta_injection", thetaInjection);
     paramsCarrier->putFloat("r_injection", rInitial);
+    paramsCarrier->putFloat("uniform_energy_injection_maximum", uniformEnergyInjectionMaximum);
+    
+    const auto& twoDimensionalModelsCommonSettings = toml::find(data, "2d_models_common_settings");
+
+    const auto thetaInjection = toml::find<double>(twoDimensionalModelsCommonSettings, "theta_injection");
+    const auto useUniformInjection = toml::find<bool>(twoDimensionalModelsCommonSettings, "use_uniform_injection");
+
+    paramsCarrier->putFloat("theta_injection", thetaInjection);
+    paramsCarrier->putInt("use_uniform_injection", useUniformInjection);
 
     const auto& solarPropSettings = toml::find(data, "SolarProp_like_model_settings");
     const auto solarPropRatio = toml::find<double>(solarPropSettings, "SolarProp_ratio");

@@ -34,7 +34,9 @@
 __global__ void wCalc(float *Tkininj, float *p, double *w, int padding)
 {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
-	Tkininj[id] = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
+	Tkininj[id] = (useUniformInjection) 
+        ? getTkinInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id)
+        : getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
 	float Tkinw = Tkininj[id] * 1e9f * q;
 	float Rig = sqrtf(Tkinw * (Tkinw + (2.0f * T0w))) / q;
 	float pinj = Rig * q / c;
@@ -72,7 +74,9 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 	int idx = threadIdx.x;
 	float r = rInit;
 	float beta, Rig, dtem1, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon;
-	float Tkin = getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
+	float Tkin = (useUniformInjection) 
+        ? getTkinInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id)
+        : getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
 	float cosineTheta, sineTheta, dtheta, theta;
 	float Bfield, Larmor, alphaH, arg, f, fprime, gamma2PlusOne2, DriftR, DriftTheta, DriftSheetR;
 	theta = thetainj;

@@ -14,6 +14,8 @@
 
 #include <iostream>
 
+#include "spdlog/spdlog.h"
+
 #include "ParamsCarrier.hpp"
 #include "ParseParams.hpp"
 #include "AbstractAlgorithm.hpp"
@@ -30,7 +32,12 @@ int main(int argc, char **argv)
 	ParamsCarrier *singleTone;
 	singleTone = parse->getParams();
 	AbstractAlgorithm *actualAlgorithm;
-	actualAlgorithm = factory->getAlgorithm(singleTone->getString("model", "FWMethod"));
+	actualAlgorithm = factory->getAlgorithm(singleTone->getString("model", "1D Fp"));
+	if (actualAlgorithm == NULL)
+	{
+		spdlog::error("Selected custom model is not defined in factory.");
+		return -1;
+	}
 	actualAlgorithm->runAlgorithm(singleTone);
 	return 0;
 }

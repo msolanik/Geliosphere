@@ -43,7 +43,7 @@ public:
     void runSimulation(ParamsCarrier *singleTone);
 
 private:
-    void simulation();
+    void simulation(int threadNumber, unsigned int availableThreads, int iteration);
     std::mutex outputMutex;
     std::queue<SimulationOutput> outputQueue;
 };

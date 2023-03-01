@@ -25,7 +25,7 @@ __device__ __constant__ float T0 = 1.67261e-27 * 2.99793e8 * 2.99793e8 / (1.6021
 __device__ __constant__ double T0_double = 1.67261e-27 * 2.99793e8 * 2.99793e8 / (1.60219e-19 * 1e9);
 __device__ __constant__ float T0w = 1.67261e-27 * 2.99793e8 * 2.99793e8;
 __device__ __constant__ float Pi = 3.141592654;
-__device__ __constant__ float injectionMax = 150.0f;
+__device__ __constant__ float injectionMax = 101.0f;
 __device__ __constant__ float quantityPerEnergy = 10000.0f;
 __device__ __constant__ float thetainj = 3.1415926535f / 2.0f;
 __device__ __constant__ float omega = 2.866e-6f;
@@ -38,14 +38,15 @@ __device__ __constant__ float driftThetaConstant = -1.0f*1.0f*(9.0e-5f/2.0f)*(2.
 __device__ __constant__ float delta0 = 8.7e-5f;
 __device__ __constant__ float rh =  0.0046367333333333f; 
 __device__ __constant__ float rInit =  1.0f; 
+__device__ __constant__ bool useUniformInjection = true; 
 
 void setConstants(ParamsCarrier *singleTone)
 {
-	if (singleTone->getString("model", "FWMethod").compare("TwoDimensionBp") == 0)
+	if (singleTone->getString("model", "1D Fp").compare("2D SolarProp-like") == 0)
 	{
 		setSolarPropConstants(singleTone);
 	}
-	if (singleTone->getString("model", "FWMethod").compare("ThreeDimensionBp") == 0)
+	if (singleTone->getString("model", "1D Fp").compare("2D Geliosphere") == 0)
 	{
 		setGeliosphereModelConstants(singleTone);
 	}
@@ -53,6 +54,10 @@ void setConstants(ParamsCarrier *singleTone)
 	cudaMemcpyToSymbol(rInit, &rInitForBackward, sizeof(rInitForBackward));
 	float thetaInjection = singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f;
 	cudaMemcpyToSymbol(thetainj, &thetaInjection, sizeof(thetaInjection));
+	float uniformEnergyInjectionMaximum = singleTone->getFloat("uniform_energy_injection_maximum", 101.0f);
+	cudaMemcpyToSymbol(injectionMax, &uniformEnergyInjectionMaximum, sizeof(uniformEnergyInjectionMaximum));
+	bool newUseUniformInjection = singleTone->getInt("use_uniform_injection", 0);
+	cudaMemcpyToSymbol(useUniformInjection, &newUseUniformInjection, sizeof(newUseUniformInjection));
 	float newDT = singleTone->getFloat("dt", singleTone->getFloat("dt_default", -1.0f));
 	if (newDT != -1.0f)
 	{
@@ -63,7 +68,7 @@ void setConstants(ParamsCarrier *singleTone)
 	{
 		cudaMemcpyToSymbol(K0, &newK, sizeof(newK));
 	}
-	bool isBackward = (singleTone->getString("model", "FWMethod").compare("BPMethod") == 0);
+	bool isBackward = (singleTone->getString("model", "1D Fp").compare("1D Bp") == 0);
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{

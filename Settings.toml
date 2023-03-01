@@ -2,8 +2,12 @@
 K0 = 5e22
 V = 400.0
 dt = 50.0
-theta_injection = 90
 r_injection = 1.0
+uniform_energy_injection_maximum = 101.0
+
+[2d_models_common_settings]
+theta_injection = 90.0
+use_uniform_injection = true
 
 [SolarProp_like_model_settings]
 SolarProp_ratio = 0.02

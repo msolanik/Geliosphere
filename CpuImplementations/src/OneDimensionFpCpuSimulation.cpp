@@ -25,7 +25,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 10000.0));
+	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 250.0));
 	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
@@ -33,7 +33,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
-			threads.emplace_back(std::thread(&OneDimensionFpCpuSimulation::simulation, this));
+			threads.emplace_back(std::thread(&OneDimensionFpCpuSimulation::simulation, this, i, nthreads, mmm));
 		}
 		for (auto &th : threads)
 		{
@@ -50,7 +50,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	writeSimulationReportFile(singleTone);
 }
 
-void OneDimensionFpCpuSimulation::simulation()
+void OneDimensionFpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
 	double r, K, dr, arnum;
 	double Tkin, Tkininj, Rig, tt, t2, beta;
@@ -62,14 +62,13 @@ void OneDimensionFpCpuSimulation::simulation()
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
 	for (m = 0; m < 101; m++)
 	{
-		for (mm = 0; mm < 10000; mm++)
+		for (mm = 0; mm < 250; mm++)
 		{
-
-			Tkininj = (m) + ((mm + 1) / 10000.0);
+			Tkininj = getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000);
 			Tkin = Tkininj;
 
 			Tkinw = Tkin * 1e9 * q;						
-			Rig = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q;
+			Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;
 			p = Rig * q / c;
 			pinj = p;
 
@@ -116,7 +115,7 @@ void OneDimensionFpCpuSimulation::simulation()
 
 				if (beta > 0.01)
 				{
-					if (Tkin < 100)
+					if (Tkin < 100.0)
 					{
 						if ((r - 1.0) / ((r - dr) - 1.0) < 0.0)
 						{

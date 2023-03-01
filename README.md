@@ -87,6 +87,9 @@ Modules are used to organize the logic needed for simulations in the heliosphere
 - **CPU Implementations** - contains classes used for running parallel CPU implementations of models of cosmic rays modulation in the heliosphere,
 - **CUDA Kernel** - contains classes used for running parallel GPU implementations of models of cosmic rays modulation in the heliosphere,
 - **Utils** - contains classes holding various functions used in Geliosphere.
+
+Additionally we added python scripts to replicate figure comparing results from Geliosphere 2D model and Ulysses.
+- **Visualization** - contains scripts needed for visualization.
 </details>
 
 ## Source file description
@@ -107,6 +110,7 @@ Geliosphere
 └───CUDAKernel
 └───Factory
 └───Utils
+└───Visualization
 ```
 
 <strong>Geliosphere</strong> module contains following source files:
@@ -345,6 +349,30 @@ Utils
 - <strong>FileUtils.cpp</strong> - Source file for utilities for manipulating with directories. 
 - <strong>ResultsUtils.cpp</strong> - Source file for utilities for analyting log files.
 
+</details>
+
+### Visualization
+
+<details>
+
+```
+Visualization
+│    
+└───batch_run_geliosphere.py
+└───create_plot.py
+└───create_ulysses_Geliosphere_flux.py
+└───prepare_input_based_on_ulysses.py
+└───prepare_spectra.py
+```
+
+<strong>Visualization</strong> directory contains following scripts:
+
+- <strong>batch_run_geliosphere.py</strong> - script used to batch run of Geliosphere. 
+- <strong>create_plot.py</strong> - script responsible for visualizing Ulysses and Geliosphere energetic spectra.
+- <strong>create_ulysses_Geliosphere_flux.py</strong> - script used to replicate figure comparing Ulysses trajectory and Geliosphere 2D model results between 1994 and 1998. 
+- <strong>prepare_input_based_on_ulysses.py</strong> - script used to prepare input for visualization script from Ulysses trajectory data.
+- <strong>prepare_spectra.py</strong> - process spectra from Geliosphere for further visualization.
+  
 </details>
 
 </details>

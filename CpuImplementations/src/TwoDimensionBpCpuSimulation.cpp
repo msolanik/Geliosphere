@@ -34,7 +34,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
-			threads.emplace_back(std::thread(&TwoDimensionBpCpuSimulation::simulation, this));
+			threads.emplace_back(std::thread(&TwoDimensionBpCpuSimulation::simulation, this, i, nthreads, mmm));
 		}
 		for (auto &th : threads)
 		{
@@ -52,7 +52,7 @@ void TwoDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	writeSimulationReportFile(singleTone);
 }
 
-void TwoDimensionBpCpuSimulation::simulation()
+void TwoDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
 	double r, K, dr, arnum, theta, Kpar, Bfactor, dtem1;
 	double Tkin, Tkininj, Rig, tt, t2, beta, alfa, Ktt, dKrr;
@@ -68,8 +68,9 @@ void TwoDimensionBpCpuSimulation::simulation()
 	{
 		for (mm = 0; mm < 250; mm++)
 		{
-
-			Tkininj = SPbins[m];
+			Tkininj = (useUniformInjection) 
+				? getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000)
+				: SPbins[m];
 			Tkin = Tkininj;
 
 			Tkinw = Tkin * 1e9 * q;

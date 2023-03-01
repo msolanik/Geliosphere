@@ -98,7 +98,7 @@ std::string getDirectoryName(ParamsCarrier *singleTone)
 void writeSimulationReportFile(ParamsCarrier *singleTone)
 {
 	FILE *file = fopen("simulation_log.txt", "w");
-	fprintf(file, "Model: %s\n", singleTone->getString("model", "FWMethod").c_str());
+	fprintf(file, "Model: %s\n", singleTone->getString("model", "1D Fp").c_str());
 	fprintf(file, "---------------------\n");
 	if(singleTone->getInt("month_option", -1) != -1) 
 	{
@@ -106,11 +106,11 @@ void writeSimulationReportFile(ParamsCarrier *singleTone)
 		fprintf(file, "Selected year: %d\n", singleTone->getInt("year_option", -1));
 	}
 
-	if (singleTone->getString("model", "FWMethod").compare("TwoDimensionBp") == 0)
+	if (singleTone->getString("model", "1D Fp").compare("2D SolarProp-like") == 0)
 	{
 		fprintf(file, "SolarProp-like model ratio: %g\n", singleTone->getFloat("solarPropRatio", 0.02f));
 	}
-	if (singleTone->getString("model", "FWMethod").compare("ThreeDimensionBp") == 0)
+	if (singleTone->getString("model", "1D Fp").compare("2D Geliosphere") == 0)
 	{
 		fprintf(file, "Geliosphere model ratio: %g\n", singleTone->getFloat("geliosphereRatio", 0.2f));
 		fprintf(file, "C Delta: %g\n", singleTone->getFloat("C_delta", 8.7e-5f));

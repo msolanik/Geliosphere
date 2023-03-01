@@ -10,7 +10,7 @@
 
 void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 {
-    spdlog::info("Starting initialization of 3D B-p simulation.");
+    spdlog::info("Starting initialization of simulation for Geliosphere 2D model.");
     srand(time(NULL));
     std::string destination = singleTone->getString("destination", "");
     if (destination.empty())
@@ -20,7 +20,7 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
     }
     if (!createDirectory("3DBP", destination))
     {
-        spdlog::error("Directory for 3D B-p simulations cannot be created.");
+        spdlog::error("Directory for Geliosphere 2D simulations cannot be created.");
         return;
     }
 
@@ -34,7 +34,7 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
         std::vector<std::thread> threads;
         for (int i = 0; i < (int)nthreads; i++)
         {
-            threads.emplace_back(std::thread(&ThreeDimensionBpCpuSimulation::simulation, this));
+            threads.emplace_back(std::thread(&ThreeDimensionBpCpuSimulation::simulation, this, i, nthreads, mmm));
         }
         for (auto &th : threads)
         {
@@ -52,7 +52,7 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
     writeSimulationReportFile(singleTone);
 }
 
-void ThreeDimensionBpCpuSimulation::simulation()
+void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
     double r, K, dr, arnum, theta, Kpar, Bfactor, dtem1, Tkinp;
     double Tkin, Tkininj, Rig, tt, t2, beta, alfa, Ktt, dKrr;
@@ -74,8 +74,10 @@ void ThreeDimensionBpCpuSimulation::simulation()
     {
         for (int mm = 0; mm < 250; mm++)
         {
-            Tkininj = SPbins[m];
-            Tkin = Tkininj;
+			Tkininj = (useUniformInjection) 
+				? getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000)
+				: SPbins[m];
+			Tkin = Tkininj;
 
             Tkinw = Tkin * 1e9 * q;
             Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;

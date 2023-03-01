@@ -28,7 +28,8 @@ enum spectrumType
     SPECTRUM_1E2 = 2,
     SPECTRUM_1E3 = 3,
     SPECTRUM_4E2 = 4,
-    SPECTRUM_SOLARPROP = 5
+    SPECTRUM_SOLARPROP = 5,
+    SPECTRUM_ULYSSES = 6
 };
 
 /**

@@ -104,7 +104,7 @@ extern __device__ __constant__ float T0w;
 extern __device__ __constant__ float Pi;
 
 /**
- * @brief Maximal injection energy.
+ * @brief Maximal injection energy in GeV.
  * 
  */
 extern __device__ __constant__ float injectionMax;
@@ -180,6 +180,12 @@ extern __device__ __constant__ float rh;
  * 
  */
 extern __device__ __constant__ float rInit;
+
+/**
+ * @brief Flag indicating usage of uniform injection in 2D models. 
+ * 
+ */
+extern __device__ __constant__ bool useUniformInjection;
 
 /**
  * @brief Set constants values according to data in ParamsCarrier.

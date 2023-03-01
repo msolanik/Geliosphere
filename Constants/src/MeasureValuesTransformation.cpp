@@ -31,7 +31,7 @@ float MeasureValuesTransformation::getTiltAngle(int month, int year)
 
 std::string MeasureValuesTransformation::getRowIdentifier(int month, int year)
 {
-    if ((model.compare("TwoDimensionBp") == 0) || (model.compare("ThreeDimensionBp") == 0))
+    if ((model.compare("2D SolarProp-like") == 0) || (model.compare("2D Geliosphere") == 0))
     {
         return getCarringtonRotation(month, year);
     }

@@ -25,7 +25,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 10000.0));
+	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 250.0));
 	setContants(singleTone);
 	for (int mmm = 0; mmm < new_MMM; mmm++)
 	{
@@ -33,7 +33,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
-			threads.emplace_back(std::thread(&OneDimensionBpCpuSimulation::simulation, this));
+			threads.emplace_back(std::thread(&OneDimensionBpCpuSimulation::simulation, this, i, nthreads, mmm));
 		}
 		for (auto &th : threads)
 		{
@@ -51,7 +51,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	writeSimulationReportFile(singleTone);
 }
 
-void OneDimensionBpCpuSimulation::simulation()
+void OneDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
 	double r, K, dr, arnum;
 	double Tkin, Tkininj, Rig, tt, t2, beta;
@@ -63,10 +63,9 @@ void OneDimensionBpCpuSimulation::simulation()
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
 	for (m = 0; m < 101; m++)
 	{
-		for (mm = 0; mm < 10000; mm++)
+		for (mm = 0; mm < 250; mm++)
 		{
-
-			Tkininj = (m) + ((mm + 1) / 10000.0);
+			Tkininj = getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000);
 			Tkin = Tkininj;
 
 			Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
