@@ -34,6 +34,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
 
 configure_file(SolarProp_K0_phi_table.csv SolarProp_K0_phi_table.csv COPYONLY)
+configure_file(Geliosphere_K0_phi_table.csv Geliosphere_K0_phi_table.csv COPYONLY)
 configure_file(K0_phi_table.csv K0_phi_table.csv COPYONLY)
 configure_file(Settings.toml Settings.toml COPYONLY)
 

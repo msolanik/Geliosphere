@@ -26,7 +26,7 @@ def generate_toml_file(r, theta):
     solarPropLikeModelSettings.add('SolarProp_ratio', 0.02)
     geliosphereModelSettings = table()
     geliosphereModelSettings.add('Geliosphere_ratio', 0.2)
-    geliosphereModelSettings.add('K0_ratio', 6.0)
+    geliosphereModelSettings.add('K0_ratio', 1.0)
     geliosphereModelSettings.add('C_delta', 8.7e-5)
     geliosphereModelSettings.add('default_tilt_angle', 0.1)
     advancedSettings = table()
@@ -51,7 +51,7 @@ def geliophere_batch_run(input_file, geliosphere_executable, start_year, end_yea
                 generate_toml_file(row['r'], row['theta'])
                 targetDirectory = row['year'] + '_' + row['month'] + '_' + row['day']
                 pathToSettings = os.path.join(os.curdir, 'Settings_batch.toml') 
-                subprocess.run([geliosphere_executable, '-T', '-c', '-s', pathToSettings, '-d', '50', 
+                subprocess.run([geliosphere_executable, '-T', '-c', '-s', pathToSettings, '-d', '1000', 
                                 '-m', row['month'], '-y', row['year'], '-p', targetDirectory])
 
 """
@@ -60,7 +60,7 @@ def geliophere_batch_run(input_file, geliosphere_executable, start_year, end_yea
 def main(argv):
     argParser = argparse.ArgumentParser(description='Simple utility for batch run of Geliosphere')
     argParser.add_argument('-g', '--geliosphere-executable', help='Path to Geliosphere executable', default='../build/Geliosphere')
-    argParser.add_argument('-i', '--input-csv-file', help='Path to input csv file', default='solarprop_input_paramaters_1AU_theta_90.csv')
+    argParser.add_argument('-i', '--input-csv-file', help='Path to input csv file', default='geliosphere_batch_input_paramaters.csv')
     argParser.add_argument('-s', '--start-year', help='Start year (included)', default='1997')
     argParser.add_argument('-e', '--end-year', help='End year (included)', default='1998')
     

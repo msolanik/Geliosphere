@@ -14,7 +14,7 @@ SolarProp_ratio = 0.02
 
 [Geliosphere_model_settings]
 Geliosphere_ratio = 0.2
-K0_ratio = 5.0
+K0_ratio = 1.0
 C_delta = 8.7e-5
 default_tilt_angle = 0.1
 

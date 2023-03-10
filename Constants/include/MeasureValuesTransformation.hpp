@@ -48,12 +48,20 @@ public:
     float getDiffusionCoefficientValue(int month, int year);
 
 	/**
-	 * @brief Calculate diffusion coefficient based on month and year. 
+	 * @brief Get tilt angle based on month and year. 
 	 * 
 	 * @param month Month of the year.
 	 * @param year Year ranging between 1976 - 2015
 	 */
 	float getTiltAngle(int month, int year);
+
+	/**
+	 * @brief Get polarity based on month and year. 
+	 * 
+	 * @param month Month of the year.
+	 * @param year Year ranging between 1976 - 2015
+	 */
+	int getPolarity(int month, int year);
 private:
     /**
 	 * @brief Path to file containing transformation table. 

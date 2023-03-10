@@ -60,7 +60,7 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     int idx = threadIdx.x;
     float r = rInit;
-    float beta, Rig, dtem1, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon, tmp1, tem2;
+    float beta, Rig, COmega, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, Cb, Cb2;
     float Tkin = (useUniformInjection) 
         ? getTkinInjection(BLOCK_SIZE_THREE_BP * THREAD_SIZE_THREE_BP * padding + id)
         : getSolarPropInjection(BLOCK_SIZE_THREE_BP * THREAD_SIZE_THREE_BP * padding + id);
@@ -68,8 +68,8 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
     float Bfield, Larmor, alphaH, arg, f, fprime, DriftR, DriftTheta, DriftSheetR;
     float delta, deltarh, deltarh2;
     float Kphph, Krt, Krph, Ktph;
-    float B111, B11, B12, B13, B22, B23;
-    float sin3, sin2, dKtt0, dKtt1, dKtt2, dKrtr, dKrtt;
+    float B11Temp, B11, B12, B13, B22, B23;
+    float sin3, sin2, dKtt1, dKtt2, dKtt3, dKtt4, CKtt, dKrtr, dKrtt, dKper;
     theta = thetainj;
     float2 *generated = (float2 *)sharedMemory;
     curandState *cuState = (curandState *)(&generated[THREAD_SIZE_THREE_BP]);
@@ -80,6 +80,7 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
         Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
 
+        // Equation 22
         if ((theta < (1.7f * Pi / 180.0f)) || (theta > (178.3f * Pi / 180.0f)))
         {
             delta = 0.003f;
@@ -91,12 +92,16 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         deltarh = delta / rh;
         deltarh2 = deltarh * deltarh;
 
+        // Equation 21
         gamma = (r * omega) * sinf(theta) / V;
         gamma2 = gamma * gamma;
-        tmp1 = 1.0f + gamma2 + (r * r * deltarh2);
-        tem2 = tmp1 * tmp1;
-        Bfactor = (5.0f / 3.4f) * r * r / sqrtf(tmp1);
+        
+        // Equation 23
+        Cb = 1.0f + gamma2 + (r * r * deltarh2);
+        Cb2 = Cb * Cb;
+        Bfactor = (5.0f / 3.4f) * r * r / sqrtf(Cb);
 
+        // Equation 28 
         if (Rig < 0.1f)
         {
             Kpar = K0 * beta * 0.1f * Bfactor / 3.0f;
@@ -106,67 +111,106 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
             Kpar = K0 * beta * Rig * Bfactor / 3.0f;
         }
 
+        // Equation 29
         Kper = ratio * Kpar;
 
-        Krr = Kper + ((Kpar - Kper) / tmp1);
-        Ktt = Kper + (r * r * deltarh2 * (Kpar - Kper) / tmp1);
+        // Equation 24
+        Krr = Kper + ((Kpar - Kper) / Cb);
+        
+        // Equation 25
+        Ktt = Kper + (r * r * deltarh2 * (Kpar - Kper) / Cb);
         Kphph = 1.0f;
 
-        Krt = deltarh * (Kpar - Kper) * r / tmp1;
+        // Equation 26
+        Krt = deltarh * (Kpar - Kper) * r / Cb;
         Krph = 0.0f;
         Ktph = 0.0f;
 
-        B111 = (Kphph * Krt * Krt) - (2.0f * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
-        B11 = 2.0f * B111 / ((Ktph * Ktph) - (Ktt * Kphph));
+        // Equation 15, where Krph = Ktph = 0, and Kphph = 1 
+        B11Temp = (Kphph * Krt * Krt) - (2.0f * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
+        B11 = 2.0f * B11Temp / ((Ktph * Ktph) - (Ktt * Kphph));
         B11 = sqrtf(B11);
+        
+        // Equation 16
         B12 = ((Krph * Ktph) - (Krt * Kphph)) / ((Ktph * Ktph) - (Ktt * Kphph));
         B12 = B12 * sqrtf(2.0f * (Ktt - (Ktph * Ktph / Kphph)));
+        
+        // Equation 19
         B13 = sqrtf(2.0f) * Krph / sqrtf(Kphph);
+        
+        // Equation 17
         B22 = Ktt - (Ktph * Ktph / Kphph);
         B22 = sqrtf(2.0f * B22) / r;
+        
+        // Equation 19
         B23 = Ktph * sqrtf(2.0f / Kphph) / r;
 
-        dtem1 = 2.0f * r * omega * omega * sinf(theta) * sinf(theta) / (V * V);
-        dtem1 = dtem1 + (2.0f * r * deltarh2);
-        dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(tmp1)) - (r * r * dtem1 / (2.0f * sqrtf(tmp1)))) / tmp1;
-        dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(tmp1, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(tmp1) / 2.0f)) / powf(tmp1, 3.0f));
+        // Equation 30
+        COmega = 2.0f * r * omega * omega * sinf(theta) * sinf(theta) / (V * V);
+        COmega = COmega + (2.0f * r * deltarh2);
+    
+        // Equation 32
+        dKper = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(Cb)) - (r * r * COmega / (2.0f * sqrtf(Cb)))) / Cb;
+
+        // Equation 31                
+        dKrr = dKper + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(Cb, 1.5f)) - (r * r * COmega * 3.0f * sqrtf(Cb) / 2.0f)) / powf(Cb, 3.0f));
         dKrr = dKrr * 5.0f / (3.0f * 3.4f);
 
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
-            dKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
-            dKtt = (-1.0f * ratio * K0 * beta * Rig * r * r * dKtt) / powf(tmp1, 1.5f);
+            // Equation 33
+            CKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
+                 
+            // Equation 34
+            dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / powf(Cb, 1.5f);
 
-            dKtt0 = 3.0f * (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * deltarh2;
-            dKtt1 = omega * omega * r * r * sinf(theta) * cosf(theta) / (V * V * powf(tmp1, 2.5f));
-            dKtt = dKtt - (dKtt0 * dKtt1);
+            // Equation 35
+            dKtt2 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * deltarh2;
+                    
+            // Equation 37
+            dKtt4 = 3.0f * CKtt / powf(Cb, 2.5f);
+                    
+            // Equation 38
+            dKtt = dKtt1 - (dKtt2 * dKtt4);
         }
         else
         {
             sin2 = sinf(theta) * sinf(theta);
             sin3 = sinf(theta) * sinf(theta) * sinf(theta);
 
-            dKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
-            dKtt = dKtt - (r * r * delta0 * delta0 * cosf(theta) / (rh * rh * sin3));
-            dKtt = (-1.0f * ratio * K0 * beta * Rig * r * r * dKtt) / powf(tmp1, 1.5f);
+            // Equation 33
+            CKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
+            CKtt = CKtt - (r * r * delta0 * delta0 * cos(theta) / (rh * rh * sin3));
+                    
+            // Equation 34
+            dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / powf(Cb, 1.5f);
 
-            dKtt0 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * delta0 * delta0 / (rh * rh);
-            dKtt1 = -2.0f * (cosf(theta) / sin3) / powf(tmp1, 1.5f);
-            dKtt2 = 1.5f * ((2.0f * omega * omega * r * r * sinf(theta) * cosf(theta) / (V * V)) - (2.0f * r * r * delta0 * delta0 * cosf(theta) / (rh * rh * sin3))) / (sin2 * powf(tmp1, 2.5f));
-            dKtt = dKtt + (dKtt0 * (dKtt1 - dKtt2));
+            // Equation 35
+            dKtt2 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * delta0 * delta0 / (rh * rh);
+                    
+            // Equation 36
+            dKtt3 = -2.0f * (cosf(theta) / sin3) / powf(Cb, 1.5f);
+                    
+            // Equation 37
+            dKtt4 = 3.0f * CKtt / (sin2 * powf(Cb, 2.5f));
+                    
+            // Equation 38
+            dKtt = dKtt1 + (dKtt2 * (dKtt3 - dKtt4));
         }
 
-        dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(tmp1, 2.5f);
+        // Equation 34
+        dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(Cb, 2.5f);
 
+        // Equation 35
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
-            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
+            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(Cb, 2.5f));
             dKrtt = -1.0f * dKrtt * delta;
             dKrtt = dKrtt * 3.0f * gamma2 * cosf(theta) / sinf(theta);
         }
         else
         {
-            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(tmp1, 2.5f));
+            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(Cb, 2.5f));
             dKrtt = -1.0f * dKrtt * delta0 * cosf(theta) / (sinf(theta) * sinf(theta));
             dKrtt = dKrtt * (1.0f - (2.0f * r * r * deltarh2) + (4.0f * gamma2));
         }
@@ -184,28 +228,47 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
         generated[idx] = curand_box_muller(&cuState[idx]);
         dtheta = dtheta + (generated[idx].x * B22 * sqrtf(dt)) + (generated[idx].y * B23 * sqrtf(dt));
 
-        dKttkon = (Ktt * cosf(theta)) / (r * r * sinf(theta));
-        dKttkon = dKttkon / tmp1;
-
         dTkin = -2.0f * V * ((Tkin + T0 + T0) / (Tkin + T0)) * Tkin * dt / (3.0f * r);
 
-        Bfield = A * sqrtf(tmp1) / (r * r);
+        Bfield = A * sqrtf(Cb) / (r * r);
+        
         Larmor = 0.0225f * Rig / Bfield;
 
+        // Equation 34 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf
         alphaH = Pi / sinf(alphaM + (2.0f * Larmor * Pi / (r * 180.0f)));
         alphaH = alphaH - 1.0f;
         alphaH = 1.0f / alphaH;
         alphaH = acosf(alphaH);
 
+        // Equation 32 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf
         arg = (1.0f - (2.0f * theta / Pi)) * tanf(alphaH);
         f = atanf(arg) / alphaH;
-        DriftR = polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * cosf(theta) * gamma * f / (tem2 * sinf(theta));
-        DriftTheta = -1.0f * polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * gamma * (2.0f + (gamma * gamma)) * f / tem2;
+
+        // Equation 35 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf
+        DriftR = polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * cosf(theta) * gamma * f / (Cb2 * sinf(theta));
+        
+        // Equation 36 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf
+        DriftTheta = -1.0f * polarity * konvF * (2.0f / (3.0f * A)) * Rig * beta * r * gamma * (2.0f + (gamma * gamma)) * f / Cb2;
+        
+        // Equation 33 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf
         fprime = 1.0f + (arg * arg);
         fprime = tanf(alphaH) / fprime;
         fprime = -1.0f * fprime * 2.0f / (Pi * alphaH);
 
-        DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / tmp1;
+        // Equation 37 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf
+        DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / Cb;
         dr = dr + ((DriftR + DriftSheetR) * dt);
         dtheta = dtheta + (DriftTheta * dt / r);
 

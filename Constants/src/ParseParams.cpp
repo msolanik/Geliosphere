@@ -25,7 +25,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *threeDimensionBackwardMethod = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("Methods");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
 #if GPU_ENABLED == 1
-	CLI::Option *cpuOnly = app.add_flag("--cpu_only", "Use only CPU for calculaions");
+	CLI::Option *cpuOnly = app.add_flag("--cpu-only", "Use only CPU for calculaions");
 #else
 	singleTone->putInt("isCpu", 1);
 #endif		
@@ -173,10 +173,10 @@ int ParseParams::parseParams(int argc, char **argv)
 			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
 				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "1D Fp")), singleTone->getString("model", "1D Fp"));
 			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
-			if (isInput2DModel(singleTone->getString("model", "1D Fp")))
+			if (isInputSolarPropLikeModel(singleTone->getString("model", "1D Fp")) || isInputGeliosphere2DModel(singleTone->getString("model", "1D Fp")))
 			{
-				spdlog::info("Tilt angle file:" + std::to_string(measureValuesTransformation->getTiltAngle(month, year)));
 				singleTone->putFloat("tilt_angle", measureValuesTransformation->getTiltAngle(month, year));
+				singleTone->putInt("polarity", measureValuesTransformation->getPolarity(month, year));
 			}
 			else
 			{
@@ -208,9 +208,13 @@ void ParseParams::printParameters(ParamsCarrier *params)
 
 std::string ParseParams::getTransformationTableName(std::string modelName)
 {
-	if (isInput2DModel(modelName))
+	if (isInputSolarPropLikeModel(modelName))
 	{
 		return "SolarProp_K0_phi_table.csv";
+	}
+	else if (isInputGeliosphere2DModel(modelName))
+	{
+		return "Geliosphere_K0_phi_table.csv";
 	}
 	else 
 	{
@@ -219,9 +223,18 @@ std::string ParseParams::getTransformationTableName(std::string modelName)
 	return NULL;
 }
 
-bool ParseParams::isInput2DModel(std::string modelName)
+bool ParseParams::isInputSolarPropLikeModel(std::string modelName)
 {
-	if ((modelName.compare("2D SolarProp-like") == 0) || (modelName.compare("2D Geliosphere") == 0))
+	if (modelName.compare("2D SolarProp-like") == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool ParseParams::isInputGeliosphere2DModel(std::string modelName)
+{
+	if (modelName.compare("2D Geliosphere") == 0)
 	{
 		return true;
 	}

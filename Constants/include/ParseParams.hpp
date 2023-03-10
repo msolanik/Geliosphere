@@ -63,11 +63,18 @@ private:
 	std::string getTransformationTableName(std::string modelName);
 
 	/**
-	 * @brief Return true for 2D models.
+	 * @brief Return true for SolarPropLike model.
 	 * 
 	 * @param modelName Name of the model.
 	 */
-	bool isInput2DModel(std::string modelName);
+	bool isInputSolarPropLikeModel(std::string modelName);
+
+	/**
+	 * @brief Return true for Geliosphere 2D model.
+	 * 
+	 * @param modelName Name of the model.
+	 */
+	bool isInputGeliosphere2DModel(std::string modelName);
 
 	/**
 	 * @brief Return path where Geliosphere is located.

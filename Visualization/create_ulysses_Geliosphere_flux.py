@@ -7,7 +7,7 @@ import os
 """
     Prepare trajectories from Ulysses and input file for batch run for further processing.
 """
-os.system(r"python3 prepare_input_based_on_ulysses.py -i ulytrj_helio.asc.txt -o ulytrj.csv -s ../SolarProp_K0_phi_table.csv -g geliosphere_batch_input_paramaters.csv")
+os.system(r"python3 prepare_input_based_on_ulysses.py -i ulytrj_helio.asc.txt -o ulytrj.csv -s ../Geliosphere_K0_phi_table.csv -g geliosphere_batch_input_paramaters.csv")
 
 """
     Geliosphere batch run for dates between 1994 and 1998. 

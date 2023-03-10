@@ -14,7 +14,7 @@ def main(argv):
     argParser = argparse.ArgumentParser(description='Utility preparing data for visualization script from Ulysses trajectory data')
     argParser.add_argument('-i', '--input-file-name', help='Input file with Ulysses trajectories', default='ulytrj_helio.asc.txt')
     argParser.add_argument('-o', '--output-file-name', help='Output name for Ulysses trajectory data', default='ulytrj.csv')
-    argParser.add_argument('-s', '--solarprop-input-parameters-file', help='Path to csv file containing SolarProp input data', default='../SolarProp_K0_phi_table.csv')
+    argParser.add_argument('-s', '--solarprop-input-parameters-file', help='Path to csv file containing SolarProp input data', default='../Geliosphere_K0_phi_table.csv')
     argParser.add_argument('-g', '--geliosphere-batch-file', help='Output file generated for batch run of Geliosphere', default='geliosphere_batch_input_paramaters.csv')
     args = argParser.parse_args(argv);
     

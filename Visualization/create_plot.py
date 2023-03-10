@@ -4,6 +4,7 @@
 import argparse
 import csv
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import sys
 
 """
@@ -37,7 +38,7 @@ def visualize_ulysses_flux(path_file_ulysses_fluxes, flux_type, plt):
         for row in csvFile:
             ulysses_time.append(int(row['year']) + (int(row['day_of_year']) / 365.0))
             flux.append(float(row['P190_flux' if flux_type == r'P190' else "P116_flux"]))
-    plt.scatter(ulysses_time,flux,color="green")
+    plt.scatter(ulysses_time,flux,color="green", label="Ulysses KET " + flux_type +" flux")
 
 """
     Visualize Geliosphere flux.
@@ -51,7 +52,7 @@ def visualize_geliosphere_flux(path_to_geliosphere_file, plt):
         for row in csvFile:
             time.append(float(row['doy']))
             flux.append(float(row['SpeAvg']) / (10000000.0))
-    plt.scatter(time,flux,color="yellow")
+    plt.scatter(time,flux,color="red", label="Geliosphere 2D model P190 simulation")
 
 """
     Run simple utility to visualize Ulysses and Geliosphere energetic spectra.
@@ -66,6 +67,44 @@ def main(argv):
     
     args = argParser.parse_args(argv);
 
+    mpl.use("pgf")
+    # Adding siunitx package based on:
+    # https://tex.stackexchange.com/questions/391074/how-to-use-the-siunitx-package-within-python-matplotlib
+    pgf_with_latex = {                      
+        "pgf.texsystem": "pdflatex",       
+        "text.usetex": True,               
+        "font.family": "serif",
+        "font.serif": [],                   
+        "font.sans-serif": [],             
+        "font.monospace": [],
+        "axes.labelsize": 14,              
+        "font.size": 14,
+        "legend.fontsize": 14,               
+        "xtick.labelsize": 14,              
+        "ytick.labelsize": 14,
+        "figure.figsize": [10,6],     
+        "pgf.preamble": "\n".join([
+            r"\usepackage[utf8]{inputenc}",
+            r"\usepackage[T1]{fontenc}",
+            r"\usepackage[detect-all,locale=UK]{siunitx}",
+            r"""\ifdefined\qty\else
+                \ifdefined\NewCommandCopy
+                    \NewCommandCopy\qty\SI
+                \else
+                    \NewDocumentCommand\qty{O{}mm}{\SI[#1]{#2}{#3}}
+                \fi
+                \fi
+                \ifdefined\unit\else
+                \ifdefined\NewCommandCopy
+                    \NewCommandCopy\unit\si
+                \else
+                    \NewDocumentCommand\unit{O{}m}{\si[#1]{#2}}
+                \fi
+                \fi"""
+            ])
+    }
+    plt.rcParams.update(pgf_with_latex)
+
     fig = plt.figure(figsize=(10, 6), dpi=300)
     
     visualize_ulysses_low_latitudes(args.ulysses_trajectory_file, plt)
@@ -73,13 +112,11 @@ def main(argv):
     visualize_geliosphere_flux(args.input_csv_file, plt)
     
     plt.xlabel("time [year]")
-    plt.ylabel("flux 1/(sec-cm**2-ster-MeV/n )")
-    title1 = 'Ulysses KET P190 (green) flux and Geliosphere 2D model P190 simulation (yellow)'
-    plt.title(title1)
-    s = '5 x $K_0$, $K_{\perp}/K_{\parallel}$ = 0.2'
-    y = 0.0
-    y = 2.0*y
-    plt.text(1994.2, y, s, fontsize=12)
+    # ^2 did showed up properly
+    plt.ylabel(r'flux [\unit{1/(s . cm\textsuperscript{2} . sr . MeV / n)}]')
+    title = 'Comparison of Ulysses KET P190 flux and Geliosphere 2D model P190 simulation'
+    plt.title(title)
+    plt.legend(loc='upper right')
     fig.savefig(args.output_image_name+ ".png", dpi = 300)
 
 if __name__ == "__main__":

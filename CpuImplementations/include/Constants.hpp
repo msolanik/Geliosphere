@@ -54,7 +54,7 @@ static double alphaM = 5.75*3.1415926535/180.0;
  * @brief Sun polarity.
  * 
  */
-const double polarity = 1.0;
+static double polarity = 1.0;
 
 /**
  * @brief Proton rest mass.
@@ -207,6 +207,7 @@ static void setContants(ParamsCarrier *singleTone)
 	}
 	thetainj = singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f;
 	rInit = singleTone->getFloat("r_injection", 1.0f);
+	polarity = (float) singleTone->getInt("polarity", 1);
 	useUniformInjection = singleTone->getInt("use_uniform_injection", 0);
 	uniformEnergyInjectionMaximum = singleTone->getFloat("uniform_energy_injection_maximum", 101.0f);
 	bool isBackward = (singleTone->getString("model", "1D Fp").compare("1D Bp") == 0);

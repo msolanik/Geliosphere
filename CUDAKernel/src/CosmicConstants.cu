@@ -54,6 +54,8 @@ void setConstants(ParamsCarrier *singleTone)
 	cudaMemcpyToSymbol(rInit, &rInitForBackward, sizeof(rInitForBackward));
 	float thetaInjection = singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f;
 	cudaMemcpyToSymbol(thetainj, &thetaInjection, sizeof(thetaInjection));
+	float newPolarity = (float) singleTone->getInt("polarity", 1);
+	cudaMemcpyToSymbol(polarity, &newPolarity, sizeof(newPolarity));
 	float uniformEnergyInjectionMaximum = singleTone->getFloat("uniform_energy_injection_maximum", 101.0f);
 	cudaMemcpyToSymbol(injectionMax, &uniformEnergyInjectionMaximum, sizeof(uniformEnergyInjectionMaximum));
 	bool newUseUniformInjection = singleTone->getInt("use_uniform_injection", 0);

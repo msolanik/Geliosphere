@@ -29,6 +29,12 @@ float MeasureValuesTransformation::getTiltAngle(int month, int year)
     return doc.GetCell<float>("tilt_angle", getRowIdentifier(month, year));
 }
 
+int MeasureValuesTransformation::getPolarity(int month, int year)
+{
+    rapidcsv::Document doc(pathToTransformationTable, rapidcsv::LabelParams(0, 0));
+    return doc.GetCell<int>("polarity", getRowIdentifier(month, year));
+}
+
 std::string MeasureValuesTransformation::getRowIdentifier(int month, int year)
 {
     if ((model.compare("2D SolarProp-like") == 0) || (model.compare("2D Geliosphere") == 0))
