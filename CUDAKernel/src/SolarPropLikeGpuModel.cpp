@@ -1,10 +1,10 @@
-#include "TwoDimensionBpGpuSimulation.hpp"
+#include "SolarPropLikeGpuModel.hpp"
 #include "CudaErrorCheck.cuh"
 #include "CosmicUtils.cuh"
 #include "CosmicConstants.cuh"
-#include "TwoDimensionBpSimulation.cuh"
+#include "SolarPropLikeModel.cuh"
 
-void TwoDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleTone)
+void SolarPropLikeGpuModel::prepareAndRunSimulation(ParamsCarrier *singleTone)
 {
     simulationInputTwoDimensionBP simulation;
     setThreadBlockSize();
@@ -12,14 +12,14 @@ void TwoDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     double *w;
     float *pinj;
     float *Tkininj;
-    trajectoryHistoryTwoDimensionBP *history, *local_history;
+    trajectoryHistorySolarPropLike *history, *local_history;
 
     gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
     gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryTwoDimensionBP))));
-    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryTwoDimensionBP))));
+    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistorySolarPropLike))));
+    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistorySolarPropLike))));
 
     simulation.singleTone = singleTone;
     simulation.history = history;
@@ -33,7 +33,7 @@ void TwoDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.maximumSizeOfSharedMemory = sharedMemoryMaximumSize;
 
     setConstants(singleTone);
-    runTwoDimensionBpMethod(&simulation);
+    runSolarPropLikeSimulation(&simulation);
 
     gpuErrchk(cudaFree(w));
     gpuErrchk(cudaFree(pinj));
@@ -44,7 +44,7 @@ void TwoDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
 }
 
 // Compute capability actual device
-void TwoDimensionBpGpuSimulation::setThreadBlockSize()
+void SolarPropLikeGpuModel::setThreadBlockSize()
 {
     cudaDeviceProp gpuProperties;
     gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));

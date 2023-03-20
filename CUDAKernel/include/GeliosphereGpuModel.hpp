@@ -1,5 +1,5 @@
 /**
- * @file ThreeDimensionBpGpuSimulation.hpp
+ * @file GeliosphereGpuModel.hpp
  * @author Michal Solanik
  * @brief GPU implementation for 3D B-p model
  * @version 0.2
@@ -19,7 +19,7 @@
  * to define support functions for running implementation of 3D B-p simulation.
  * 
  */
-class ThreeDimensionBpGpuSimulation : public AbstractGpuSimulation
+class GeliosphereGpuModel : public AbstractGpuSimulation
 {
 public:
     /**

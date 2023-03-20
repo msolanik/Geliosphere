@@ -1,7 +1,7 @@
 /**
  * @file TwoDimensionBpAlgorithm.hpp
  * @author Michal Solanik
- * @brief Implementation of 2D B-p method
+ * @brief Implementation of 2D B-p model
  * @version 0.1
  * @date 2022-03-13
  * 
@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef TWO_DIMENSION_BP_METHOD_H
-#define TWO_DIMENSION_BP_METHOD_H
+#ifndef TWO_DIMENSION_BP_model_H
+#define TWO_DIMENSION_BP_model_H
 
 #include "AbstractAlgorithm.hpp"
 
@@ -23,7 +23,7 @@ class TwoDimensionBpAlgorithm : public AbstractAlgorithm
 {
 public:
 	/**
-	 * @brief GPU implementation of 2D B-p method and set input 
+	 * @brief GPU implementation of 2D B-p model and set input 
 	 * paramaters.  
 	 * 
 	 * @param singleTone datastructure containing input parameters.

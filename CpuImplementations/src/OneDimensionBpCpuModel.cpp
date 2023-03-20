@@ -1,4 +1,4 @@
-#include "OneDimensionBpCpuSimulation.hpp"
+#include "OneDimensionBpCpuModel.hpp"
 #include "FileUtils.hpp"
 #include "Constants.hpp"
 
@@ -7,7 +7,7 @@
 #include <thread>
 #include <random>
 
-void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
+void OneDimensionBpCpuModel::runSimulation(ParamsCarrier *singleTone)
 {
 	srand(time(NULL));
 	spdlog::info("Starting initialization of 1D B-p simulation.");
@@ -33,7 +33,7 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
-			threads.emplace_back(std::thread(&OneDimensionBpCpuSimulation::simulation, this, i, nthreads, mmm));
+			threads.emplace_back(std::thread(&OneDimensionBpCpuModel::simulation, this, i, nthreads, mmm));
 		}
 		for (auto &th : threads)
 		{
@@ -51,12 +51,12 @@ void OneDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	writeSimulationReportFile(singleTone);
 }
 
-void OneDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
+void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
-	double r, K, dr, arnum;
-	double Tkin, Tkininj, Rig, tt, t2, beta;
+	double r, dr, arnum;
+	double Tkin, Tkininj, Rig, beta;
 	double w;
-	double Tkinw, p, rp, dp, pp, pinj, cfactor, sumac;
+	double p, dp, pp, Kdiff;
 	int m, mm;
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
@@ -74,27 +74,38 @@ void OneDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int avai
 
 			while (r < 100.0002)
 			{
-				tt = Tkin + T0;
-				t2 = tt + T0;
-				beta = sqrt(Tkin * t2) / tt;
+				// Equation 42
+				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
+				// Equation 43 in GeV
 				Rig = (p * c / q) / 1e9;
                 pp = p;
-                p -= (2.0f * V * pp * dt / (3.0f * r));
+                
+				// Equation 47
+				dp = (2.0f * V * pp * dt / (3.0f * r));
+				p -= dp;
 
+				// Equation 44
+				Kdiff = K0 * beta * Rig;
                 arnum = distribution(generator);
-                dr = (V + (2.0 * K0 * beta * Rig / r)) * dt + (arnum * sqrt(2.0 * K0 * beta * Rig * dt));
+                
+				// Equation 47
+				dr = (V + (2.0 * Kdiff / r)) * dt + (arnum * sqrt(2.0 * Kdiff * dt));
 			    r += dr;
 
+				// Equation 43 in J
                 Rig = p * c / q;
                 Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
-                Rig = Rig / 1e9;
-                beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
+                
+				// Equation 42
+				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
 				if (beta > 0.01f && Tkin < 200.0f)
 		        {
 			        if ((r > 100.0f) && ((r - dr) < 100.0f))
 			        {
+						w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
+						w = (pow(w, -1.85) / p) / 1e45;
 						outputMutex.lock();
 						outputQueue.push({Tkin, Tkininj, r, w});
 						outputMutex.unlock();

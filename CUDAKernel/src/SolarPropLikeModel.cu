@@ -1,7 +1,7 @@
 /**
- * @file TwoDimensionBpSimulation.cu
+ * @file SolarPropLikeModel.cu
  * @author Michal Solanik
- * @brief Implementation of 2D B-p method.
+ * @brief Implementation of SolarPropLike model.
  * @version 0.2
  * @date 2022-06-02
  *
@@ -17,7 +17,7 @@
 
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
-#include "TwoDimensionBpSimulation.cuh"
+#include "SolarPropLikeModel.cuh"
 #include "CosmicConstants.cuh"
 #include "CosmicUtils.cuh"
 #include "CudaErrorCheck.cuh"
@@ -31,7 +31,7 @@
  * @param padding Support value used to calculate state for getting
  * kinetic energy.
  */
-__global__ void wCalc(float *Tkininj, float *p, double *w, int padding)
+__global__ void trajectoryPreSimulation(float *Tkininj, float *p, double *w, int padding)
 {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	Tkininj[id] = (useUniformInjection) 
@@ -47,7 +47,7 @@ __global__ void wCalc(float *Tkininj, float *p, double *w, int padding)
 }
 
 /**
- * @brief Return value of rigidity for 2D B-p method.
+ * @brief Return value of rigidity for SolarPropLike model.
  *
  * @param rigidity Current value of rigidity.
  * @return New value of rigidity.
@@ -58,7 +58,7 @@ __device__ float getRigidity(float rigidity)
 }
 
 /**
- * @brief Run simulations for 2D B-p method.
+ * @brief Run simulations for SolarPropLike model.
  * This model is based on model contained in SolarProp by Niles Kappl:
  * https://arxiv.org/pdf/1511.07875.pdf
  *
@@ -67,13 +67,13 @@ __device__ float getRigidity(float rigidity)
  * kinetic energy.
  * @param state Array of random number generator data structures.
  */
-__global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimensionBP *history, int padding, curandState *state)
+__global__ void trajectorySimulationTwoDimensionBp(trajectoryHistorySolarPropLike *history, int padding, curandState *state)
 {
 	extern __shared__ int sharedMemory[];
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	int idx = threadIdx.x;
 	float r = rInit;
-	float beta, Rig, dtem1, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon;
+	float beta, Rig, dKrrTmp, dKtt, dr, Krr, Bfactor, Kpar, dKrr, Ktt, Kper, dTkin, gamma, gamma2, dKttkon;
 	float Tkin = (useUniformInjection) 
         ? getTkinInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id)
         : getSolarPropInjection(BLOCK_SIZE_TWO_BP * THREAD_SIZE_TWO_BP * padding + id);
@@ -94,10 +94,10 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 
 		// dKrr
 		Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
-		dtem1 = 2.0f * r * omega * omega * sineTheta * sineTheta / (V * V);
+		dKrrTmp = 2.0f * r * omega * omega * sineTheta * sineTheta / (V * V);
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
-		dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(1.0f + gamma2)) - (r * r * dtem1 / (2.0f * sqrtf(1.0f + gamma2)))) / (1.0f + gamma2);
-		dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(1.0f + gamma2, 1.5f)) - (r * r * dtem1 * 3.0f * sqrtf(1.0f + gamma2) / 2.0f)) / powf(1.0f + gamma2, 3.0f));
+		dKrr = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(1.0f + gamma2)) - (r * r * dKrrTmp / (2.0f * sqrtf(1.0f + gamma2)))) / (1.0f + gamma2);
+		dKrr = dKrr + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(1.0f + gamma2, 1.5f)) - (r * r * dKrrTmp * 3.0f * sqrtf(1.0f + gamma2) / 2.0f)) / powf(1.0f + gamma2, 3.0f));
 		dKrr = dKrr * 5.0f / (3.0f * 3.4f);
 
 		Bfactor = (5.0f / 3.4f) * (r * r) / sqrtf(1.0f + gamma2);
@@ -179,11 +179,11 @@ __global__ void trajectorySimulationTwoDimensionBp(trajectoryHistoryTwoDimension
 }
 
 /**
- * @brief Run 2D B-p method with given parameters defines
+ * @brief Run SolarPropLike model with given parameters defines
  * in input simulation data structure.
  *
  */
-void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
+void runSolarPropLikeSimulation(simulationInputTwoDimensionBP *simulation)
 {
 	int counter;
 	ParamsCarrier *singleTone;
@@ -215,7 +215,7 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 		spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
-		wCalc<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
+		trajectoryPreSimulation<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
 		gpuErrchk(cudaDeviceSynchronize());
 		trajectorySimulationTwoDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
@@ -223,7 +223,7 @@ void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation)
 		spdlog::info("In this iteration {} particles were detected.", counter);
 		if (counter != 0)
 		{
-			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryTwoDimensionBP), cudaMemcpyDeviceToHost));
+			gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistorySolarPropLike), cudaMemcpyDeviceToHost));
 			for (int j = 0; j < counter; ++j)
 			{
 				fprintf(file, "%g %g %g %g %g %g\n", simulation->Tkininj[simulation->local_history[j].id], simulation->local_history[j].Tkin, simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f, simulation->local_history[j].theta);

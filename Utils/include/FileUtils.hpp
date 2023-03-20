@@ -29,12 +29,12 @@ int mkdirAndchdir(std::string directoryName);
 /**
  * @brief Create a Directory object
  * 
- * @param methodDirectory Name of directory for used method.
+ * @param modelDirectory Name of directory for used model.
  * @param destination Name of new directory
  * @return true in the case of success
  * @return false in the case of failure and 
  */
-bool createDirectory(std::string methodDirectory, std::string destination);
+bool createDirectory(std::string modelDirectory, std::string destination);
 
 /**
  * @brief Get the Directory Name object

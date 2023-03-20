@@ -3,9 +3,9 @@
 #include "spdlog/spdlog.h"
 
 #include "TwoDimensionBpResults.hpp"
-#include "TwoDimensionBpCpuSimulation.hpp"
+#include "SolarPropLikeCpuModel.hpp"
 #if GPU_ENABLED == 1
-#include "TwoDimensionBpGpuSimulation.hpp"
+#include "SolarPropLikeGpuModel.hpp"
 #endif
 
 void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
@@ -13,7 +13,7 @@ void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	if (!singleTone->getInt("isCpu", 0))
 	{
 #if GPU_ENABLED == 1
-		TwoDimensionBpGpuSimulation *twoDimensionBpGpuSimulation = new TwoDimensionBpGpuSimulation();
+		SolarPropLikeGpuModel *twoDimensionBpGpuSimulation = new SolarPropLikeGpuModel();
 		twoDimensionBpGpuSimulation->prepareAndRunSimulation(singleTone);
 #else
     	spdlog::info("GPU-based computations are disabled. Please, compile again without -DUSE_CPU_ONLY.");
@@ -22,7 +22,7 @@ void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	}
 	else
 	{
-		TwoDimensionBpCpuSimulation *twoDimensionBpCpuSimulation = new TwoDimensionBpCpuSimulation();
+		SolarPropLikeCpuModel *twoDimensionBpCpuSimulation = new SolarPropLikeCpuModel();
 		twoDimensionBpCpuSimulation->runSimulation(singleTone);
 	}
 

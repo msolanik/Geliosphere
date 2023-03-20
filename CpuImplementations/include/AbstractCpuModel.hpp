@@ -20,7 +20,7 @@
  * @details Implementation of this class should define simulation and needed operations. 
  * 
  */
-class AbstractCpuSimulation
+class AbstractCpuModel
 {
 public:
 	/**

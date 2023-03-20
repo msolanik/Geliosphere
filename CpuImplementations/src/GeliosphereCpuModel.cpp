@@ -1,4 +1,4 @@
-#include "ThreeDimensionBpCpuSimulation.hpp"
+#include "GeliosphereCpuModel.hpp"
 #include "FileUtils.hpp"
 #include "Constants.hpp"
 
@@ -8,7 +8,7 @@
 #include <random>
 #include <cmath>
 
-void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
+void GeliosphereCpuModel::runSimulation(ParamsCarrier *singleTone)
 {
     spdlog::info("Starting initialization of simulation for Geliosphere 2D model.");
     srand(time(NULL));
@@ -26,7 +26,7 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 
     FILE *file = fopen("log.dat", "w");
     unsigned int nthreads = std::thread::hardware_concurrency();
-    int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 30.0 * 250.0));
+    int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 30.0 * 500.0));
     setContants(singleTone);
     for (int mmm = 0; mmm < new_MMM; mmm++)
     {
@@ -34,7 +34,7 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
         std::vector<std::thread> threads;
         for (int i = 0; i < (int)nthreads; i++)
         {
-            threads.emplace_back(std::thread(&ThreeDimensionBpCpuSimulation::simulation, this, i, nthreads, mmm));
+            threads.emplace_back(std::thread(&GeliosphereCpuModel::simulation, this, i, nthreads, mmm));
         }
         for (auto &th : threads)
         {
@@ -52,19 +52,18 @@ void ThreeDimensionBpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
     writeSimulationReportFile(singleTone);
 }
 
-void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
+void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
-    double r, K, dr, arnum, theta, Kpar, Bfactor, COmega, Tkinp;
-    double Tkin, Tkininj, Rig, tt, t2, beta, alfa, Ktt, dKrr, dKper;
-    double w, r2, gammma, gamma2, Cb, Cb2, Kper, Krr, dKtt, dKtt3, dKtt4, CKtt;
-    double Tkinw, p, rp, dp, pp, pinj, cfactor, sumac;
+    double r, dr, arnum, theta, Kpar, Bfactor, COmega, Tkinp;
+    double Tkin, Tkininj, Rig, beta, alfa, Ktt, dKrr, dKper;
+    double w, r2, gamma, gamma2, Cb, Cb2, Kper, Krr, dKtt, dKtt3, dKtt4, CKtt;
+    double Tkinw, p;
     int m, mm;
-    double dtheta, dTkin, thetap;
-    double delta, delta2, deltarh, deltarh2;
+    double dtheta, dTkin;
+    double delta, deltarh, deltarh2;
     double DriftR, DriftTheta, arg, alphaH, Larmor, Bfield, f, fprime, DriftSheetR;
     double Kphph, Krt, Krph, Ktph, B11Temp, B11, B12, B13, B22, B23;
-    double sin2, sin3, dKtt0, dKtt1, dKtt2;
-    double xx, yy, arnum11, arnum12, arnum13, arnum22, arnum23;
+    double sin2, sin3, dKtt1, dKtt2;
     double dKrtr, dKrtt;
     thread_local std::random_device rd{};
     thread_local std::mt19937 generator(rd());
@@ -72,17 +71,16 @@ void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int av
 
     for (int m = 0; m < 30; m++)
     {
-        for (int mm = 0; mm < 250; mm++)
+        for (int mm = 0; mm < 500; mm++)
         {
 			Tkininj = (useUniformInjection) 
-				? getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000)
+				? getTkinInjection(((availableThreads * iteration + threadNumber) * 500) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000)
 				: SPbins[m];
 			Tkin = Tkininj;
 
             Tkinw = Tkin * 1e9 * q;
             Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;
             p = Rig * q / c;
-            pinj = p;
 
             w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
             w = pow(w, -1.85) / p;
@@ -93,11 +91,10 @@ void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int av
 
             while (r < 100.0)
             {
-                tt = Tkin + T0;
-                t2 = tt + T0;
-                beta = sqrt(Tkin * t2) / tt;
+				// Equation 42
+				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
-                alfa = t2 / tt;
+				alfa = (Tkin + T0 + T0)/(Tkin + T0);
 
                 Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
 
@@ -113,13 +110,12 @@ void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int av
                     delta = delta0 / sin(theta);
                 }
 
-                delta2 = delta * delta;
                 deltarh = delta / rh;
                 deltarh2 = deltarh * deltarh;
 
                 // Equation 21
-                gammma = (r * omega) * sin(theta) / V;
-                gamma2 = gammma * gammma;
+                gamma = (r * omega) * sin(theta) / V;
+                gamma2 = gamma * gamma;
 
                 // Equation 23
                 Cb = 1.0 + gamma2 + (r2 * deltarh2);
@@ -274,12 +270,12 @@ void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int av
                 // Equation 35 from 
                 // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
                 // https://arxiv.org/pdf/1511.07875.pdf
-                DriftR = polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * cos(theta) * gammma * f / (Cb2 * sin(theta));
+                DriftR = polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * cos(theta) * gamma * f / (Cb2 * sin(theta));
                 
                 // Equation 36 from 
                 // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
                 // https://arxiv.org/pdf/1511.07875.pdf
-                DriftTheta = -1.0 * polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * gammma * (2.0 + (gammma * gammma)) * f / Cb2;
+                DriftTheta = -1.0 * polarity * konvF * (2.0 / (3.0 * A)) * Rig * beta * r * gamma * (2.0 + (gamma * gamma)) * f / Cb2;
 
                 // Equation 33 from 
                 // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
@@ -291,7 +287,7 @@ void ThreeDimensionBpCpuSimulation::simulation(int threadNumber, unsigned int av
                 // Equation 37 from 
                 // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
                 // https://arxiv.org/pdf/1511.07875.pdf
-                DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gammma * fprime / Cb;
+                DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gamma * fprime / Cb;
 
                 dr = dr + ((DriftR + DriftSheetR) * dt);
                 dtheta = dtheta + (DriftTheta * dt / r);

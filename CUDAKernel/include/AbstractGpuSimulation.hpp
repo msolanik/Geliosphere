@@ -1,5 +1,5 @@
 /**
- * @file AbstractGpuMethod.hpp
+ * @file AbstractGpuSimulation.hpp
  * @author Michal Solanik
  * @brief Abstract definition for implementation of model on GPU. 
  * @version 0.2

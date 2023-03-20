@@ -1,7 +1,7 @@
 /**
- * @file ThreeDimensionBpSimulation.cu
+ * @file GeliosphereModel.cu
  * @author Michal Solanik
- * @brief Implementation of 3D B-p method.
+ * @brief Implementation of Geliosphere model.
  * @version 0.2
  * @date 2022-06-02
  *
@@ -17,7 +17,7 @@
 
 #include "ParamsCarrier.hpp"
 #include "FileUtils.hpp"
-#include "ThreeDimensionBpSimulation.cuh"
+#include "GeliosphereModel.cuh"
 #include "CosmicConstants.cuh"
 #include "CosmicUtils.cuh"
 #include "CudaErrorCheck.cuh"
@@ -31,7 +31,7 @@
  * @param padding Support value used to calculate state for getting
  * kinetic energy.
  */
-__global__ void wCalcThreeBp(float *Tkininj, float *p, double *w, int padding)
+__global__ void trajectoryPreSimulationThreeBp(float *Tkininj, float *p, double *w, int padding)
 {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     Tkininj[id] = (useUniformInjection) 
@@ -47,14 +47,14 @@ __global__ void wCalcThreeBp(float *Tkininj, float *p, double *w, int padding)
 }
 
 /**
- * @brief Run simulations for 3D B-p method.
+ * @brief Run simulations for Geliosphere model.
  *
  * @param history Data structure containing output records.
  * @param padding Support value used to calculate state for getting
  * kinetic energy.
  * @param state Array of random number generator data structures.
  */
-__global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimensionBP *history, int padding, curandState *state)
+__global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliosphere *history, int padding, curandState *state)
 {
     extern __shared__ int sharedMemory[];
     int id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -304,11 +304,11 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryThreeDimen
 }
 
 /**
- * @brief Run 3D B-p method with given parameters defines
+ * @brief Run Geliosphere model with given parameters defines
  * in input simulation data structure.
  *
  */
-void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
+void runGeliosphereSimulation(simulationInputThreeDimensionBP *simulation)
 {
     int counter;
     ParamsCarrier *singleTone;
@@ -340,7 +340,7 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
         spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
         nullCount<<<1, 1>>>();
         gpuErrchk(cudaDeviceSynchronize());
-        wCalcThreeBp<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
+        trajectoryPreSimulationThreeBp<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
         gpuErrchk(cudaDeviceSynchronize());
         trajectorySimulationThreeDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
         gpuErrchk(cudaDeviceSynchronize());
@@ -348,7 +348,7 @@ void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation)
         spdlog::info("In this iteration {} particles were detected.", counter);
         if (counter != 0)
         {
-            gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryThreeDimensionBP), cudaMemcpyDeviceToHost));
+            gpuErrchk(cudaMemcpy(simulation->local_history, simulation->history, counter * sizeof(trajectoryHistoryGeliosphere), cudaMemcpyDeviceToHost));
             for (int j = 0; j < counter; ++j)
             {
                 fprintf(file, "%g %g %g %g %g %g\n", simulation->Tkininj[simulation->local_history[j].id], simulation->local_history[j].Tkin, simulation->local_history[j].r, simulation->w[simulation->local_history[j].id], singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f, simulation->local_history[j].theta);

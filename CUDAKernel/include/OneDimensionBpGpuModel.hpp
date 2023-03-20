@@ -1,5 +1,5 @@
 /**
- * @file OneDimensionBpGpuSimulation.hpp
+ * @file OneDimensionBpGpuModel.hpp
  * @author Michal Solanik
  * @brief GPU implementation for 1D B-p model
  * @version 0.2
@@ -19,7 +19,7 @@
  * to define support functions for running implementation of 1D B-p simulation.
  * 
  */
-class OneDimensionBpGpuSimulation : public AbstractGpuSimulation
+class OneDimensionBpGpuModel : public AbstractGpuSimulation
 {
 public:
     /**

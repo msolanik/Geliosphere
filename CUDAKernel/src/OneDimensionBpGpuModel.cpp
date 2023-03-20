@@ -1,24 +1,24 @@
-#include "OneDimensionBpGpuSimulation.hpp"
+#include "OneDimensionBpGpuModel.hpp"
 #include "CudaErrorCheck.cuh"
 #include "CosmicUtils.cuh"
 #include "CosmicConstants.cuh"
-#include "OneDimensionBpSimulation.cuh"
+#include "OneDimensionBpModel.cuh"
 
-void OneDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleTone)
+void OneDimensionBpGpuModel::prepareAndRunSimulation(ParamsCarrier *singleTone)
 {
     simulationInputBP simulation;
     setThreadBlockSize();
     curandState_t *state;
     double *w;
     float *Tkininj, *pinj;
-    trajectoryHistoryBP *history, *local_history;
+    trajectoryHistoryOneDimensionBp *history, *local_history;
 
     gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
     gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
-    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryBP))));
+    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryOneDimensionBp))));
+    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryOneDimensionBp))));
 
     simulation.singleTone = singleTone;
     simulation.history = history;
@@ -32,7 +32,7 @@ void OneDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.maximumSizeOfSharedMemory = sharedMemoryMaximumSize;
 
     setConstants(singleTone);
-    runBPMethod(&simulation);
+    runOneDimensionBpSimulation(&simulation);
 
     gpuErrchk(cudaFree(w));
     gpuErrchk(cudaFree(Tkininj));
@@ -43,7 +43,7 @@ void OneDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
 }
 
 // Compute capability actual device
-void OneDimensionBpGpuSimulation::setThreadBlockSize()
+void OneDimensionBpGpuModel::setThreadBlockSize()
 {
 	cudaDeviceProp gpuProperties;
 	gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));

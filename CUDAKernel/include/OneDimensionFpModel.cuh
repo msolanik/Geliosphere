@@ -1,7 +1,7 @@
 /**
- * @file OneDimensionFpSimulation.cuh
+ * @file OneDimensionFpModel.cuh
  * @author Michal Solanik
- * @brief Definition of data structures needed for 1D F-p method.
+ * @brief Definition of data structures needed for 1D F-p model.
  * @version 0.1
  * @date 2021-07-13
  * 
@@ -45,7 +45,7 @@
  * simulations.
  * 
  */
-struct trajectoryHistory
+struct trajectoryHistoryOneDimensionFp
 {
 	float sumac = -1.0f;
 	float r = -1.0f;
@@ -63,15 +63,15 @@ struct trajectoryHistory
 
 /**
  * @brief Data structure responsible for holding input information for 
- * 1D F-p method.
+ * 1D F-p model.
  * 
  */
 struct simulationInput
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
-	trajectoryHistory *history;
-	trajectoryHistory *local_history;
+	trajectoryHistoryOneDimensionFp *history;
+	trajectoryHistoryOneDimensionFp *local_history;
 	float *pinj;
 	double *w;
 	int blockSize;
@@ -79,6 +79,6 @@ struct simulationInput
 	int maximumSizeOfSharedMemory;
 };
 
-void runFWMethod(simulationInput *simulation);
+void runOneDimensionFpSimulation(simulationInput *simulation);
 
 #endif // !FLOAT_FW_DEFINES_H

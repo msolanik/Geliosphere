@@ -1,7 +1,7 @@
 /**
  * @file OneDimensionFpResults.hpp
  * @author Michal Solanik
- * @brief Implementation of 1D F-p method analyzer for output data.
+ * @brief Implementation of 1D F-p model analyzer for output data.
  * @version 0.1
  * @date 2021-07-13
  * 
@@ -16,7 +16,7 @@
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface
- * to define analyzer for 1D F-p method for creating output energetic 
+ * to define analyzer for 1D F-p model for creating output energetic 
  * spectra from log file. 
  * 
  */

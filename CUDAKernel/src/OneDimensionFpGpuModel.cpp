@@ -1,23 +1,23 @@
-#include "OneDimensionFpGpuSimulation.hpp"
+#include "OneDimensionFpGpuModel.hpp"
 #include "CudaErrorCheck.cuh"
 #include "CosmicUtils.cuh"
 #include "CosmicConstants.cuh"
-#include "OneDimensionFpSimulation.cuh"
+#include "OneDimensionFpModel.cuh"
 
-void OneDimensionFpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleTone)
+void OneDimensionFpGpuModel::prepareAndRunSimulation(ParamsCarrier *singleTone)
 {
     simulationInput simulation;
     setThreadBlockSize();
     curandState_t *state;
     double *w;
     float *pinj;
-    trajectoryHistory *history, *local_history;
+    trajectoryHistoryOneDimensionFp *history, *local_history;
 
     gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
     gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
-    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistory))));
+    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryOneDimensionFp))));
+    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryOneDimensionFp))));
 
     simulation.singleTone = singleTone;
     simulation.history = history;
@@ -30,7 +30,7 @@ void OneDimensionFpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
     simulation.maximumSizeOfSharedMemory = sharedMemoryMaximumSize;
 
     setConstants(singleTone);
-    runFWMethod(&simulation);
+    runOneDimensionFpSimulation(&simulation);
 
     gpuErrchk(cudaFree(w));
     gpuErrchk(cudaFree(pinj));
@@ -40,7 +40,7 @@ void OneDimensionFpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleT
 }
 
 // Compute capability actual device
-void OneDimensionFpGpuSimulation::setThreadBlockSize()
+void OneDimensionFpGpuModel::setThreadBlockSize()
 {
     cudaDeviceProp gpuProperties;
     gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));

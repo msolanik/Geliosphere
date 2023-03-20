@@ -1,7 +1,7 @@
 /**
- * @file OneDimensionBpSimulation.cuh
+ * @file OneDimensionBpModel.cuh
  * @author Michal Solanik
- * @brief Definition of data structures needed for 1D B-p method.
+ * @brief Definition of data structures needed for 1D B-p model.
  * @version 0.1
  * @date 2021-07-13
  * 
@@ -45,7 +45,7 @@
  * simulations.
  * 
  */
-struct trajectoryHistoryBP
+struct trajectoryHistoryOneDimensionBp
 {
 	float Tkin = -1.0f;
 	float r = -1.0f;
@@ -63,15 +63,15 @@ struct trajectoryHistoryBP
 
 /**
  * @brief Data structure responsible for holding input information for 
- * 1D B-p method.
+ * 1D B-p model.
  * 
  */
 struct simulationInputBP
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
-	trajectoryHistoryBP *history;
-	trajectoryHistoryBP *local_history;
+	trajectoryHistoryOneDimensionBp *history;
+	trajectoryHistoryOneDimensionBp *local_history;
 	float *Tkininj;
 	float *pinj;
 	double *w;
@@ -80,6 +80,6 @@ struct simulationInputBP
 	int maximumSizeOfSharedMemory;
 };
 
-void runBPMethod(simulationInputBP *simulation);
+void runOneDimensionBpSimulation(simulationInputBP *simulation);
 
 #endif // !BP_DEFINES_H

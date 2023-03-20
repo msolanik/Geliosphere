@@ -1,36 +1,35 @@
 /**
- * @file OneDimensionFpCpuSimulation.hpp
+ * @file OneDimensionFpCpuModel.hpp
  * @author Michal Solanik
  * @brief CPU implementation for 1D F-p model
  * @version 0.2
- * @date 2022-02-02
+ * @date 2022-06-01
  * 
  * @copyright Copyright (c) 2022
  * 
  */
 
-#ifndef FP_CPU_ONE_DIMENSION_SIMULATION_H
-#define FP_CPU_ONE_DIMENSION_SIMULATION_H
+#ifndef BP_CPU_ONE_DIMENSION_SIMULATION_H
+#define BP_CPU_ONE_DIMENSION_SIMULATION_H
 
-#include "AbstractCpuSimulation.hpp"
+#include "AbstractCpuModel.hpp"
 
 #include <mutex>
 #include <queue>
 
 struct SimulationOutput {
-    double pinj;
-    double p;
-    double r;
-    double w;
-    double sumac;
+	double Tkin;
+	double Tkininj;
+	double r;
+	double w;
 };
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
- * to define support functions for running implementation of 1D F-p model.
+ * to define support functions for running implementation of 1D B-p model.
  * 
  */
-class OneDimensionFpCpuSimulation : public AbstractCpuSimulation
+class OneDimensionBpCpuModel : public AbstractCpuModel
 {
 public:
     /**

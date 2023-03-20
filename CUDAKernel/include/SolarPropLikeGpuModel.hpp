@@ -1,5 +1,5 @@
 /**
- * @file TwoDimensionBpGpuSimulation.hpp
+ * @file SolarPropLikeGpuModel.hpp
  * @author Michal Solanik
  * @brief GPU implementation for 1D B-p model
  * @version 0.2
@@ -19,7 +19,7 @@
  * to define support functions for running implementation of 2D B-p simulation.
  * 
  */
-class TwoDimensionBpGpuSimulation : public AbstractGpuSimulation
+class SolarPropLikeGpuModel : public AbstractGpuSimulation
 {
 public:
     /**

@@ -1,5 +1,5 @@
 /**
- * @file OneDimensionFpGpuSimulation.hpp
+ * @file OneDimensionFpGpuModel.hpp
  * @author Michal Solanik
  * @brief GPU implementation for 1D F-p model
  * @version 0.2
@@ -19,7 +19,7 @@
  * to define support functions for running implementation of 1D F-p simulation.
  * 
  */
-class OneDimensionFpGpuSimulation : public AbstractGpuSimulation
+class OneDimensionFpGpuModel : public AbstractGpuSimulation
 {
 public:
     /**

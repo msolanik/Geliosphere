@@ -1,5 +1,6 @@
 #include <string>
 #include <regex>
+#include <unistd.h>
 
 #include "CLI/App.hpp"
 #include "CLI/Option.hpp"
@@ -19,10 +20,10 @@ int ParseParams::parseParams(int argc, char **argv)
 	int bilions;
 	singleTone = singleTone->instance();
 	CLI::App app{"App description"};
-	CLI::Option *forwardMethod = app.add_flag("-F,--forward", "Run a 1D forward-in-time model")->group("Methods");
-	CLI::Option *backwardMethod = app.add_flag("-B,--backward", "Run a 1D backward-in-time model")->group("Methods");
-	CLI::Option *twoDimensionBackwardMethod = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("Methods");
-	CLI::Option *threeDimensionBackwardMethod = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("Methods");
+	CLI::Option *forwardModel = app.add_flag("-F,--forward", "Run a 1D forward-in-time model")->group("models");
+	CLI::Option *backwardModel = app.add_flag("-B,--backward", "Run a 1D backward-in-time model")->group("models");
+	CLI::Option *solarPropLikeModel = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("models");
+	CLI::Option *geliosphereModel = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("models");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
 #if GPU_ENABLED == 1
 	CLI::Option *cpuOnly = app.add_flag("--cpu-only", "Use only CPU for calculaions");
@@ -45,34 +46,34 @@ int ParseParams::parseParams(int argc, char **argv)
 	vset->excludes(monthOption);
 	vset->excludes(yearOption);
 
-	backwardMethod->excludes(forwardMethod);
-	backwardMethod->excludes(twoDimensionBackwardMethod);
-	backwardMethod->excludes(threeDimensionBackwardMethod);
-	backwardMethod->excludes(customModel);
-	forwardMethod->excludes(backwardMethod);
-	forwardMethod->excludes(twoDimensionBackwardMethod);
-	forwardMethod->excludes(threeDimensionBackwardMethod);
-	forwardMethod->excludes(customModel);
-	twoDimensionBackwardMethod->excludes(backwardMethod);
-	twoDimensionBackwardMethod->excludes(forwardMethod);
-	twoDimensionBackwardMethod->excludes(threeDimensionBackwardMethod);
-	twoDimensionBackwardMethod->excludes(customModel);
-	threeDimensionBackwardMethod->excludes(backwardMethod);
-	threeDimensionBackwardMethod->excludes(forwardMethod);
-	threeDimensionBackwardMethod->excludes(twoDimensionBackwardMethod);
-	threeDimensionBackwardMethod->excludes(customModel);
-	customModel->excludes(backwardMethod);
-	customModel->excludes(forwardMethod);
-	customModel->excludes(twoDimensionBackwardMethod);
-	customModel->excludes(threeDimensionBackwardMethod);
+	backwardModel->excludes(forwardModel);
+	backwardModel->excludes(solarPropLikeModel);
+	backwardModel->excludes(geliosphereModel);
+	backwardModel->excludes(customModel);
+	forwardModel->excludes(backwardModel);
+	forwardModel->excludes(solarPropLikeModel);
+	forwardModel->excludes(geliosphereModel);
+	forwardModel->excludes(customModel);
+	solarPropLikeModel->excludes(backwardModel);
+	solarPropLikeModel->excludes(forwardModel);
+	solarPropLikeModel->excludes(geliosphereModel);
+	solarPropLikeModel->excludes(customModel);
+	geliosphereModel->excludes(backwardModel);
+	geliosphereModel->excludes(forwardModel);
+	geliosphereModel->excludes(solarPropLikeModel);
+	geliosphereModel->excludes(customModel);
+	customModel->excludes(backwardModel);
+	customModel->excludes(forwardModel);
+	customModel->excludes(solarPropLikeModel);
+	customModel->excludes(geliosphereModel);
 
 	monthOption->requires(yearOption);
 
 	spdlog::info("Started to parsing input parameters");
 	CLI11_PARSE(app, argc, argv);
-	if (!*forwardMethod && !*backwardMethod && !*twoDimensionBackwardMethod && !threeDimensionBackwardMethod)
+	if (!*forwardModel && !*backwardModel && !*solarPropLikeModel && !geliosphereModel)
 	{
-		spdlog::error("At least one method must be selected!");
+		spdlog::error("At least one model must be selected!");
 		return -1;
 	}
 	if (*csv)
@@ -125,13 +126,21 @@ int ParseParams::parseParams(int argc, char **argv)
 
 	if (*settingsOption)
 	{
-		TomlSettings *tomlSettings = new TomlSettings(settings);
-		tomlSettings->parseFromSettings(singleTone);
+		if (access(settings.c_str(), F_OK) == 0) {
+			TomlSettings *tomlSettings = new TomlSettings(settings);
+			tomlSettings->parseFromSettings(singleTone);
+		} else {
+			spdlog::warn("No settings file exists on entered path.");
+		}
 	}
 	else 
 	{
-		TomlSettings *tomlSettings = new TomlSettings(currentApplicationPath + "Settings.toml");
-		tomlSettings->parseFromSettings(singleTone);
+		if (access(settings.c_str(), F_OK) == 0) {
+			TomlSettings *tomlSettings = new TomlSettings(currentApplicationPath + "Settings.toml");
+			tomlSettings->parseFromSettings(singleTone);
+		} else {
+			spdlog::warn("No settings file exists on default path.");
+		}
 	}
 #if GPU_ENABLED == 1
 	if (*cpuOnly)
@@ -143,19 +152,19 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		singleTone->putString("destination", newDestination);
 	}
-	if (*forwardMethod)
+	if (*forwardModel)
 	{
 		singleTone->putString("model", "1D Fp");
 	}
-	else if (*backwardMethod)
+	else if (*backwardModel)
 	{
 		singleTone->putString("model", "1D Bp");
 	}
-	else if (*twoDimensionBackwardMethod)
+	else if (*solarPropLikeModel)
 	{
 		singleTone->putString("model", "2D SolarProp-like");
 	}
-	else if (*threeDimensionBackwardMethod)
+	else if (*geliosphereModel)
 	{
 		singleTone->putString("model", "2D Geliosphere");
 	}
@@ -180,7 +189,7 @@ int ParseParams::parseParams(int argc, char **argv)
 			}
 			else
 			{
-				singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year));
+				singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year) * 6.68458712e-9);
 			}
 		}
 		catch(const std::out_of_range&)

@@ -1,10 +1,10 @@
-#include "ThreeDimensionBpGpuSimulation.hpp"
+#include "GeliosphereGpuModel.hpp"
 #include "CudaErrorCheck.cuh"
 #include "CosmicUtils.cuh"
 #include "CosmicConstants.cuh"
-#include "ThreeDimensionBpSimulation.cuh"
+#include "GeliosphereModel.cuh"
 
-void ThreeDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singleTone)
+void GeliosphereGpuModel::prepareAndRunSimulation(ParamsCarrier *singleTone)
 {
     simulationInputThreeDimensionBP simulation;
     setThreadBlockSize();
@@ -12,14 +12,14 @@ void ThreeDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singl
     double *w;
     float *pinj;
     float *Tkininj;
-    trajectoryHistoryThreeDimensionBP *history, *local_history;
+    trajectoryHistoryGeliosphere *history, *local_history;
 
     gpuErrchk(cudaMallocManaged(&w, ((blockSize * threadSize) * sizeof(double))));
     gpuErrchk(cudaMallocManaged(&pinj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&Tkininj, ((blockSize * threadSize) * sizeof(float))));
     gpuErrchk(cudaMallocManaged(&state, ((blockSize * threadSize) * sizeof(curandState_t))));
-    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryThreeDimensionBP))));
-    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryThreeDimensionBP))));
+    gpuErrchk(cudaMallocHost(&local_history, ((blockSize * threadSize) * sizeof(trajectoryHistoryGeliosphere))));
+    gpuErrchk(cudaMalloc(&history, ((blockSize * threadSize) * sizeof(trajectoryHistoryGeliosphere))));
 
     simulation.singleTone = singleTone;
     simulation.history = history;
@@ -33,7 +33,7 @@ void ThreeDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singl
     simulation.maximumSizeOfSharedMemory = sharedMemoryMaximumSize;
 
     setConstants(singleTone);
-    runThreeDimensionBpMethod(&simulation);
+    runGeliosphereSimulation(&simulation);
 
     gpuErrchk(cudaFree(w));
     gpuErrchk(cudaFree(pinj));
@@ -44,7 +44,7 @@ void ThreeDimensionBpGpuSimulation::prepareAndRunSimulation(ParamsCarrier *singl
 }
 
 // Compute capability actual device
-void ThreeDimensionBpGpuSimulation::setThreadBlockSize()
+void GeliosphereGpuModel::setThreadBlockSize()
 {
     cudaDeviceProp gpuProperties;
     gpuErrchk(cudaGetDeviceProperties(&gpuProperties, 0));

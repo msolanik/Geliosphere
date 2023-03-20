@@ -54,7 +54,7 @@ int mkdirAndchdir(std::string directoryName)
 	return 1;
 }
 
-bool createDirectory(std::string methodDirectory, std::string destination)
+bool createDirectory(std::string modelDirectory, std::string destination)
 {
 	mode_t process_mask = umask(0);
 	umask(process_mask);
@@ -62,7 +62,7 @@ bool createDirectory(std::string methodDirectory, std::string destination)
 	{
 		return false;
 	}
-	if (mkdirAndchdir(methodDirectory) != 1)
+	if (mkdirAndchdir(modelDirectory) != 1)
 	{
 		return false;
 	}
@@ -90,8 +90,9 @@ std::string getDirectoryName(ParamsCarrier *singleTone)
 	}
 	std::string parameters;
 	parameters += dirName;
-	parameters += "_dt=" + std::to_string(singleTone->getFloat("dt", 5.0f)) + "K0=" +
-				  singleTone->getString("K0input", "0.000222") + "V=" + singleTone->getString("Vinput", "400");
+	parameters += "_dt=" + std::to_string(singleTone->getFloat("dt", singleTone->getFloat("dt_default", 50.0f))) + "K0=" +
+				  std::to_string(singleTone->getFloat("K0", singleTone->getFloat("K0_default", 0.000222f))) + "V=" 
+				  + std::to_string(singleTone->getFloat("V", singleTone->getFloat("V_default", 2.66667e-6)));
 	return parameters;
 }
 

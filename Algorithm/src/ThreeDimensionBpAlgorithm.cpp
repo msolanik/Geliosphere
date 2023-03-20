@@ -2,10 +2,10 @@
 
 #include "spdlog/spdlog.h"
 
-#include "ThreeDimensionBpCpuSimulation.hpp"
+#include "GeliosphereCpuModel.hpp"
 #include "TwoDimensionBpResults.hpp"
 #if GPU_ENABLED == 1
-#include "ThreeDimensionBpGpuSimulation.hpp"
+#include "GeliosphereGpuModel.hpp"
 #endif
 
 void ThreeDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
@@ -13,7 +13,7 @@ void ThreeDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	if (!singleTone->getInt("isCpu", 0))
 	{
 #if GPU_ENABLED == 1
-		ThreeDimensionBpGpuSimulation *threeDimensionBpGpuSimulation = new ThreeDimensionBpGpuSimulation();
+		GeliosphereGpuModel *threeDimensionBpGpuSimulation = new GeliosphereGpuModel();
 		threeDimensionBpGpuSimulation->prepareAndRunSimulation(singleTone);
 #else
     	spdlog::info("GPU-based computations are disabled. Please, compile again without -DUSE_CPU_ONLY.");
@@ -22,7 +22,7 @@ void ThreeDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	}
 	else
 	{
-		ThreeDimensionBpCpuSimulation *threeDimensionBpCpuSimulation = new ThreeDimensionBpCpuSimulation();
+		GeliosphereCpuModel *threeDimensionBpCpuSimulation = new GeliosphereCpuModel();
 		threeDimensionBpCpuSimulation->runSimulation(singleTone);
 	}
 

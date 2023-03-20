@@ -1,4 +1,4 @@
-#include "OneDimensionFpCpuSimulation.hpp"
+#include "OneDimensionFpCpuModel.hpp"
 #include "FileUtils.hpp"
 #include "Constants.hpp"
 
@@ -7,7 +7,7 @@
 #include <thread>
 #include <random>
 
-void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
+void OneDimensionFpCpuModel::runSimulation(ParamsCarrier *singleTone)
 {
 	spdlog::info("Starting initialization of 1D F-p simulation.");
 	srand(time(NULL));
@@ -33,7 +33,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
-			threads.emplace_back(std::thread(&OneDimensionFpCpuSimulation::simulation, this, i, nthreads, mmm));
+			threads.emplace_back(std::thread(&OneDimensionFpCpuModel::simulation, this, i, nthreads, mmm));
 		}
 		for (auto &th : threads)
 		{
@@ -50,7 +50,7 @@ void OneDimensionFpCpuSimulation::runSimulation(ParamsCarrier *singleTone)
 	writeSimulationReportFile(singleTone);
 }
 
-void OneDimensionFpCpuSimulation::simulation(int threadNumber, unsigned int availableThreads, int iteration)
+void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
 	double r, K, dr, arnum;
 	double Tkin, Tkininj, Rig, tt, t2, beta;

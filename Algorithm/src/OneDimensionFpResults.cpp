@@ -14,7 +14,7 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
     spdlog::info("Started to analyze 1D F-p particles.");
     ResultsUtils *resultsUtils = new ResultsUtils();
     int energy1e2, energy1e3, energy4e2;
-    double Rig, p1AU, Tkin, w0, w, p100AU, r, sumac;
+    double Rig, p1AU, Tkin, w0, w, p100AU, r, L;
     double binb[25], binw[25], binc[25];
     double spe1e2[100] = {0}, spe1e2N[100] = {0};
     double spe4e2[400] = {0}, spe4e2N[400] = {0};
@@ -34,7 +34,7 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
     spdlog::info("Founded {} to analyze.", numberOfIterations);
     for (int i = 0; i < numberOfIterations; i++)
     {
-        int reader = fscanf(inputFile, " %lf  %lf  %lf  %lf %lf \n", &p100AU, &p1AU, &r, &w0, &sumac);
+        int reader = fscanf(inputFile, " %lf  %lf  %lf  %lf %lf \n", &p100AU, &p1AU, &r, &w0, &L);
         if (reader == -1)
         {
             spdlog::error("Could not read from log.dat file.");
@@ -46,7 +46,7 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
         w0 = (m0 * m0 * c * c * c * c) + (p100AU * p100AU * c * c);
         w0 = exp(-1.85 * log(w0)) / p100AU;
         w0 = w0 / 1e45;
-        w = w0 * p1AU * p1AU * exp(sumac);
+        w = w0 * p1AU * p1AU * exp(L);
         if (r < 0.3)
         {
             w = 0.0;

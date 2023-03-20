@@ -1,7 +1,7 @@
 /**
- * @file TwoDimensionBpSimulation.cuh
+ * @file SolarPropLikeModel.cuh
  * @author Michal Solanik
- * @brief Definition of data structures needed for 2D B-p method.
+ * @brief Definition of data structures needed for 2D B-p model.
  * @version 0.2
  * @date 2022-06-02
  * 
@@ -45,7 +45,7 @@
  * simulations.
  * 
  */
-struct trajectoryHistoryTwoDimensionBP
+struct trajectoryHistorySolarPropLike
 {
 	float Tkin = -1.0f;
 	float r = -1.0f;
@@ -63,15 +63,15 @@ struct trajectoryHistoryTwoDimensionBP
 
 /**
  * @brief Data structure responsible for holding input information for 
- * 1D B-p method.
+ * 1D B-p model.
  * 
  */
 struct simulationInputTwoDimensionBP
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
-	trajectoryHistoryTwoDimensionBP *history;
-	trajectoryHistoryTwoDimensionBP *local_history;
+	trajectoryHistorySolarPropLike *history;
+	trajectoryHistorySolarPropLike *local_history;
 	float *Tkininj;
 	float *pinj;
 	double *w;
@@ -80,6 +80,6 @@ struct simulationInputTwoDimensionBP
 	int maximumSizeOfSharedMemory;
 };
 
-void runTwoDimensionBpMethod(simulationInputTwoDimensionBP *simulation);
+void runSolarPropLikeSimulation(simulationInputTwoDimensionBP *simulation);
 
 #endif // !BP_DEFINES_H

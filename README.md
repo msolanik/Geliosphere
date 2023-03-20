@@ -153,23 +153,23 @@ Algorithm
 <strong>Algorithm</strong> module contains following source files:
 
 - <strong>AbstractAlgorithm.hpp</strong> - Header file of abstract definition for algorithm.
-- <strong>OneDimensionBpAlgorithm.hpp</strong> - Header file of implementation of 1D B-p method
-- <strong>OneDimensionBpResults.hpp</strong> - Header file of implementation of 1D B-p method analyzer for output data.
-- <strong>OneDimensionFpAlgorithm.hpp</strong> - Header file of implementation of 1D F-p method
-- <strong>OneDimensionFpResults.hpp</strong> - Header file of implementation of 1D F-p method analyzer for output data.
+- <strong>OneDimensionBpAlgorithm.hpp</strong> - Header file of implementation of 1D B-p model
+- <strong>OneDimensionBpResults.hpp</strong> - Header file of implementation of 1D B-p model analyzer for output data.
+- <strong>OneDimensionFpAlgorithm.hpp</strong> - Header file of implementation of 1D F-p model
+- <strong>OneDimensionFpResults.hpp</strong> - Header file of implementation of 1D F-p model analyzer for output data.
 - <strong>ResultConstants.hpp</strong> - Header file containing constants needed for analysis of log files for all models.
-- <strong>ThreeDimensionBpAlgorithm.hpp</strong> - Header file of implementation of Geliosphere 2D B-p method.
-- <strong>TwoDimensionBpAlgorithm.hpp</strong> - Header file of implementation of SolarProp-like 2D B-p method.
-- <strong>TwoDimensionBpResults.hpp</strong> - Header file of implementation of 2D B-p method analyzer for output data.
+- <strong>ThreeDimensionBpAlgorithm.hpp</strong> - Header file of implementation of Geliosphere 2D B-p model.
+- <strong>TwoDimensionBpAlgorithm.hpp</strong> - Header file of implementation of SolarProp-like 2D B-p model.
+- <strong>TwoDimensionBpResults.hpp</strong> - Header file of implementation of 2D B-p model analyzer for output data.
 
 - <strong>AbstractAlgorithm.cpp</strong> - Source file of abstract definition for algorithm.
-- <strong>OneDimensionBpAlgorithm.cpp</strong> - Source file of implementation of 1D B-p method
-- <strong>OneDimensionBpResults.cpp</strong> - Source file of implementation of 1D B-p method analyzer for output data.
-- <strong>OneDimensionFpAlgorithm.cpp</strong> - Source file of implementation of 1D F-p method
-- <strong>OneDimensionFpResults.cpp</strong> - Source file of implementation of 1D F-p method analyzer for output data.
-- <strong>ThreeDimensionBpAlgorithm.cpp</strong> - Source file of implementation of Geliosphere 2D B-p method.
-- <strong>TwoDimensionBpAlgorithm.cpp</strong> - Source file of implementation of SolarProp-like 2D B-p method.
-- <strong>TwoDimensionBpResults.cpp</strong> - Source file of implementation of 2D B-p method analyzer for output data.
+- <strong>OneDimensionBpAlgorithm.cpp</strong> - Source file of implementation of 1D B-p model
+- <strong>OneDimensionBpResults.cpp</strong> - Source file of implementation of 1D B-p model analyzer for output data.
+- <strong>OneDimensionFpAlgorithm.cpp</strong> - Source file of implementation of 1D F-p model
+- <strong>OneDimensionFpResults.cpp</strong> - Source file of implementation of 1D F-p model analyzer for output data.
+- <strong>ThreeDimensionBpAlgorithm.cpp</strong> - Source file of implementation of Geliosphere 2D B-p model.
+- <strong>TwoDimensionBpAlgorithm.cpp</strong> - Source file of implementation of SolarProp-like 2D B-p model.
+- <strong>TwoDimensionBpResults.cpp</strong> - Source file of implementation of 2D B-p model analyzer for output data.
 
 </details>
 
@@ -237,32 +237,32 @@ Constants
 CpuImplementations
 │    
 └───include
-|   |   AbstractCpuSimulation.hpp
+|   |   AbstractCpuModel.hpp
 |   |   Constants.hpp
-|   |   OneDimensionBpCpuSimulation.hpp
-|   |   OneDimensionFpCpuSimulation.hpp
-|   |   ThreeDimensionBpCpuSimulation.hpp
-|   |   TwoDimensionBpCpuSimulation.hpp
+|   |   OneDimensionBpCpuModel.hpp
+|   |   OneDimensionFpCpuModel.hpp
+|   |   GeliosphereCpuModel.hpp
+|   |   SolarPropLikeCpuModel.hpp
 └───src
-    |   OneDimensionBpCpuSimulation.cpp
-    |   OneDimensionFpCpuSimulation.cpp
-    |   ThreeDimensionBpCpuSimulation.cpp
-    |   TwoDimensionBpCpuSimulation.cpp
+    |   OneDimensionBpCpuModel.cpp
+    |   OneDimensionFpCpuModel.cpp
+    |   GeliosphereCpuModel.cpp
+    |   SolarPropLikeCpuModel.cpp
 ```
 
 <strong>CPU Implementations</strong> module contains following source files:
 
-- <strong>AbstractCpuSimulation.hpp</strong> - Abstract definition for implementation of model on CPU.
+- <strong>AbstractCpuModel.hpp</strong> - Abstract definition for implementation of model on CPU.
 - <strong>Constants.hpp</strong> - Header file for constants for CPU implementations.
-- <strong>OneDimensionBpCpuSimulation.hpp</strong> - Header file for CPU implementation for 1D B-p model.
-- <strong>OneDimensionFpCpuSimulation.hpp</strong> - Header file for CPU implementation for 1D F-p model.
-- <strong>ThreeDimensionBpCpuSimulation.hpp</strong> - Header file for CPU implementation for Geliosphere 2D B-p model.
-- <strong>TwoDimensionBpCpuSimulation.hpp</strong> - Header file for CPU implementation for SolarProp-like 2D B-p model.
+- <strong>OneDimensionBpCpuModel.hpp</strong> - Header file for CPU implementation for 1D B-p model.
+- <strong>OneDimensionFpCpuModel.hpp</strong> - Header file for CPU implementation for 1D F-p model.
+- <strong>GeliosphereCpuModel.hpp</strong> - Header file for CPU implementation for Geliosphere 2D B-p model.
+- <strong>SolarPropLikeCpuModel.hpp</strong> - Header file for CPU implementation for SolarProp-like 2D B-p model.
 
-- <strong>OneDimensionBpCpuSimulation.cpp</strong> - Source file for CPU implementation for 1D B-p model.
-- <strong>OneDimensionFpCpuSimulation.cpp</strong> - Source file for CPU implementation for 1D F-p model.
-- <strong>ThreeDimensionBpCpuSimulation.cpp</strong> - Source file for CPU implementation for Geliosphere 2D B-p model.
-- <strong>TwoDimensionBpCpuSimulation.cpp</strong> - Source file for CPU implementation for SolarProp-like 2D B-p model.
+- <strong>OneDimensionBpCpuModel.cpp</strong> - Source file for CPU implementation for 1D B-p model.
+- <strong>OneDimensionFpCpuModel.cpp</strong> - Source file for CPU implementation for 1D F-p model.
+- <strong>GeliosphereCpuModel.cpp</strong> - Source file for CPU implementation for Geliosphere 2D B-p model.
+- <strong>SolarPropLikeCpuModel.cpp</strong> - Source file for CPU implementation for SolarProp-like 2D B-p model.
   
 </details>
 
@@ -278,25 +278,25 @@ CUDAKernel
 |   |   CosmicConstants.cuh
 |   |   CosmicUtils.cuh
 |   |   CudaErrorCheck.cuh
-|   |   OneDimensionBpGpuSimulation.hpp
-|   |   OneDimensionBpSimulation.cuh
-|   |   OneDimensionFpGpuSimulation.hpp
-|   |   OneDimensionFpSimulation.cuh
-|   |   ThreeDimensionBpGpuSimulation.hpp
-|   |   ThreeDimensionBpSimulation.cuh
-|   |   TwoDimensionBpGpuSimulation.hpp
-|   |   TwoDimensionBpSimulation.cuh
+|   |   OneDimensionBpGpuModel.hpp
+|   |   OneDimensionBpModel.cuh
+|   |   OneDimensionFpGpuModel.hpp
+|   |   OneDimensionFpModel.cuh
+|   |   GeliosphereGpuModel.hpp
+|   |   GeliosphereModel.cuh
+|   |   SolarPropLikeGpuModel.hpp
+|   |   SolarPropLikeModel.cuh
 └───src
     |   CosmicConstants.cu
     |   CosmicUtils.cu
-    |   OneDimensionBpGpuSimulation.cpp
-    |   OneDimensionBpSimulation.cu
-    |   OneDimensionFpGpuSimulation.cpp
-    |   OneDimensionFpSimulation.cu
-    |   ThreeDimensionBpGpuSimulation.cpp
-    |   ThreeDimensionBpSimulation.cu
-    |   TwoDimensionBpGpuSimulation.cpp
-    |   TwoDimensionBpSimulation.cu
+    |   OneDimensionBpGpuModel.cpp
+    |   OneDimensionBpModel.cu
+    |   OneDimensionFpGpuModel.cpp
+    |   OneDimensionFpModel.cu
+    |   GeliosphereGpuModel.cpp
+    |   GeliosphereModel.cu
+    |   SolarPropLikeGpuModel.cpp
+    |   SolarPropLikeModel.cu
 ```
 
 <strong>CUDA Kernel</strong> module contains following source files:
@@ -305,25 +305,25 @@ CUDAKernel
 - <strong>CosmicConstants.cuh</strong> - Header file for constants needed for simulations.
 - <strong>CosmicUtils.cuh</strong> - Header file for common functions for simulations.
 - <strong>CudaErrorCheck.cuh</strong> - Header file for utilities for checking errors.
-- <strong>OneDimensionBpGpuSimulation.hpp</strong> - Header file for class utilizing GPU implementation of 1D B-p model.
-- <strong>OneDimensionBpSimulation.cuh</strong> - Header file for GPU implementation of 1D B-p model.
-- <strong>OneDimensionFpGpuSimulation.hpp</strong> - Header file for class utilizing GPU implementation of 1D F-p model.
-- <strong>OneDimensionFpSimulation.cuh</strong> - Header file for GPU implementation of 1D F-p model.
-- <strong>ThreeDimensionBpGpuSimulation.hpp</strong> - Header file for class utilizing GPU implementation of Geliosphere 2D B-p model.
-- <strong>ThreeDimensionBpGpuSimulation.cuh</strong> - Header file for GPU implementation of Geliosphere 2D B-p model.
-- <strong>TwoDimensionBpGpuSimulation.hpp</strong> - Header file for class utilizing GPU implementation of SolarProp-like 2D B-p model.
-- <strong>TwoDimensionBpSimulation.cuh</strong> - Header file for GPU implementation of SolarProp-like 2D B-p model.
+- <strong>OneDimensionBpGpuModel.hpp</strong> - Header file for class utilizing GPU implementation of 1D B-p model.
+- <strong>OneDimensionBpModel.cuh</strong> - Header file for GPU implementation of 1D B-p model.
+- <strong>OneDimensionFpGpuModel.hpp</strong> - Header file for class utilizing GPU implementation of 1D F-p model.
+- <strong>OneDimensionFpModel.cuh</strong> - Header file for GPU implementation of 1D F-p model.
+- <strong>GeliosphereGpuModel.hpp</strong> - Header file for class utilizing GPU implementation of Geliosphere 2D B-p model.
+- <strong>GeliosphereGpuModel.cuh</strong> - Header file for GPU implementation of Geliosphere 2D B-p model.
+- <strong>SolarPropLikeGpuModel.hpp</strong> - Header file for class utilizing GPU implementation of SolarProp-like 2D B-p model.
+- <strong>SolarPropLikeModel.cuh</strong> - Header file for GPU implementation of SolarProp-like 2D B-p model.
 
 - <strong>CosmicConstants.cu</strong> - Source file for constants needed for simulations.
 - <strong>CosmicUtils.cu</strong> - Source file for common functions for simulations.
-- <strong>OneDimensionBpGpuSimulation.cpp</strong> - Source file for class utilizing GPU implementation of 1D B-p model.
-- <strong>OneDimensionBpSimulation.cu</strong> - Source file for GPU implementation of 1D B-p model.
-- <strong>OneDimensionFpGpuSimulation.cpp</strong> - Source file for class utilizing GPU implementation of 1D F-p model.
-- <strong>OneDimensionFpSimulation.cu</strong> - Source file for GPU implementation of 1D F-p model.
-- <strong>ThreeDimensionBpGpuSimulation.cpp</strong> - Source file for class utilizing GPU implementation of Geliosphere 2D B-p model.
-- <strong>ThreeDimensionBpGpuSimulation.cu</strong> - Source file for GPU implementation of Geliosphere 2D B-p model.
-- <strong>TwoDimensionBpGpuSimulation.cpp</strong> - Source file for class utilizing GPU implementation of SolarProp-like 2D B-p model.
-- <strong>TwoDimensionBpSimulation.cu</strong> - Source file for GPU implementation of SolarProp-like 2D B-p model.
+- <strong>OneDimensionBpGpuModel.cpp</strong> - Source file for class utilizing GPU implementation of 1D B-p model.
+- <strong>OneDimensionBpModel.cu</strong> - Source file for GPU implementation of 1D B-p model.
+- <strong>OneDimensionFpGpuModel.cpp</strong> - Source file for class utilizing GPU implementation of 1D F-p model.
+- <strong>OneDimensionFpModel.cu</strong> - Source file for GPU implementation of 1D F-p model.
+- <strong>GeliosphereGpuModel.cpp</strong> - Source file for class utilizing GPU implementation of Geliosphere 2D B-p model.
+- <strong>GeliosphereGpuModel.cu</strong> - Source file for GPU implementation of Geliosphere 2D B-p model.
+- <strong>SolarPropLikeGpuModel.cpp</strong> - Source file for class utilizing GPU implementation of SolarProp-like 2D B-p model.
+- <strong>SolarPropLikeModel.cu</strong> - Source file for GPU implementation of SolarProp-like 2D B-p model.
 
 </details>
 

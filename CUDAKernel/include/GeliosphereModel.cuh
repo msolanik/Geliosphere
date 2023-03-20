@@ -1,7 +1,7 @@
 /**
- * @file ThreeDimensionBpSimulation.cuh
+ * @file GeliosphereModel.cuh
  * @author Michal Solanik
- * @brief Definition of data structures needed for 3D B-p method.
+ * @brief Definition of data structures needed for Geliosphere model.
  * @version 0.2
  * @date 2022-08-15
  * 
@@ -41,11 +41,11 @@
 #endif
 
 /**
- * @brief Data structure responsible for holding output data from 1D B-p 
+ * @brief Data structure responsible for holding output data from Geliosphere 
  * simulations.
  * 
  */
-struct trajectoryHistoryThreeDimensionBP
+struct trajectoryHistoryGeliosphere
 {
 	float Tkin = -1.0f;
 	float r = -1.0f;
@@ -63,15 +63,15 @@ struct trajectoryHistoryThreeDimensionBP
 
 /**
  * @brief Data structure responsible for holding input information for 
- * 1D B-p method.
+ * 1D B-p model.
  * 
  */
 struct simulationInputThreeDimensionBP
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
-	trajectoryHistoryThreeDimensionBP *history;
-	trajectoryHistoryThreeDimensionBP *local_history;
+	trajectoryHistoryGeliosphere *history;
+	trajectoryHistoryGeliosphere *local_history;
 	float *Tkininj;
 	float *pinj;
 	double *w;
@@ -80,6 +80,6 @@ struct simulationInputThreeDimensionBP
 	int maximumSizeOfSharedMemory;
 };
 
-void runThreeDimensionBpMethod(simulationInputThreeDimensionBP *simulation);
+void runGeliosphereSimulation(simulationInputThreeDimensionBP *simulation);
 
 #endif // !BP_DEFINES_H
