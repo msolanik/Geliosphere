@@ -1,25 +1,25 @@
 /**
- * @file TwoDimensionBpAlgorithm.hpp
+ * @file SolarPropLikeAlgorithm.hpp
  * @author Michal Solanik
- * @brief Implementation of 2D B-p model
- * @version 0.1
- * @date 2022-03-13
+ * @brief Implementation of Geliosphere model algorithm
+ * @version 0.2
+ * @date 2022-07-07
  * 
  * @copyright Copyright (c) 2022
  * 
  */
 
-#ifndef TWO_DIMENSION_BP_model_H
-#define TWO_DIMENSION_BP_model_H
+#ifndef GELIOSPHERE_MODEL_H
+#define GELIOSPHERE_MODEL_H
 
 #include "AbstractAlgorithm.hpp"
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
- * to define support functions for running implementation of 2D B-p simulation.
+ * to define support functions for running implementation of Geliosphere model simulation.
  * 
  */
-class TwoDimensionBpAlgorithm : public AbstractAlgorithm
+class GeliosphereAlgorithm : public AbstractAlgorithm
 {
 public:
 	/**

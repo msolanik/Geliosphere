@@ -11,7 +11,7 @@
 
 void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 {
-    spdlog::info("Started to analyze 2D/3D B-p particles.");
+    spdlog::info("Started to analyze 2D B-p particles.");
     ResultsUtils *resultsUtils = new ResultsUtils();
     double w, Rig, p1AU, Tkin, r, p, Tkinw, Rig1AU, Tkininj, theta, thetainj, tt, t2, beta;
     double tem6, tem5, jlis, tem, wJGR, jlisJGR, jlisBurger, wBurger;
@@ -19,7 +19,15 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     FILE *inputFile = fopen("log.dat", "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
-    spdlog::info("Founded {} to analyze.", numberOfIterations);
+    if (numberOfIterations < 0)
+    {
+        spdlog::info("No trajectory found in log file.", numberOfIterations);
+        spdlog::warn("Please, consider increase of amount of simulated test particles for current input parameters.", numberOfIterations);
+    }
+    else
+    {
+        spdlog::info("Founded {} trajectories for analysis.", numberOfIterations);
+    }
     for (int i = 0; i < numberOfIterations; i++)
     {
         int reader = fscanf(inputFile, "%lf %lf %lf %lf %lf %lf\n", &Tkininj, &Tkin, &r, &w, &thetainj, &theta);

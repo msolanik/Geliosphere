@@ -1,4 +1,4 @@
-#include "ThreeDimensionBpAlgorithm.hpp"
+#include "GeliosphereAlgorithm.hpp"
 
 #include "spdlog/spdlog.h"
 
@@ -8,7 +8,7 @@
 #include "GeliosphereGpuModel.hpp"
 #endif
 
-void ThreeDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
+void GeliosphereAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
 	if (!singleTone->getInt("isCpu", 0))
 	{

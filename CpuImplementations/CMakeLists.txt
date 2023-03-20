@@ -26,7 +26,7 @@ target_include_directories( ${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    Constants::Basic
+    Input::Basic
     utils::utils
     Threads::Threads
     spdlog::spdlog_header_only

@@ -1,14 +1,14 @@
 # Set the project name
-project (Constants)
+project (Input)
 
 include_directories(include)
 
 file(GLOB SOURCES "src/*.cpp")
-set(Constants ${SOURCES})  
+set(Input ${SOURCES})  
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
 
-add_library(Constants SHARED ${SOURCES}) 
-add_library(Constants::Basic ALIAS ${PROJECT_NAME})
+add_library(Input SHARED ${SOURCES}) 
+add_library(Input::Basic ALIAS ${PROJECT_NAME})
 
 include(FetchContent)
 FetchContent_Declare(

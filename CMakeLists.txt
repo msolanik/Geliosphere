@@ -21,7 +21,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 add_subdirectory (Algorithm)
-add_subdirectory (Constants)
+add_subdirectory (Input)
 add_subdirectory (CpuImplementations)
 if(CPU_VERSION_ONLY MATCHES OFF)
 add_subdirectory (CUDAKernel)
@@ -42,7 +42,7 @@ configure_file(Settings.toml Settings.toml COPYONLY)
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_link_libraries(${PROJECT_NAME}
-    Constants::Basic
+    Input::Basic
     Algorithm::Algorithm
     factory::factory
     spdlog::spdlog_header_only

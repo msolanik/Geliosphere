@@ -135,8 +135,8 @@ Algorithm
 |   |   OneDimensionFpAlgorithm.hpp
 |   |   OneDimensionFpResults.hpp
 |   |   ResultConstants.hpp
-|   |   ThreeDimensionBpAlgorithm.hpp
-|   |   TwoDimensionBpAlgorithm.hpp
+|   |   GeliosphereAlgorithm.hpp
+|   |   SolarPropLikeAlgorithm.hpp
 |   |   TwoDimensionBpResults.hpp
 └───src
     |   AbstractAlgorithm.cpp
@@ -144,8 +144,8 @@ Algorithm
     |   OneDimensionBpResults.cpp
     |   OneDimensionFpAlgorithm.cpp
     |   OneDimensionFpResults.cpp
-    |   ThreeDimensionBpAlgorithm.cpp
-    |   TwoDimensionBpAlgorithm.cpp
+    |   GeliosphereAlgorithm.cpp
+    |   SolarPropLikeAlgorithm.cpp
     |   TwoDimensionBpResults.cpp
 ```
 
@@ -158,8 +158,8 @@ Algorithm
 - <strong>OneDimensionFpAlgorithm.hpp</strong> - Header file of implementation of 1D F-p model
 - <strong>OneDimensionFpResults.hpp</strong> - Header file of implementation of 1D F-p model analyzer for output data.
 - <strong>ResultConstants.hpp</strong> - Header file containing constants needed for analysis of log files for all models.
-- <strong>ThreeDimensionBpAlgorithm.hpp</strong> - Header file of implementation of Geliosphere 2D B-p model.
-- <strong>TwoDimensionBpAlgorithm.hpp</strong> - Header file of implementation of SolarProp-like 2D B-p model.
+- <strong>GeliosphereAlgorithm.hpp</strong> - Header file of implementation of Geliosphere 2D B-p model.
+- <strong>SolarPropLikeAlgorithm.hpp</strong> - Header file of implementation of SolarProp-like 2D B-p model.
 - <strong>TwoDimensionBpResults.hpp</strong> - Header file of implementation of 2D B-p model analyzer for output data.
 
 - <strong>AbstractAlgorithm.cpp</strong> - Source file of abstract definition for algorithm.
@@ -167,8 +167,8 @@ Algorithm
 - <strong>OneDimensionBpResults.cpp</strong> - Source file of implementation of 1D B-p model analyzer for output data.
 - <strong>OneDimensionFpAlgorithm.cpp</strong> - Source file of implementation of 1D F-p model
 - <strong>OneDimensionFpResults.cpp</strong> - Source file of implementation of 1D F-p model analyzer for output data.
-- <strong>ThreeDimensionBpAlgorithm.cpp</strong> - Source file of implementation of Geliosphere 2D B-p model.
-- <strong>TwoDimensionBpAlgorithm.cpp</strong> - Source file of implementation of SolarProp-like 2D B-p model.
+- <strong>GeliosphereAlgorithm.cpp</strong> - Source file of implementation of Geliosphere 2D B-p model.
+- <strong>SolarPropLikeAlgorithm.cpp</strong> - Source file of implementation of SolarProp-like 2D B-p model.
 - <strong>TwoDimensionBpResults.cpp</strong> - Source file of implementation of 2D B-p model analyzer for output data.
 
 </details>

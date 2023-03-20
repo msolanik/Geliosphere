@@ -1,8 +1,8 @@
 #include "CosmicFactory.hpp"
 #include "OneDimensionBpAlgorithm.hpp"
 #include "OneDimensionFpAlgorithm.hpp"
-#include "TwoDimensionBpAlgorithm.hpp"
-#include "ThreeDimensionBpAlgorithm.hpp"
+#include "SolarPropLikeAlgorithm.hpp"
+#include "GeliosphereAlgorithm.hpp"
 
 AbstractAlgorithm *CosmicFactory::getAlgorithm(std::string name)
 {
@@ -16,11 +16,11 @@ AbstractAlgorithm *CosmicFactory::getAlgorithm(std::string name)
 	}
 	else if (name.compare("2D SolarProp-like") == 0)
 	{
-		return new TwoDimensionBpAlgorithm();
+		return new SolarPropLikeAlgorithm();
 	}
 	else if (name.compare("2D Geliosphere") == 0)
 	{
-		return new ThreeDimensionBpAlgorithm();
+		return new GeliosphereAlgorithm();
 	}
 	return NULL;
 }

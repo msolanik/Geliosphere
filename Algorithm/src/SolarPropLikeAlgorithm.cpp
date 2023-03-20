@@ -1,4 +1,4 @@
-#include "TwoDimensionBpAlgorithm.hpp"
+#include "SolarPropLikeAlgorithm.hpp"
 
 #include "spdlog/spdlog.h"
 
@@ -8,7 +8,7 @@
 #include "SolarPropLikeGpuModel.hpp"
 #endif
 
-void TwoDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
+void SolarPropLikeAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
 	if (!singleTone->getInt("isCpu", 0))
 	{
