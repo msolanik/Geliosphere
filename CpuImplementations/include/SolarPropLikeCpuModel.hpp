@@ -1,7 +1,7 @@
 /**
  * @file SolarPropLikeCpuModel.hpp
  * @author Michal Solanik
- * @brief CPU implementation for 2D B-p model
+ * @brief CPU implementation for SOLARPROPLike model
  * @version 0.2
  * @date 2022-02-02
  *

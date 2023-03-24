@@ -26,15 +26,19 @@
  * 
  * @param w Spectrum intensity.
  * @param pinj Injecting particle momentum.
- * @param padding Support value used to calculate state for getting
+ * @param iteration Support value used to calculate state for getting
  * kinetic energy.
  */
-__global__ void trajectoryPreSimulation(double *w, float *pinj, int padding)
+__global__ void trajectoryPreSimulation(double *w, float *pinj, int iteration)
 {
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
-	float Tkinw = getTkinInjection(BLOCK_SIZE * THREAD_SIZE * padding + id) * 1e9f * q;
+	float Tkinw = getTkinInjection(BLOCK_SIZE * THREAD_SIZE * iteration + id) * 1e9f * q;
 	float Rig = sqrtf(Tkinw * (Tkinw + (2.0f * T0w))) / q;
 	float p = Rig * q / c;
+	
+	// Equation under Equation 6 from 
+    // Yamada et al. "A stochastic view of the solar modulation phenomena of cosmic rays" GEOPHYSICAL RESEARCH LETTERS, VOL. 25, NO.13, PAGES 2353-2356, JULY 1, 1998
+    // https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1029/98GL51869
 	double newW = (m0_double * m0_double * c_double * c_double * c_double * c_double) + (p * p * c_double * c_double);
 	newW = (pow(newW, -1.85) / p) / 1e45;
 	w[id] = newW;
@@ -59,7 +63,7 @@ __global__ void trajectorySimulation(float *pinj, trajectoryHistoryOneDimensionF
 	int idx = threadIdx.x;
 	float r = 100.0001f;
 	float p = pinj[id];
-	float beta, sumac = 0.0f, Rig, dr, pp;
+	float beta, sumac = 0.0f, Rig, dr, pp, Kdiff;
 	float Tkin = getTkinInjection(BLOCK_SIZE * THREAD_SIZE * padding + id);
 	float2 *generated = (float2 *)sharedMemory;
 	curandState *cuState = (curandState *)(&generated[THREAD_SIZE]);
@@ -68,24 +72,37 @@ __global__ void trajectorySimulation(float *pinj, trajectoryHistoryOneDimensionF
 	bool generate = true;
 	while (r < 100.0002f)
 	{
+		// Equation 5
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
+		
+		// Equation 6
 		Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
+		
+		// Equation 11
 		sumac += ((4.0f * V / (3.0f * r)) * dt);
+		
+		// Equation 10
 		pp = p;
 		p -= (2.0f * V * pp * dt / (3.0f * r));
+	
+		// Equation 7
+		Kdiff = K0 * beta * Rig;
 		if (generate)
 		{
 			generated[idx] = curand_box_muller(&cuState[idx]);
-			dr = (V + (2.0f * K0 * beta * Rig / r)) * dt + (generated[idx].x * sqrtf(2.0f * K0 * beta * Rig * dt));
+			// Equation 9
+			dr = (V + (2.0f * Kdiff / r)) * dt + (generated[idx].x * sqrtf(2.0f * Kdiff * dt));
 			r += dr;
 			generate = false;
 		}
 		else
 		{
-			dr = (V + (2.0f * K0 * beta * Rig / r)) * dt + (generated[idx].y * sqrtf(2.0f * K0 * beta * Rig * dt));
+			// Equation 9
+			dr = (V + (2.0f * Kdiff / r)) * dt + (generated[idx].y * sqrtf(2.0f * Kdiff * dt));
 			r += dr;
 			generate = true;
 		}
+		// Equation 6 in J
 		Rig = p * c / q;
 		Tkin = (sqrtf((T0 * T0 * q * q * 1e9f * 1e9f) + (q * q * Rig * Rig)) - (T0 * q * 1e9f)) / (q * 1e9f);
 		if (beta > 0.01f && Tkin < 100.0f)
@@ -127,7 +144,7 @@ void runOneDimensionFpSimulation(simulationInput *simulation)
 		destination = getDirectoryName(singleTone);
         spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
-	if (!createDirectory("FW", destination))
+	if (!createDirectory("1DFP", destination))
 	{
         spdlog::error("Directory for 1D F-p simulations cannot be created.");
 		return;
@@ -141,14 +158,16 @@ void runOneDimensionFpSimulation(simulationInput *simulation)
 	{
 		cudaFuncSetAttribute(trajectorySimulation, cudaFuncAttributeMaxDynamicSharedMemorySize, simulation->maximumSizeOfSharedMemory);
 	}
-	for (int k = 0; k < iterations; ++k)
+	for (int iteration = 0; iteration < iterations; ++iteration)
 	{
-        spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
+        spdlog::info("Processed: {:03.2f}%", (float)iteration / ((float)iterations / 100.0));
 		nullCount<<<1, 1>>>();
 		gpuErrchk(cudaDeviceSynchronize());
-		trajectoryPreSimulation<<<simulation->blockSize, simulation->threadSize>>>(simulation->w, simulation->pinj, k);
+		trajectoryPreSimulation<<<simulation->blockSize, simulation->threadSize>>>(simulation->w, simulation->pinj, iteration);
 		gpuErrchk(cudaDeviceSynchronize());
-		trajectorySimulation<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, simulation->history, k, simulation->state);
+		trajectorySimulation<<<simulation->blockSize, simulation->threadSize, 
+			simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->pinj, 
+				simulation->history, iteration, simulation->state);
 		gpuErrchk(cudaDeviceSynchronize());
 		cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
         spdlog::info("In this iteration {} particles were detected.", counter);

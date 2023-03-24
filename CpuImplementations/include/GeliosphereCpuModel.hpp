@@ -1,7 +1,7 @@
 /**
  * @file GeliosphereCpuModel.hpp
  * @author Michal Solanik
- * @brief CPU implementation for 3D B-p model
+ * @brief CPU implementation for Geliosphere 2D model
  * @version 0.2
  * @date 2022-07-07
  *

@@ -1,7 +1,7 @@
 /**
  * @file SolarPropLikeGpuModel.hpp
  * @author Michal Solanik
- * @brief GPU implementation for 1D B-p model
+ * @brief GPU implementation for SOLARPROPLike model
  * @version 0.2
  * @date 2022-07-11
  * 
@@ -16,7 +16,7 @@
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
- * to define support functions for running implementation of 2D B-p simulation.
+ * to define support functions for running implementation of SOLARPROPLike simulation.
  * 
  */
 class SolarPropLikeGpuModel : public AbstractGpuSimulation

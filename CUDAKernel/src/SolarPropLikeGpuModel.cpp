@@ -6,7 +6,7 @@
 
 void SolarPropLikeGpuModel::prepareAndRunSimulation(ParamsCarrier *singleTone)
 {
-    simulationInputTwoDimensionBP simulation;
+    simulationInputSolarPropLike simulation;
     setThreadBlockSize();
     curandState_t *state;
     double *w;

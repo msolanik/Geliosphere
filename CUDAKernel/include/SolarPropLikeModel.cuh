@@ -1,7 +1,7 @@
 /**
  * @file SolarPropLikeModel.cuh
  * @author Michal Solanik
- * @brief Definition of data structures needed for 2D B-p model.
+ * @brief Definition of data structures needed for SOLARPROPLike model.
  * @version 0.2
  * @date 2022-06-02
  * 
@@ -66,7 +66,7 @@ struct trajectoryHistorySolarPropLike
  * 1D B-p model.
  * 
  */
-struct simulationInputTwoDimensionBP
+struct simulationInputSolarPropLike
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
@@ -80,6 +80,6 @@ struct simulationInputTwoDimensionBP
 	int maximumSizeOfSharedMemory;
 };
 
-void runSolarPropLikeSimulation(simulationInputTwoDimensionBP *simulation);
+void runSolarPropLikeSimulation(simulationInputSolarPropLike *simulation);
 
 #endif // !BP_DEFINES_H

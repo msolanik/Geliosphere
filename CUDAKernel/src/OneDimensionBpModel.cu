@@ -68,38 +68,38 @@ __global__ void trajectorySimulationBP(float *pinj, trajectoryHistoryOneDimensio
 	bool generate = true;
 	while (r < 100.0002f)
 	{
-		// Equation 42
+		// Equation 5
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		
-		// Equation 43 in GeV
+		// Equation 6 in GeV
 		Rig = (p * c / q) / 1e9f;
 		pp = p;
 
-		// Equation 47
+		// Equation 14
 		p -= (2.0f * V * pp * dt / (3.0f * r));
 
-		// Equation 44
+		// Equation 7
 		Kdiff = K0 * beta * Rig;
 		if (generate)
 		{
 			generated[idx] = curand_box_muller(&cuState[idx]);
-			// Equation 47
+			// Equation 13
 			dr = (V + (2.0f * Kdiff / r)) * dt + (generated[idx].x * sqrtf(2.0f * Kdiff * dt));
 			r += dr;
 			generate = false;
 		}
 		else
 		{
-			// Equation 47
+			// Equation 13
 			dr = (V + (2.0f * Kdiff / r)) * dt + (generated[idx].y * sqrtf(2.0f * Kdiff * dt));
 			r += dr;
 			generate = true;
 		}
-		// Equation 43 in J
+		// Equation 6 in J
 		Rig = p * c / q;
 		Tkin = (sqrtf((T0 * T0 * q * q * 1e9f * 1e9f) + (q * q * Rig * Rig)) - (T0 * q * 1e9f)) / (q * 1e9f);
 		
-		// Equation 42
+		// Equation 5
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		if (beta > 0.01f && Tkin < 200.0f)
 		{
@@ -143,7 +143,7 @@ void runOneDimensionBpSimulation(simulationInputBP *simulation)
 		destination = getDirectoryName(singleTone);
         spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
-	if (!createDirectory("BP", destination))
+	if (!createDirectory("1DBP", destination))
 	{
         spdlog::error("Directory for 1D B-p simulations cannot be created.");
 		return;

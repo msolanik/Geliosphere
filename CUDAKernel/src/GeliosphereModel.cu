@@ -31,7 +31,7 @@
  * @param padding Support value used to calculate state for getting
  * kinetic energy.
  */
-__global__ void trajectoryPreSimulationThreeBp(float *Tkininj, float *p, double *w, int padding)
+__global__ void trajectoryPreSimulationGeliosphere(float *Tkininj, float *p, double *w, int padding)
 {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     Tkininj[id] = (useUniformInjection) 
@@ -40,6 +40,10 @@ __global__ void trajectoryPreSimulationThreeBp(float *Tkininj, float *p, double 
     float Tkinw = Tkininj[id] * 1e9f * q;
     float Rig = sqrtf(Tkinw * (Tkinw + (2.0f * T0w))) / q;
     float pinj = Rig * q / c;
+
+    // Equation under Equation 6 from 
+    // Yamada et al. "A stochastic view of the solar modulation phenomena of cosmic rays" GEOPHYSICAL RESEARCH LETTERS, VOL. 25, NO.13, PAGES 2353-2356, JULY 1, 1998
+    // https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1029/98GL51869
     double newW = (m0_double * m0_double * c_double * c_double * c_double * c_double) + (pinj * pinj * c_double * c_double);
     newW = (pow(newW, -1.85) / pinj) / 1e45;
     w[id] = newW;
@@ -54,7 +58,7 @@ __global__ void trajectoryPreSimulationThreeBp(float *Tkininj, float *p, double 
  * kinetic energy.
  * @param state Array of random number generator data structures.
  */
-__global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliosphere *history, int padding, curandState *state)
+__global__ void trajectorySimulationGeliosphere(trajectoryHistoryGeliosphere *history, int padding, curandState *state)
 {
     extern __shared__ int sharedMemory[];
     int id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -77,10 +81,15 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
     int count;
     while (r < 100.0f)
     {
+		// Equation 5
         beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
+
+        // Equation 8 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf		
         Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
 
-        // Equation 22
+        // Equation 25
         if ((theta < (1.7f * Pi / 180.0f)) || (theta > (178.3f * Pi / 180.0f)))
         {
             delta = 0.003f;
@@ -92,16 +101,16 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
         deltarh = delta / rh;
         deltarh2 = deltarh * deltarh;
 
-        // Equation 21
+        // Equation 24
         gamma = (r * omega) * sinf(theta) / V;
         gamma2 = gamma * gamma;
         
-        // Equation 23
+        // Equation 26
         Cb = 1.0f + gamma2 + (r * r * deltarh2);
         Cb2 = Cb * Cb;
         Bfactor = (5.0f / 3.4f) * r * r / sqrtf(Cb);
 
-        // Equation 28 
+        // Equation 32 
         if (Rig < 0.1f)
         {
             Kpar = K0 * beta * 0.1f * Bfactor / 3.0f;
@@ -111,66 +120,66 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
             Kpar = K0 * beta * Rig * Bfactor / 3.0f;
         }
 
-        // Equation 29
+        // Equation 33
         Kper = ratio * Kpar;
 
-        // Equation 24
+        // Equation 27
         Krr = Kper + ((Kpar - Kper) / Cb);
         
-        // Equation 25
+        // Equation 28
         Ktt = Kper + (r * r * deltarh2 * (Kpar - Kper) / Cb);
         Kphph = 1.0f;
 
-        // Equation 26
+        // Equation 29
         Krt = deltarh * (Kpar - Kper) * r / Cb;
         Krph = 0.0f;
         Ktph = 0.0f;
 
-        // Equation 15, where Krph = Ktph = 0, and Kphph = 1 
+        // Equation 16, where Krph = Ktph = 0, and Kphph = 1 
         B11Temp = (Kphph * Krt * Krt) - (2.0f * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
         B11 = 2.0f * B11Temp / ((Ktph * Ktph) - (Ktt * Kphph));
         B11 = sqrtf(B11);
         
-        // Equation 16
+        // Equation 17
         B12 = ((Krph * Ktph) - (Krt * Kphph)) / ((Ktph * Ktph) - (Ktt * Kphph));
         B12 = B12 * sqrtf(2.0f * (Ktt - (Ktph * Ktph / Kphph)));
         
-        // Equation 19
+        // Equation 20
         B13 = sqrtf(2.0f) * Krph / sqrtf(Kphph);
         
-        // Equation 17
+        // Equation 18
         B22 = Ktt - (Ktph * Ktph / Kphph);
         B22 = sqrtf(2.0f * B22) / r;
         
-        // Equation 19
+        // Equation 20
         B23 = Ktph * sqrtf(2.0f / Kphph) / r;
 
-        // Equation 30
+        // Equation 34
         COmega = 2.0f * r * omega * omega * sinf(theta) * sinf(theta) / (V * V);
         COmega = COmega + (2.0f * r * deltarh2);
     
-        // Equation 32
+        // Equation 36
         dKper = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(Cb)) - (r * r * COmega / (2.0f * sqrtf(Cb)))) / Cb;
 
-        // Equation 31                
+        // Equation 35                
         dKrr = dKper + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(Cb, 1.5f)) - (r * r * COmega * 3.0f * sqrtf(Cb) / 2.0f)) / powf(Cb, 3.0f));
         dKrr = dKrr * 5.0f / (3.0f * 3.4f);
 
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
-            // Equation 33
+            // Equation 37
             CKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
                  
-            // Equation 34
+            // Equation 38
             dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / powf(Cb, 1.5f);
 
-            // Equation 35
+            // Equation 39
             dKtt2 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * deltarh2;
                     
-            // Equation 37
+            // Equation 41
             dKtt4 = 3.0f * CKtt / powf(Cb, 2.5f);
                     
-            // Equation 38
+            // Equation 42
             dKtt = dKtt1 - (dKtt2 * dKtt4);
         }
         else
@@ -178,30 +187,30 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
             sin2 = sinf(theta) * sinf(theta);
             sin3 = sinf(theta) * sinf(theta) * sinf(theta);
 
-            // Equation 33
+            // Equation 37
             CKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
             CKtt = CKtt - (r * r * delta0 * delta0 * cos(theta) / (rh * rh * sin3));
                     
-            // Equation 34
+            // Equation 38
             dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / powf(Cb, 1.5f);
 
-            // Equation 35
+            // Equation 39
             dKtt2 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * delta0 * delta0 / (rh * rh);
                     
-            // Equation 36
+            // Equation 40
             dKtt3 = -2.0f * (cosf(theta) / sin3) / powf(Cb, 1.5f);
                     
-            // Equation 37
+            // Equation 41
             dKtt4 = 3.0f * CKtt / (sin2 * powf(Cb, 2.5f));
                     
-            // Equation 38
+            // Equation 42
             dKtt = dKtt1 + (dKtt2 * (dKtt3 - dKtt4));
         }
 
-        // Equation 34
+        // Equation 43
         dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(Cb, 2.5f);
 
-        // Equation 35
+        // Equation 44
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
             dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(Cb, 2.5f));
@@ -215,6 +224,7 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
             dKrtt = dKrtt * (1.0f - (2.0f * r * r * deltarh2) + (4.0f * gamma2));
         }
 
+        // Equation 21
         dr = ((-1.0f * V) + (2.0f * Krr / r) + dKrr) * dt;
         dr = dr + (dKrtt * dt / r) + (Krt * cosf(theta) * dt / (r * sinf(theta)));
         generated[idx] = curand_box_muller(&cuState[idx]);
@@ -222,16 +232,21 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
         dr = dr + (generated[idx].y * B12 * sqrtf(dt));
         dr = dr + (curand_normal(&cuState[idx]) * B13 * sqrtf(dt));
 
+        // Equation 22
         dtheta = (Ktt * cosf(theta)) / (r * r * sinf(theta));
         dtheta = (dtheta * dt) + (dKtt * dt / (r * r));
         dtheta = dtheta + (dKrtr * dt) + (2.0f * Krt * dt / r);
         generated[idx] = curand_box_muller(&cuState[idx]);
         dtheta = dtheta + (generated[idx].x * B22 * sqrtf(dt)) + (generated[idx].y * B23 * sqrtf(dt));
 
+        // Equation 23
         dTkin = -2.0f * V * ((Tkin + T0 + T0) / (Tkin + T0)) * Tkin * dt / (3.0f * r);
 
         Bfield = A * sqrtf(Cb) / (r * r);
         
+        // Equation 26 from 
+        // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        // https://arxiv.org/pdf/1511.07875.pdf        
         Larmor = 0.0225f * Rig / Bfield;
 
         // Equation 34 from 
@@ -269,7 +284,11 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
         // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
         // https://arxiv.org/pdf/1511.07875.pdf
         DriftSheetR = polarity * konvF * (1.0f / (3.0f * A)) * Rig * beta * r * gamma * fprime / Cb;
+        
+        // Equation 21
         dr = dr + ((DriftR + DriftSheetR) * dt);
+        
+        // Equation 22
         dtheta = dtheta + (DriftTheta * dt / r);
 
         r = r + dr;
@@ -308,12 +327,12 @@ __global__ void trajectorySimulationThreeDimensionBp(trajectoryHistoryGeliospher
  * in input simulation data structure.
  *
  */
-void runGeliosphereSimulation(simulationInputThreeDimensionBP *simulation)
+void runGeliosphereSimulation(simulationInputGeliosphere *simulation)
 {
     int counter;
     ParamsCarrier *singleTone;
     singleTone = simulation->singleTone;
-    spdlog::info("Starting initialization of 3D B-p simulation.");
+    spdlog::info("Starting initialization of Geliosphere 2D simulation.");
 
     std::string destination = singleTone->getString("destination", "");
     if (destination.empty())
@@ -321,9 +340,9 @@ void runGeliosphereSimulation(simulationInputThreeDimensionBP *simulation)
         destination = getDirectoryName(singleTone);
         spdlog::info("Destination is not specified - using generated name for destination: " + destination);
     }
-    if (!createDirectory("3DBP", destination))
+    if (!createDirectory("Geliosphere2D", destination))
     {
-        spdlog::error("Directory for 3D B-p simulations cannot be created.");
+        spdlog::error("Directory for Geliosphere 2D simulations cannot be created.");
         return;
     }
 
@@ -333,16 +352,16 @@ void runGeliosphereSimulation(simulationInputThreeDimensionBP *simulation)
     int iterations = ceil((float)singleTone->getInt("millions", 1) * 1000000 / ((float)simulation->blockSize * (float)simulation->threadSize));
     if (simulation->maximumSizeOfSharedMemory != -1)
     {
-        cudaFuncSetAttribute(trajectorySimulationThreeDimensionBp, cudaFuncAttributeMaxDynamicSharedMemorySize, simulation->maximumSizeOfSharedMemory);
+        cudaFuncSetAttribute(trajectorySimulationGeliosphere, cudaFuncAttributeMaxDynamicSharedMemorySize, simulation->maximumSizeOfSharedMemory);
     }
     for (int k = 0; k < iterations; ++k)
     {
         spdlog::info("Processed: {:03.2f}%", (float)k / ((float)iterations / 100.0));
         nullCount<<<1, 1>>>();
         gpuErrchk(cudaDeviceSynchronize());
-        trajectoryPreSimulationThreeBp<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
+        trajectoryPreSimulationGeliosphere<<<simulation->blockSize, simulation->threadSize>>>(simulation->Tkininj, simulation->pinj, simulation->w, k);
         gpuErrchk(cudaDeviceSynchronize());
-        trajectorySimulationThreeDimensionBp<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
+        trajectorySimulationGeliosphere<<<simulation->blockSize, simulation->threadSize, simulation->threadSize * sizeof(curandState_t) + simulation->threadSize * sizeof(float2)>>>(simulation->history, k, simulation->state);
         gpuErrchk(cudaDeviceSynchronize());
         cudaMemcpyFromSymbol(&counter, outputCounter, sizeof(int), 0, cudaMemcpyDeviceToHost);
         spdlog::info("In this iteration {} particles were detected.", counter);

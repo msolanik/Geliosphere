@@ -6,7 +6,7 @@
 
 void GeliosphereGpuModel::prepareAndRunSimulation(ParamsCarrier *singleTone)
 {
-    simulationInputThreeDimensionBP simulation;
+    simulationInputGeliosphere simulation;
     setThreadBlockSize();
     curandState_t *state;
     double *w;

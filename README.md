@@ -9,18 +9,20 @@ Class documentation can be found [here](https://msolanik.github.io/Geliosphere/a
 | :--- | :----: | ---: |
 | -F | - | Run forward-in-time simulation |
 | -B | - | Run backward-in-time simulation |
-| -E | - | Run SolarpropLike 2D backward-in-time simulation |
+| -E | - | Run SOLARPROPLike 2D backward-in-time simulation |
 | -T | - | Run Geliosphere 2D backward-in-time simulation |
 | -c | - | Set .csv output |
+| --cpu-only | - | Simulation will be executed on CPU. |
 | -h | - | Print help for Geliosphere |
 | -d | float | Set time step (default value 5.0s) |
 | -K | float | Set K0 (default value 5∗10^22cm2/s) |
 | -V | float | Set solar wind speed (default value 400 km/s)|
 | -p | string | Set custom path for output in output directory |
-| -N | int | Set amount of simulations in millions |
-| -m | int | Set month for using meassured values |
-| -y | int | Set year for using meassured values |
+| -N | int | Set number of test particles in millions |
+| -m | int | Load K0 and V for given month from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D |
+| -y | int | Load K0 and V for given year from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D |
 | -s | string | Set path to settings toml file (default Settings.tml in root folder) |
+| --custom-model | string | Run custom user-implemented model |
 
 All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.
 
@@ -77,13 +79,13 @@ Help for Geliosphere can be displayed via following command:
 
 Following image describes relations between modules in Geliosphere:
 
-![module_diagram drawio (1)](https://user-images.githubusercontent.com/22960818/200040994-dde685a6-9990-4a78-83e6-0975eaf230f3.png)
+![module_diagram drawio (1)](https://user-images.githubusercontent.com/22960818/227489782-ca3d8c0d-e96f-473f-ace9-3cd9397cfe18.png)
 
 Modules are used to organize the logic needed for simulations in the heliosphere and to support logic for them. These modules are described as follows: 
 - **Geliosphere** - contains the main function and links basic logic for selecting the model, parsing input data and running the selected model,
 - **Algorithm** - contains logic used for selecting implementation of model for selected computing unit, and logic for analyzing output spectra, 
 - **Factory** - contains classes based on factory and abstract factory patterns used for creating objects,  
-- **Constants** - contains classes used for parsing input data,
+- **Input** - contains classes used for parsing input data,
 - **CPU Implementations** - contains classes used for running parallel CPU implementations of models of cosmic rays modulation in the heliosphere,
 - **CUDA Kernel** - contains classes used for running parallel GPU implementations of models of cosmic rays modulation in the heliosphere,
 - **Utils** - contains classes holding various functions used in Geliosphere.
@@ -197,12 +199,12 @@ Factory
 
 </details>
 
-### Constants module
+### Input module
 
 <details>
 
 ```
-Constants
+Input
 │    
 └───include
 |   |   MeasureValuesTransformation.hpp
@@ -216,7 +218,7 @@ Constants
     |   TomlSettings.cpp
 ```
 
-<strong>Constants</strong> module contains following source files:
+<strong>Input</strong> module contains following source files:
 
 - <strong>MeasureValuesTransformation.hpp</strong> - Header file for class representing extraction of measured parameters for simulation from table.
 - <strong>ParamsCarrier.hpp</strong> - Header file for universal map-like structure.

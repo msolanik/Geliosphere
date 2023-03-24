@@ -82,23 +82,29 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*dtset)
 	{
-		if (newDT < 0.1f || newDT > 1000)
+		if (newDT < 3.0 || newDT > 5000.0)
 		{
-			spdlog::error("dt is out of range!(0.1-1000)");
+			spdlog::error("dt is out of range!(3-5000)");
 			return -1;
 		}
 		singleTone->putFloat("dt", newDT);
 	}
 	if (*kset)
 	{
-		if (newK < 1e22 || newK > 1e23)
+		if (newK < 0.0)
 		{
-			spdlog::error("K0 is out of range!(1e22-1e23 cm^2/s)");
+			spdlog::error("K0 is out of range!(>0)");
 			return -1;
+		}
+		if (newK < 1e19 || newK > 1e23)
+		{
+			spdlog::warn("K0 is out of recommended range!(1e19-1e23 cm^2/s)");
 		}
 		char buffer[80];
 		sprintf(buffer, "%g", newK);
 		singleTone->putString("K0input", buffer);
+		// 10^22 cm^2/s = 4.444e-5 AU^2/s
+		// 10^20 cm^2/s = 4.444e-7 AU^2/s
 		newK = newK * 4.4683705e-27;
 		singleTone->putFloat("K0", newK);
 		singleTone->putInt("K0_entered_by_user", 1);

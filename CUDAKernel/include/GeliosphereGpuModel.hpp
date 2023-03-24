@@ -1,7 +1,7 @@
 /**
  * @file GeliosphereGpuModel.hpp
  * @author Michal Solanik
- * @brief GPU implementation for 3D B-p model
+ * @brief GPU implementation for Geliosphere 2D model
  * @version 0.2
  * @date 2022-08-15
  * 
@@ -16,7 +16,7 @@
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
- * to define support functions for running implementation of 3D B-p simulation.
+ * to define support functions for running implementation of Geliosphere 2D simulation.
  * 
  */
 class GeliosphereGpuModel : public AbstractGpuSimulation

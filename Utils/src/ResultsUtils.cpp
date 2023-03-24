@@ -34,14 +34,8 @@ void ResultsUtils::printCsvHeader(FILE *outputFile, enum spectrumType spectrumTy
         fprintf(outputFile, "%s,%s\n", "binc", "spelog/binw");
         break;
     case SPECTRUM_1E2:
-        fprintf(outputFile, "%s,%s,%s\n", "Tkin", "spe1e2N", "spe1e2");
-        break;
     case SPECTRUM_1E3:
-        fprintf(outputFile, "%s,%s,%s\n", "Tkin", "spe1e3N", "spe1e3");
-        break;
     case SPECTRUM_4E2:
-        fprintf(outputFile, "%s,%s,%s\n", "Tkin", "spe4e2N", "spe4e2");
-        break;
     case SPECTRUM_SOLARPROP:
     case SPECTRUM_ULYSSES:
         fprintf(outputFile, "%s,%s,%s,%s\n", "Tkin", "spe", "speAvg", "speCount");
@@ -91,7 +85,8 @@ void ResultsUtils::writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FI
     {
         for (int i = 0; i < spectrumOutput->size; i++)
         {
-            fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), ((float)(i + 1) / spectrumOutput->tkinPortion), spectrumCount[i], spectrumValue[i]);
+            fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), ((float)(i + 1) / spectrumOutput->tkinPortion), spectrumValue[i], 
+                (spectrumCount[i] != 0.0) ? spectrumValue[i]/spectrumCount[i] : 0.0, spectrumCount[i]);
         }
     }
 }

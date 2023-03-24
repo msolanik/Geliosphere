@@ -66,7 +66,7 @@ struct trajectoryHistoryGeliosphere
  * 1D B-p model.
  * 
  */
-struct simulationInputThreeDimensionBP
+struct simulationInputGeliosphere
 {
 	ParamsCarrier *singleTone;
 	curandState_t *state;
@@ -80,6 +80,6 @@ struct simulationInputThreeDimensionBP
 	int maximumSizeOfSharedMemory;
 };
 
-void runGeliosphereSimulation(simulationInputThreeDimensionBP *simulation);
+void runGeliosphereSimulation(simulationInputGeliosphere *simulation);
 
 #endif // !BP_DEFINES_H

@@ -18,7 +18,7 @@ void SolarPropLikeCpuModel::runSimulation(ParamsCarrier *singleTone)
 		destination = getDirectoryName(singleTone);
 		spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
-	if (!createDirectory("2DBP", destination))
+	if (!createDirectory("SOLARPROPLike", destination))
 	{
 		spdlog::error("Directory for SOLARPROPlike 2D simulations cannot be created.");
 		return;
@@ -26,15 +26,15 @@ void SolarPropLikeCpuModel::runSimulation(ParamsCarrier *singleTone)
 
 	FILE *file = fopen("log.dat", "w");
 	unsigned int nthreads = std::thread::hardware_concurrency();
-	int new_MMM = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 30.0 * 500.0));
+	int targetIterations = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 30.0 * 500.0));
 	setContants(singleTone);
-	for (int mmm = 0; mmm < new_MMM; mmm++)
+	for (int iteration = 0; iteration < targetIterations; iteration++)
 	{
-		spdlog::info("Processed: {:03.2f}%", (float) mmm / ((float) new_MMM / 100.0));
+		spdlog::info("Processed: {:03.2f}%", (float) iteration / ((float) targetIterations / 100.0));
 		std::vector<std::thread> threads;
 		for (int i = 0; i < (int)nthreads; i++)
 		{
-			threads.emplace_back(std::thread(&SolarPropLikeCpuModel::simulation, this, i, nthreads, mmm));
+			threads.emplace_back(std::thread(&SolarPropLikeCpuModel::simulation, this, i, nthreads, iteration));
 		}
 		for (auto &th : threads)
 		{
@@ -58,25 +58,31 @@ void SolarPropLikeCpuModel::simulation(int threadNumber, unsigned int availableT
 	double Tkin, Tkininj, Rig, beta, alfa, Ktt, dKrr;
 	double w, r2, gamma, gamma2, onePlusGamma, onePlusGamma2, Kper, Krr;
 	double Tkinw, p;
-	int m, mm;
 	double dtheta, dTkin;
 	double DriftR,DriftTheta,arg,alphaH,Larmor,Bfield,f,fprime,DriftSheetR;
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
-	for (m = 0; m < 30; m++)
+	for (int energy = 0; energy < 30; energy++)
 	{
-		for (mm = 0; mm < 500; mm++)
+		for (int particlePerEnergy = 0; particlePerEnergy < 500; particlePerEnergy++)
 		{
 			Tkininj = (useUniformInjection) 
-				? getTkinInjection(((availableThreads * iteration + threadNumber) * 500) + mm, 0.0001, uniformEnergyInjectionMaximum, 10000)
-				: SPbins[m];
+				? getTkinInjection(((availableThreads * iteration + threadNumber) * 500) + particlePerEnergy, 0.0001, uniformEnergyInjectionMaximum, 10000)
+				: SPbins[energy];
 			Tkin = Tkininj;
 
 			Tkinw = Tkin * 1e9 * q;
+			
+			// Equation 8 from 
+            // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+            // https://arxiv.org/pdf/1511.07875.pdf		
 			Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;
 			p = Rig * q / c;
 
+			// Equation under Equation 6 from 
+            // Yamada et al. "A stochastic view of the solar modulation phenomena of cosmic rays" GEOPHYSICAL RESEARCH LETTERS, VOL. 25, NO.13, PAGES 2353-2356, JULY 1, 1998
+            // https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1029/98GL51869
 			w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
 			w = pow(w, -1.85) / p;
 			w = w / 1e45;
@@ -86,11 +92,12 @@ void SolarPropLikeCpuModel::simulation(int threadNumber, unsigned int availableT
 
 			while (r < 100.0)
 			{
-				// Equation 42
+				// Equation 5
 				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
-				alfa = (Tkin + T0 + T0)/(Tkin + T0);
-				
+                // Equation 8 from 
+                // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+                // https://arxiv.org/pdf/1511.07875.pdf				
 				Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
 
 				r2 = r * r;
@@ -158,6 +165,7 @@ void SolarPropLikeCpuModel::simulation(int threadNumber, unsigned int availableT
 				// Equation 18 from 
                 // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
                 // https://arxiv.org/pdf/1511.07875.pdf
+				alfa = (Tkin + T0 + T0)/(Tkin + T0);
 				dTkin = -2.0*V*alfa*Tkin*dt/(3.0*r);  
 				
 				Bfield = A*sqrt(onePlusGamma)/(r*r);
@@ -202,8 +210,15 @@ void SolarPropLikeCpuModel::simulation(int threadNumber, unsigned int availableT
                 // Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
                 // https://arxiv.org/pdf/1511.07875.pdf
 				DriftSheetR = polarity*konvF*(1.0/(3.0*A))*Rig*beta*r*gamma*fprime/onePlusGamma; 
-
+				
+				// Equation 16 from 
+				// Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+				// https://arxiv.org/pdf/1511.07875.pdf
 				dr = dr + ((DriftR + DriftSheetR)*dt);
+
+				// Equation 17 from 
+        		// Kappl, Rolf. "SOLARPROP: Charge-sign dependent solar modulation for everyone." Computer Physics Communications 207 (2016): 386-399.
+        		// https://arxiv.org/pdf/1511.07875.pdf
 				dtheta = dtheta + (DriftTheta*dt/r);
 
 				r = r + dr;
