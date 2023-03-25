@@ -22,6 +22,47 @@ ulytrj_helio.asc.txt
 KET_P116_P190_1994-1998.csv
 ```
 
+If there are some issues regarding the siunitx package, we recommend to comment out following code in  ```prepare_spectra.py```:
+<details>
+ mpl.use("pgf")
+    # Adding siunitx package based on:
+    # https://tex.stackexchange.com/questions/391074/how-to-use-the-siunitx-package-within-python-matplotlib
+    pgf_with_latex = {                      
+        "pgf.texsystem": "pdflatex",       
+        "text.usetex": True,               
+        "font.family": "serif",
+        "font.serif": [],                   
+        "font.sans-serif": [],             
+        "font.monospace": [],
+        "axes.labelsize": 14,              
+        "font.size": 14,
+        "legend.fontsize": 14,               
+        "xtick.labelsize": 14,              
+        "ytick.labelsize": 14,
+        "figure.figsize": [10,6],     
+        "pgf.preamble": "\n".join([
+            r"\usepackage[utf8]{inputenc}",
+            r"\usepackage[T1]{fontenc}",
+            r"\usepackage[detect-all,locale=UK]{siunitx}",
+            r"""\ifdefined\qty\else
+                \ifdefined\NewCommandCopy
+                    \NewCommandCopy\qty\SI
+                \else
+                    \NewDocumentCommand\qty{O{}mm}{\SI[#1]{#2}{#3}}
+                \fi
+                \fi
+                \ifdefined\unit\else
+                \ifdefined\NewCommandCopy
+                    \NewCommandCopy\unit\si
+                \else
+                    \NewDocumentCommand\unit{O{}m}{\si[#1]{#2}}
+                \fi
+                \fi"""
+            ])
+    }
+    plt.rcParams.update(pgf_with_latex)
+</details>
+
 ## create_ulysses_Geliosphere_flux.py
 Utility to replicate figure comparing Ulysses trajectory and Geliosphere 2D model results between 1994 and 1998. Script requires to has built-up Geliosphere in ```../build/``` directory.
 After success run, flux_KET_P190_vs_SOLARPROPlike_1xdelta0.png will contain mentioned figure.

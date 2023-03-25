@@ -42,13 +42,19 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         Tkinw = Tkininj * 1e9 * q;
         Rig1AU = sqrt(Tkinw * (Tkinw + (2 * T0w))) / q;
         p1AU = Rig1AU * q / c;
-
+        
+        // Based on:
+        // W. R. Webber, P. R. Higbie. "Production of cosmogenic Be nuclei in the Earth's atmosphere by cosmic rays: Its dependence on solar modulation and the interstellar cosmic ray spectrum" 
+        // https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2003JA009863
         tem5 = 21.1 * exp(-2.8 * log(Tkininj));
         tem6 = 1.0 + (5.85 * exp(-1.22 * log(Tkininj))) + (1.18 * exp(-2.54 * log(Tkininj)));
         jlis = tem5 / tem6;
         w = jlis / (p * p);
         w = w * p1AU * p1AU;
 
+        // Based on: 
+        // Ilya G. Usoskin, Katja Alanko-Huotari, Gennady A. Kovaltsov, Kalevi Mursula. "Heliospheric modulation of cosmic rays: Monthly reconstruction for 1951–2004"
+        // https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2005JA011250
         tt = Tkin + Tr;
         t2 = tt + Tr;
         beta = sqrt(Tkin * t2) / tt;
@@ -56,16 +62,17 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         tem = exp(-3.93 * log(tem));
         jlisJGR = 2.7e3 * exp(1.12 * log(Tkin)) * tem;
         jlisJGR = jlisJGR / (beta * beta);
-
         wJGR = jlisJGR / (p * p);
         wJGR = wJGR * p1AU * p1AU;
 
+        // Based on:
+        // R. A. Burger, M. S. Potgieter, B. Heber. "Production of cosmogenic Be nuclei in the Earth's atmosphere by cosmic rays: Its dependence on solar modulation and the interstellar cosmic ray spectrum"
+        // https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2003JA009863
         tem = sqrt((Tkin*Tkin) + (2.0*Tkin*0.938));
         jlisBurger = 1.9*1.0e4*exp(-2.78*log(tem));
         tem = sqrt((Tkin*Tkin) + (2.0*Tkin*0.938));
         tem = 0.4866*exp(-2.51*log(tem));
         jlisBurger = jlisBurger/(1 + tem);
-
         wBurger = jlisBurger/(p*p);
         wBurger = wBurger*p1AU*p1AU;
 
@@ -91,10 +98,10 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     fclose(inputFile);
 
     struct spectrumOutput spectrumOutput;
-    spectrumOutput.fileName = "JGAR";
+    spectrumOutput.fileName = "Usoskin_2005";
     spectrumOutput.isCsv = singleTone->getInt("csv", 0);
     resultsUtils->writeSpectrum(&spectrumOutput, speN, speJGR, SPECTRUM_SOLARPROP);
-    spdlog::info("Spectrum based on JGAR has been written to file.");
+    spdlog::info("Spectrum based on Usoskin 2005 has been written to file.");
 
     spectrumOutput.fileName = "Weber";
     spectrumOutput.isCsv = singleTone->getInt("csv", 0);
