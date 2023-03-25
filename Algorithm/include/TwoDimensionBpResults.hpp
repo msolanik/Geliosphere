@@ -1,7 +1,7 @@
 /**
  * @file TwoDimensionBpResults.hpp
  * @author Michal Solanik
- * @brief Implementation of 2D B-p method analyzer for output data.
+ * @brief Implementation of 2D B-p model analyzer for output data.
  * @version 0.1
  * @date 2022-03-13
  * 
@@ -16,7 +16,7 @@
 
 /**
  * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface
- * to define analyzer for 2D B-p method for creating output energetic 
+ * to define analyzer for 2D B-p model for creating output energetic 
  * spectra from log file. 
  * 
  */

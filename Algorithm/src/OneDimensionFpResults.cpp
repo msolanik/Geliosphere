@@ -31,7 +31,15 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
     }
     FILE *inputFile = fopen("log.dat", "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
-    spdlog::info("Founded {} to analyze.", numberOfIterations);
+    if (numberOfIterations < 0)
+    {
+        spdlog::info("No trajectory found in log file.", numberOfIterations);
+        spdlog::warn("Please, consider increase of amount of simulated test particles for current input parameters.", numberOfIterations);
+    }
+    else
+    {
+        spdlog::info("Founded {} trajectories for analysis.", numberOfIterations);
+    }
     for (int i = 0; i < numberOfIterations; i++)
     {
         int reader = fscanf(inputFile, " %lf  %lf  %lf  %lf %lf \n", &p100AU, &p1AU, &r, &w0, &sumac);

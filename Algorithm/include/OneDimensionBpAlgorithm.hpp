@@ -1,7 +1,7 @@
 /**
  * @file OneDimensionBpAlgorithm.hpp
  * @author Michal Solanik
- * @brief Implementation of 1D B-p method
+ * @brief Implementation of 1D B-p model
  * @version 0.1
  * @date 2021-07-13
  * 
@@ -23,7 +23,7 @@ class OneDimensionBpAlgorithm : public AbstractAlgorithm
 {
 public:
 	/**
-	 * @brief GPU implementation of 1D B-p method and set input 
+	 * @brief GPU implementation of 1D B-p model and set input 
 	 * paramaters.  
 	 * 
 	 * @param singleTone datastructure containing input parameters.

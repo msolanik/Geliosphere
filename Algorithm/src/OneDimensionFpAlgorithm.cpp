@@ -3,9 +3,9 @@
 #include "spdlog/spdlog.h"
 
 #include "OneDimensionFpResults.hpp"
-#include "OneDimensionFpCpuSimulation.hpp"
+#include "OneDimensionFpCpuModel.hpp"
 #if GPU_ENABLED == 1
-#include "OneDimensionFpGpuSimulation.hpp"
+#include "OneDimensionFpGpuModel.hpp"
 #endif
 
 void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
@@ -13,7 +13,7 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	if (!singleTone->getInt("isCpu", 0))
 	{
 #if GPU_ENABLED == 1
-		OneDimensionFpGpuSimulation *oneDimensionFpGpuSimulation = new OneDimensionFpGpuSimulation();
+		OneDimensionFpGpuModel *oneDimensionFpGpuSimulation = new OneDimensionFpGpuModel();
 		oneDimensionFpGpuSimulation->prepareAndRunSimulation(singleTone);
 #else
     	spdlog::info("GPU-based computations are disabled. Please, compile again without -DUSE_CPU_ONLY.");
@@ -22,7 +22,7 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 	}
 	else
 	{
-		OneDimensionFpCpuSimulation *oneDimensionFpCpuSimulation = new OneDimensionFpCpuSimulation();
+		OneDimensionFpCpuModel *oneDimensionFpCpuSimulation = new OneDimensionFpCpuModel();
 		oneDimensionFpCpuSimulation->runSimulation(singleTone);
 	}
 

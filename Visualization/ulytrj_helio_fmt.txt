@@ -1,0 +1,34 @@
+CRUISE, PRIME AND EXTENDED MISSION TRAJECTORY FILE FORMAT
+ - (HELIOCENTRIC COORDINATE SYSTEM) -
+
+LOCATION: ESTUDS::DKA500:[UDS.TRAJECTORY.HELIOCENTRIC]HELIO.DAT;1
+
+UDS REPRESENTATIVE: K. KIEDRON (KRYS@KITA.JPL.NASA.GOV)
+
+RECORD FORMAT:
+
+C FREE FORMAT
+      READ(1,*)IYEAR,IDOY,IHOUR,IMIN,ISEC,
+     .         ESU,SUE,SEU,RANGE,HLAT,HRASC,HECLAT,SOLONG
+C FIXED FORMAT
+      READ(1,100)IYEAR,IDOY,IHOUR,IMIN,ISEC,
+     .           ESU,SUE,SEU,RANGE,HLAT,HRASC,HECLAT,SOLONG
+100   FORMAT(I4,X,I3,3(X,I2.2),3F11.2,F11.4,F11.2,F12.2,F11.2,F13.3)
+
+PARAMETER LIST:
+
+      IYEAR:  year
+      IDOY:   day of year
+      IHOUR:  hour
+      IMIN:   minute
+      ISEC:   second
+      ESU:    earth-sun-Ulysses angle (degree)
+      SUE:    sun-Ulysses-earth angle (degree)
+      SEU:    sun-earth-Ulysses angle (degree)
+      HRANGE: heliocentric range (AU)
+      HLAT:   heliographic latitude (degree)
+      HRASC:  heliographic right ascension (degree)
+      HECLAT: heliocentric ecliptic latitude (degree)
+      SOLONG: solar longitude (degree)
+
+TIME RESOLUTION: 1 day

@@ -24,13 +24,13 @@ target_include_directories( ${PROJECT_NAME}
 
 if(CPU_VERSION_ONLY)
     target_link_libraries(${PROJECT_NAME}
-    Constants::Basic
+    Input::Basic
     cpu_implementations::cpu_implementations
     spdlog::spdlog_header_only
     )
 else()
     target_link_libraries(${PROJECT_NAME}
-    Constants::Basic
+    Input::Basic
     cpu_implementations::cpu_implementations
     Cuda-kernel::Cuda-kernel
     spdlog::spdlog_header_only

@@ -1,7 +1,7 @@
 /**
  * @file OneDimensionFpAlgorithm.hpp
  * @author Michal Solanik
- * @brief Implementation of 1D F-p method
+ * @brief Implementation of 1D F-p model
  * @version 0.1
  * @date 2021-07-13
  * 
@@ -23,7 +23,7 @@ class OneDimensionFpAlgorithm : public AbstractAlgorithm
 {
 public:
 	/**
-	 * @brief Encapsulates GPU implementation of 1D F-p method and set input 
+	 * @brief Encapsulates GPU implementation of 1D F-p model and set input 
 	 * paramaters.  
 	 * 
 	 * @param singleTone datastructure containing input parameters.

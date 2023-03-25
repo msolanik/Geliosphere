@@ -1,0 +1,5 @@
+results/
+output/
+bins_per_years_output/
+Settings_batch.toml
+Pipfile.lock

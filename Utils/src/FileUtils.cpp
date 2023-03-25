@@ -54,7 +54,7 @@ int mkdirAndchdir(std::string directoryName)
 	return 1;
 }
 
-bool createDirectory(std::string methodDirectory, std::string destination)
+bool createDirectory(std::string modelDirectory, std::string destination)
 {
 	mode_t process_mask = umask(0);
 	umask(process_mask);
@@ -62,7 +62,7 @@ bool createDirectory(std::string methodDirectory, std::string destination)
 	{
 		return false;
 	}
-	if (mkdirAndchdir(methodDirectory) != 1)
+	if (mkdirAndchdir(modelDirectory) != 1)
 	{
 		return false;
 	}
@@ -90,7 +90,36 @@ std::string getDirectoryName(ParamsCarrier *singleTone)
 	}
 	std::string parameters;
 	parameters += dirName;
-	parameters += "_dt=" + std::to_string(singleTone->getFloat("dt", 5.0f)) + "K0=" +
-				  singleTone->getString("K0input", "0.000222") + "V=" + singleTone->getString("Vinput", "400");
+	parameters += "_dt=" + std::to_string(singleTone->getFloat("dt", singleTone->getFloat("dt_default", 50.0f))) + "K0=" +
+				  std::to_string(singleTone->getFloat("K0", singleTone->getFloat("K0_default", 0.000222f))) + "V=" 
+				  + std::to_string(singleTone->getFloat("V", singleTone->getFloat("V_default", 2.66667e-6)));
 	return parameters;
+}
+
+void writeSimulationReportFile(ParamsCarrier *singleTone)
+{
+	FILE *file = fopen("simulation_log.txt", "w");
+	fprintf(file, "Model: %s\n", singleTone->getString("model", "1D Fp").c_str());
+	fprintf(file, "---------------------\n");
+	if(singleTone->getInt("month_option", -1) != -1) 
+	{
+		fprintf(file, "Selected month: %d\n", singleTone->getInt("month_option", -1));
+		fprintf(file, "Selected year: %d\n", singleTone->getInt("year_option", -1));
+	}
+
+	if (singleTone->getString("model", "1D Fp").compare("2D SolarProp-like") == 0)
+	{
+		fprintf(file, "SolarProp-like model ratio: %g\n", singleTone->getFloat("solarPropRatio", 0.02f));
+	}
+	if (singleTone->getString("model", "1D Fp").compare("2D Geliosphere") == 0)
+	{
+		fprintf(file, "Geliosphere model ratio: %g\n", singleTone->getFloat("geliosphereRatio", 0.2f));
+		fprintf(file, "C Delta: %g\n", singleTone->getFloat("C_delta", 8.7e-5f));
+		fprintf(file, "Loaded tilt angle from file: %g\n", singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1)));
+		fprintf(file, "Calculated tilt angle:: %g\n", singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1)) * 3.1415926535f / 180.0f);
+	}
+	fprintf(file, "dt: %g\n", singleTone->getFloat("dt", singleTone->getFloat("dt_default", 50.0f)));
+	fprintf(file, "K0: %g\n", singleTone->getFloat("K0", singleTone->getFloat("K0_default", 0.000222f)));
+	fprintf(file, "V: %g\n", singleTone->getFloat("V", singleTone->getFloat("V_default", 2.66667e-6)));
+	fclose(file);
 }

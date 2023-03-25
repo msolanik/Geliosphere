@@ -9,6 +9,9 @@
  * 
  */
 
+#ifndef CPU_CONSTANTS_H
+#define CPU_CONSTANTS_H
+
 #include "ParamsCarrier.hpp"
 
 /**
@@ -51,7 +54,7 @@ static double alphaM = 5.75*3.1415926535/180.0;
  * @brief Sun polarity.
  * 
  */
-const double polarity = 1.0;
+static double polarity = 1.0;
 
 /**
  * @brief Proton rest mass.
@@ -121,7 +124,31 @@ const double SPbins[30] = { 0.01, 0.015, 0.0225, 0.03375, 0.050625,
  * @brief Equatoria radius of sun. 
  * 
  */
-const double rh =  695510.0/150000000.0; 
+const double rh =  695510.0/150000000.0;
+
+/**
+ * @brief Initial value of r.
+ * 
+ */
+static double rInit = 1.0f;
+
+/**
+ * @brief Initial value of theta.
+ * 
+ */
+static double thetainj = 90.0f * 3.1415926535f / 180.0f;
+
+/**
+ * @brief Flag indicating usage of uniform injection instead of bins based on SolarProp implementation in 2D models. 
+ * 
+ */
+static bool useUniformInjection = false;
+
+/**
+ * @brief Maximal injection energy in GeV.
+ * 
+ */
+static double uniformEnergyInjectionMaximum = 101.0;
 
 /**
  * @brief Set contants for SolarProp-like Backward-in-time model.
@@ -130,6 +157,12 @@ const double rh =  695510.0/150000000.0;
 static void setSolarPropConstants(ParamsCarrier *singleTone)
 {
 	ratio = singleTone->getFloat("solarPropRatio", 0.02f);
+	alphaM = singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1)) * 3.1415926535f / 180.0f;
+	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
+	if (newK != -1.0f && !singleTone->getInt("K0_entered_by_user", 0))
+	{
+		K0 = newK;
+	}
 }
 
 /**
@@ -140,7 +173,7 @@ static void setGeliosphereModelConstants(ParamsCarrier *singleTone)
 {
 	ratio = singleTone->getFloat("geliosphereRatio", 0.2f);
 	delta0 = singleTone->getFloat("C_delta", 8.7e-5f);
-	alphaM = singleTone->getFloat("tilt_angle", 0.1f);
+	alphaM = singleTone->getFloat("tilt_angle", singleTone->getFloat("default_tilt_angle", 0.1)) * 3.1415926535f / 180.0f;
 	float newK = singleTone->getFloat("K0", singleTone->getFloat("K0_default", -1.0f));
 	if (newK != -1.0f && !singleTone->getInt("K0_entered_by_user", 0))
 	{
@@ -154,11 +187,11 @@ static void setGeliosphereModelConstants(ParamsCarrier *singleTone)
  */
 static void setContants(ParamsCarrier *singleTone)
 {
-	if (singleTone->getString("model", "FWMethod").compare("TwoDimensionBp") == 0)
+	if (singleTone->getString("model", "1D Fp").compare("2D SolarProp-like") == 0)
 	{
 		setSolarPropConstants(singleTone);
 	}
-	if (singleTone->getString("model", "FWMethod").compare("ThreeDimensionBp") == 0)
+	if (singleTone->getString("model", "1D Fp").compare("2D Geliosphere") == 0)
 	{
 		setGeliosphereModelConstants(singleTone);
 	}
@@ -172,7 +205,12 @@ static void setContants(ParamsCarrier *singleTone)
 	{
 		K0 = newK;
 	}
-	bool isBackward = (singleTone->getString("model", "FWMethod").compare("BPMethod") == 0);
+	thetainj = singleTone->getFloat("theta_injection", 90.0f) * 3.1415926535f / 180.0f;
+	rInit = singleTone->getFloat("r_injection", 1.0f);
+	polarity = (float) singleTone->getInt("polarity", 1);
+	useUniformInjection = singleTone->getInt("use_uniform_injection", 0);
+	uniformEnergyInjectionMaximum = singleTone->getFloat("uniform_energy_injection_maximum", 101.0f);
+	bool isBackward = (singleTone->getString("model", "1D Fp").compare("1D Bp") == 0);
 	float newV = (isBackward) ? singleTone->getFloat("V", singleTone->getFloat("V_default", 1.0f)) * (-1.0f) : singleTone->getFloat("V", singleTone->getFloat("V_default", -1.0f));
 	if (newV != -1.0f)
 	{
@@ -183,3 +221,20 @@ static void setContants(ParamsCarrier *singleTone)
 		V = (isBackward) ? 2.66667e-6 * (-1.0f) : 2.66667e-6;
 	}
 }
+
+/**
+ * @brief Get the value of injection for Tkin.
+ * 
+ * @param id identifier of test particle in simulation. 
+ * @param from initial value.
+ * @param to maximum value.
+ * @param numberOfBins number of bins per energy.
+ * @return value of injection for Tkin. 
+ */
+static double getTkinInjection(unsigned long long id, double from, double to, int numberOfBins) 
+{
+	double step = (to - from) / numberOfBins;
+	return from + ((id % numberOfBins) * step);
+}
+
+#endif
