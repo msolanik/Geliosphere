@@ -75,29 +75,33 @@ $(function() {
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-B   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run backward-in-time simulation    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyLeft">-E   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run SolarpropLike 2D backward-in-time simulation    </td></tr>
+<td class="markdownTableBodyLeft">-E   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run SOLARPROPLike 2D backward-in-time simulation    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-T   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Run Geliosphere 2D backward-in-time simulation    </td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-c   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Set .csv output    </td></tr>
 <tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">&ndash;cpu-only   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Simulation will be executed on CPU.    </td></tr>
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-h   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Print help for Geliosphere    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-d   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set time step (default value 5.0s)    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-K   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set K0 (default value 5∗10^22cm2/s)    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-V   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set solar wind speed (default value 400 km/s)    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-p   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set custom path for output in output directory    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyLeft">-N   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set amount of simulations in millions    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyLeft">-m   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set month for using meassured values    </td></tr>
+<td class="markdownTableBodyLeft">-N   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set number of test particles in millions    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyLeft">-y   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set year for using meassured values    </td></tr>
+<td class="markdownTableBodyLeft">-m   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Load K0 and V for given month from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyLeft">-s   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set path to settings toml file (default Settings.tml in root folder)   </td></tr>
+<td class="markdownTableBodyLeft">-y   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Load K0 and V for given year from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-s   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set path to settings toml file (default Settings.tml in root folder)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">&ndash;custom-model   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run custom user-implemented model   </td></tr>
 </table>
 <p>All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.</p>
 <p>Additional information about used models can be found in following articles:</p>
@@ -107,10 +111,12 @@ $(function() {
 <h2>Geliosphere with GPU support</h2>
 <p>Standard installation of the GPU version of Geliosphere requires installation of the Nvidia toolkit, g++ and cmake 3.14+. These packages can be installed via any packaging tool. The following example is provided for the apt-get packaging tool: </p><div class="fragment"><div class="line">sudo apt-get install cuda g++ cmake</div>
 </div><!-- fragment --><p>Different Linux distributions may have different approach for CUDA installation.</p>
-<p>After installation is complete, an optimized version of the tool can be built via the following command: </p><div class="fragment"><div class="line">cmake --clean-first -DCMAKE_BUILD_TYPE=Release --install ./ &amp;&amp; make</div>
-</div><!-- fragment --><p>After build is complete successfully, executable is placed in root directory with Geliosphere. For further instruction regarding the program usage, following command will display help for the user: </p><div class="fragment"><div class="line">./Geliosphere --help</div>
+<p>After installation is complete, an optimized version of the tool can be built via the following command: </p><div class="fragment"><div class="line">cmake -B build -DCMAKE_BUILD_TYPE=Release</div>
+<div class="line">cmake --build build</div>
+</div><!-- fragment --><p>After build is complete successfully, executable is placed in build directory with Geliosphere. For further instruction regarding the program usage, following command will display help for the user: </p><div class="fragment"><div class="line">./build/Geliosphere --help</div>
 </div><!-- fragment --><h2>Geliosphere with CPU-only support</h2>
-<p>The packages are similar, with the exception that the CPU version naturally does not require installation of the Nvidia toolkit. CPU-only version of Geliosphere can be built via the following command: </p><div class="fragment"><div class="line">cmake --clean-first -DCPU_VERSION_ONLY=1 -DCMAKE_BUILD_TYPE=Release --install ./ &amp;&amp; make</div>
+<p>The packages are similar, with the exception that the CPU version naturally does not require installation of the Nvidia toolkit. CPU-only version of Geliosphere can be built via the following command: </p><div class="fragment"><div class="line">cmake -B build -DCMAKE_BUILD_TYPE=Release -DCPU_VERSION_ONLY=1</div>
+<div class="line">cmake --build build</div>
 </div><!-- fragment --><h2>Dockerized versions</h2>
 <p>We also included runner scripts(<em>runner.sh</em> and <em>runner_cpu_only.sh</em>), that can build and run Geliosphere in Docker. They automatically build Docker image, however it can re-built via:</p>
 <div class="fragment"><div class="line">./runner.sh -f</div>
@@ -121,16 +127,19 @@ $(function() {
 <h1>Module structure</h1>
 <p>&lt;details&gt;</p>
 <p>Following image describes relations between modules in Geliosphere:</p>
-<p><img src="https://user-images.githubusercontent.com/22960818/200040994-dde685a6-9990-4a78-83e6-0975eaf230f3.png" alt="module_diagram drawio (1)" class="inline"/></p>
+<p><img src="https://user-images.githubusercontent.com/22960818/227489782-ca3d8c0d-e96f-473f-ace9-3cd9397cfe18.png" alt="module_diagram drawio (1)" class="inline"/></p>
 <p>Modules are used to organize the logic needed for simulations in the heliosphere and to support logic for them. These modules are described as follows:</p><ul>
 <li><b>Geliosphere</b> - contains the main function and links basic logic for selecting the model, parsing input data and running the selected model,</li>
 <li><b>Algorithm</b> - contains logic used for selecting implementation of model for selected computing unit, and logic for analyzing output spectra,</li>
 <li><b>Factory</b> - contains classes based on factory and abstract factory patterns used for creating objects, <br  />
 </li>
-<li><b>Constants</b> - contains classes used for parsing input data,</li>
+<li><b>Input</b> - contains classes used for parsing input data,</li>
 <li><b>CPU Implementations</b> - contains classes used for running parallel CPU implementations of models of cosmic rays modulation in the heliosphere,</li>
 <li><b>CUDA Kernel</b> - contains classes used for running parallel GPU implementations of models of cosmic rays modulation in the heliosphere,</li>
-<li><b>Utils</b> - contains classes holding various functions used in Geliosphere. &lt;/details&gt;</li>
+<li><b>Utils</b> - contains classes holding various functions used in Geliosphere.</li>
+</ul>
+<p>Additionally we added python scripts to replicate figure comparing results from Geliosphere 2D model and Ulysses.</p><ul>
+<li><b>Visualization</b> - contains scripts needed for visualization. &lt;/details&gt;</li>
 </ul>
 <h1>Source file description</h1>
 <p>&lt;details&gt;</p>
@@ -147,6 +156,7 @@ $(function() {
 <div class="line">└───CUDAKernel</div>
 <div class="line">└───Factory</div>
 <div class="line">└───Utils</div>
+<div class="line">└───Visualization</div>
 </div><!-- fragment --><p><b>Geliosphere</b> module contains following source files:</p>
 <ul>
 <li><b>Dockerfile</b> - file containing defitinion for building GPU Docker image with GPU support.</li>
@@ -165,8 +175,8 @@ $(function() {
 <div class="line">|   |   OneDimensionFpAlgorithm.hpp</div>
 <div class="line">|   |   OneDimensionFpResults.hpp</div>
 <div class="line">|   |   ResultConstants.hpp</div>
-<div class="line">|   |   ThreeDimensionBpAlgorithm.hpp</div>
-<div class="line">|   |   TwoDimensionBpAlgorithm.hpp</div>
+<div class="line">|   |   GeliosphereAlgorithm.hpp</div>
+<div class="line">|   |   SolarPropLikeAlgorithm.hpp</div>
 <div class="line">|   |   TwoDimensionBpResults.hpp</div>
 <div class="line">└───src</div>
 <div class="line">    |   AbstractAlgorithm.cpp</div>
@@ -174,28 +184,28 @@ $(function() {
 <div class="line">    |   OneDimensionBpResults.cpp</div>
 <div class="line">    |   OneDimensionFpAlgorithm.cpp</div>
 <div class="line">    |   OneDimensionFpResults.cpp</div>
-<div class="line">    |   ThreeDimensionBpAlgorithm.cpp</div>
-<div class="line">    |   TwoDimensionBpAlgorithm.cpp</div>
+<div class="line">    |   GeliosphereAlgorithm.cpp</div>
+<div class="line">    |   SolarPropLikeAlgorithm.cpp</div>
 <div class="line">    |   TwoDimensionBpResults.cpp</div>
 </div><!-- fragment --><p><b>Algorithm</b> module contains following source files:</p>
 <ul>
 <li><b>AbstractAlgorithm.hpp</b> - Header file of abstract definition for algorithm.</li>
-<li><b>OneDimensionBpAlgorithm.hpp</b> - Header file of implementation of 1D B-p method</li>
-<li><b>OneDimensionBpResults.hpp</b> - Header file of implementation of 1D B-p method analyzer for output data.</li>
-<li><b>OneDimensionFpAlgorithm.hpp</b> - Header file of implementation of 1D F-p method</li>
-<li><b>OneDimensionFpResults.hpp</b> - Header file of implementation of 1D F-p method analyzer for output data.</li>
+<li><b>OneDimensionBpAlgorithm.hpp</b> - Header file of implementation of 1D B-p model</li>
+<li><b>OneDimensionBpResults.hpp</b> - Header file of implementation of 1D B-p model analyzer for output data.</li>
+<li><b>OneDimensionFpAlgorithm.hpp</b> - Header file of implementation of 1D F-p model</li>
+<li><b>OneDimensionFpResults.hpp</b> - Header file of implementation of 1D F-p model analyzer for output data.</li>
 <li><b>ResultConstants.hpp</b> - Header file containing constants needed for analysis of log files for all models.</li>
-<li><b>ThreeDimensionBpAlgorithm.hpp</b> - Header file of implementation of Geliosphere 2D B-p method.</li>
-<li><b>TwoDimensionBpAlgorithm.hpp</b> - Header file of implementation of SolarProp-like 2D B-p method.</li>
-<li><b>TwoDimensionBpResults.hpp</b> - Header file of implementation of 2D B-p method analyzer for output data.</li>
+<li><b>GeliosphereAlgorithm.hpp</b> - Header file of implementation of Geliosphere 2D B-p model.</li>
+<li><b>SolarPropLikeAlgorithm.hpp</b> - Header file of implementation of SolarProp-like 2D B-p model.</li>
+<li><b>TwoDimensionBpResults.hpp</b> - Header file of implementation of 2D B-p model analyzer for output data.</li>
 <li><b>AbstractAlgorithm.cpp</b> - Source file of abstract definition for algorithm.</li>
-<li><b>OneDimensionBpAlgorithm.cpp</b> - Source file of implementation of 1D B-p method</li>
-<li><b>OneDimensionBpResults.cpp</b> - Source file of implementation of 1D B-p method analyzer for output data.</li>
-<li><b>OneDimensionFpAlgorithm.cpp</b> - Source file of implementation of 1D F-p method</li>
-<li><b>OneDimensionFpResults.cpp</b> - Source file of implementation of 1D F-p method analyzer for output data.</li>
-<li><b>ThreeDimensionBpAlgorithm.cpp</b> - Source file of implementation of Geliosphere 2D B-p method.</li>
-<li><b>TwoDimensionBpAlgorithm.cpp</b> - Source file of implementation of SolarProp-like 2D B-p method.</li>
-<li><b>TwoDimensionBpResults.cpp</b> - Source file of implementation of 2D B-p method analyzer for output data.</li>
+<li><b>OneDimensionBpAlgorithm.cpp</b> - Source file of implementation of 1D B-p model</li>
+<li><b>OneDimensionBpResults.cpp</b> - Source file of implementation of 1D B-p model analyzer for output data.</li>
+<li><b>OneDimensionFpAlgorithm.cpp</b> - Source file of implementation of 1D F-p model</li>
+<li><b>OneDimensionFpResults.cpp</b> - Source file of implementation of 1D F-p model analyzer for output data.</li>
+<li><b>GeliosphereAlgorithm.cpp</b> - Source file of implementation of Geliosphere 2D B-p model.</li>
+<li><b>SolarPropLikeAlgorithm.cpp</b> - Source file of implementation of SolarProp-like 2D B-p model.</li>
+<li><b>TwoDimensionBpResults.cpp</b> - Source file of implementation of 2D B-p model analyzer for output data.</li>
 </ul>
 <p>&lt;/details&gt;</p>
 <h2>Factory module</h2>
@@ -216,9 +226,9 @@ $(function() {
 <li><b>CosmicFactory.cpp</b> - Source file of class represents implementation of Factory Pattern for cosmic algorithms.</li>
 </ul>
 <p>&lt;/details&gt;</p>
-<h2>Constants module</h2>
+<h2>Input module</h2>
 <p>&lt;details&gt;</p>
-<div class="fragment"><div class="line">Constants</div>
+<div class="fragment"><div class="line">Input</div>
 <div class="line">│    </div>
 <div class="line">└───include</div>
 <div class="line">|   |   MeasureValuesTransformation.hpp</div>
@@ -230,7 +240,7 @@ $(function() {
 <div class="line">    |   ParamsCarrier.cpp</div>
 <div class="line">    |   ParseParams.cpp</div>
 <div class="line">    |   TomlSettings.cpp</div>
-</div><!-- fragment --><p><b>Constants</b> module contains following source files:</p>
+</div><!-- fragment --><p><b>Input</b> module contains following source files:</p>
 <ul>
 <li><b>MeasureValuesTransformation.hpp</b> - Header file for class representing extraction of measured parameters for simulation from table.</li>
 <li><b>ParamsCarrier.hpp</b> - Header file for universal map-like structure.</li>
@@ -247,29 +257,29 @@ $(function() {
 <div class="fragment"><div class="line">CpuImplementations</div>
 <div class="line">│    </div>
 <div class="line">└───include</div>
-<div class="line">|   |   AbstractCpuSimulation.hpp</div>
+<div class="line">|   |   AbstractCpuModel.hpp</div>
 <div class="line">|   |   Constants.hpp</div>
-<div class="line">|   |   OneDimensionBpCpuSimulation.hpp</div>
-<div class="line">|   |   OneDimensionFpCpuSimulation.hpp</div>
-<div class="line">|   |   ThreeDimensionBpCpuSimulation.hpp</div>
-<div class="line">|   |   TwoDimensionBpCpuSimulation.hpp</div>
+<div class="line">|   |   OneDimensionBpCpuModel.hpp</div>
+<div class="line">|   |   OneDimensionFpCpuModel.hpp</div>
+<div class="line">|   |   GeliosphereCpuModel.hpp</div>
+<div class="line">|   |   SolarPropLikeCpuModel.hpp</div>
 <div class="line">└───src</div>
-<div class="line">    |   OneDimensionBpCpuSimulation.cpp</div>
-<div class="line">    |   OneDimensionFpCpuSimulation.cpp</div>
-<div class="line">    |   ThreeDimensionBpCpuSimulation.cpp</div>
-<div class="line">    |   TwoDimensionBpCpuSimulation.cpp</div>
+<div class="line">    |   OneDimensionBpCpuModel.cpp</div>
+<div class="line">    |   OneDimensionFpCpuModel.cpp</div>
+<div class="line">    |   GeliosphereCpuModel.cpp</div>
+<div class="line">    |   SolarPropLikeCpuModel.cpp</div>
 </div><!-- fragment --><p><b>CPU Implementations</b> module contains following source files:</p>
 <ul>
-<li><b>AbstractCpuSimulation.hpp</b> - Abstract definition for implementation of model on CPU.</li>
+<li><b>AbstractCpuModel.hpp</b> - Abstract definition for implementation of model on CPU.</li>
 <li><b>Constants.hpp</b> - Header file for constants for CPU implementations.</li>
-<li><b>OneDimensionBpCpuSimulation.hpp</b> - Header file for CPU implementation for 1D B-p model.</li>
-<li><b>OneDimensionFpCpuSimulation.hpp</b> - Header file for CPU implementation for 1D F-p model.</li>
-<li><b>ThreeDimensionBpCpuSimulation.hpp</b> - Header file for CPU implementation for Geliosphere 2D B-p model.</li>
-<li><b>TwoDimensionBpCpuSimulation.hpp</b> - Header file for CPU implementation for SolarProp-like 2D B-p model.</li>
-<li><b>OneDimensionBpCpuSimulation.cpp</b> - Source file for CPU implementation for 1D B-p model.</li>
-<li><b>OneDimensionFpCpuSimulation.cpp</b> - Source file for CPU implementation for 1D F-p model.</li>
-<li><b>ThreeDimensionBpCpuSimulation.cpp</b> - Source file for CPU implementation for Geliosphere 2D B-p model.</li>
-<li><b>TwoDimensionBpCpuSimulation.cpp</b> - Source file for CPU implementation for SolarProp-like 2D B-p model.</li>
+<li><b>OneDimensionBpCpuModel.hpp</b> - Header file for CPU implementation for 1D B-p model.</li>
+<li><b>OneDimensionFpCpuModel.hpp</b> - Header file for CPU implementation for 1D F-p model.</li>
+<li><b>GeliosphereCpuModel.hpp</b> - Header file for CPU implementation for Geliosphere 2D B-p model.</li>
+<li><b>SolarPropLikeCpuModel.hpp</b> - Header file for CPU implementation for SolarProp-like 2D B-p model.</li>
+<li><b>OneDimensionBpCpuModel.cpp</b> - Source file for CPU implementation for 1D B-p model.</li>
+<li><b>OneDimensionFpCpuModel.cpp</b> - Source file for CPU implementation for 1D F-p model.</li>
+<li><b>GeliosphereCpuModel.cpp</b> - Source file for CPU implementation for Geliosphere 2D B-p model.</li>
+<li><b>SolarPropLikeCpuModel.cpp</b> - Source file for CPU implementation for SolarProp-like 2D B-p model.</li>
 </ul>
 <p>&lt;/details&gt;</p>
 <h2>CUDA Kernel module</h2>
@@ -281,49 +291,49 @@ $(function() {
 <div class="line">|   |   CosmicConstants.cuh</div>
 <div class="line">|   |   CosmicUtils.cuh</div>
 <div class="line">|   |   CudaErrorCheck.cuh</div>
-<div class="line">|   |   OneDimensionBpGpuSimulation.hpp</div>
-<div class="line">|   |   OneDimensionBpSimulation.cuh</div>
-<div class="line">|   |   OneDimensionFpGpuSimulation.hpp</div>
-<div class="line">|   |   OneDimensionFpSimulation.cuh</div>
-<div class="line">|   |   ThreeDimensionBpGpuSimulation.hpp</div>
-<div class="line">|   |   ThreeDimensionBpSimulation.cuh</div>
-<div class="line">|   |   TwoDimensionBpGpuSimulation.hpp</div>
-<div class="line">|   |   TwoDimensionBpSimulation.cuh</div>
+<div class="line">|   |   OneDimensionBpGpuModel.hpp</div>
+<div class="line">|   |   OneDimensionBpModel.cuh</div>
+<div class="line">|   |   OneDimensionFpGpuModel.hpp</div>
+<div class="line">|   |   OneDimensionFpModel.cuh</div>
+<div class="line">|   |   GeliosphereGpuModel.hpp</div>
+<div class="line">|   |   GeliosphereModel.cuh</div>
+<div class="line">|   |   SolarPropLikeGpuModel.hpp</div>
+<div class="line">|   |   SolarPropLikeModel.cuh</div>
 <div class="line">└───src</div>
 <div class="line">    |   CosmicConstants.cu</div>
 <div class="line">    |   CosmicUtils.cu</div>
-<div class="line">    |   OneDimensionBpGpuSimulation.cpp</div>
-<div class="line">    |   OneDimensionBpSimulation.cu</div>
-<div class="line">    |   OneDimensionFpGpuSimulation.cpp</div>
-<div class="line">    |   OneDimensionFpSimulation.cu</div>
-<div class="line">    |   ThreeDimensionBpGpuSimulation.cpp</div>
-<div class="line">    |   ThreeDimensionBpSimulation.cu</div>
-<div class="line">    |   TwoDimensionBpGpuSimulation.cpp</div>
-<div class="line">    |   TwoDimensionBpSimulation.cu</div>
+<div class="line">    |   OneDimensionBpGpuModel.cpp</div>
+<div class="line">    |   OneDimensionBpModel.cu</div>
+<div class="line">    |   OneDimensionFpGpuModel.cpp</div>
+<div class="line">    |   OneDimensionFpModel.cu</div>
+<div class="line">    |   GeliosphereGpuModel.cpp</div>
+<div class="line">    |   GeliosphereModel.cu</div>
+<div class="line">    |   SolarPropLikeGpuModel.cpp</div>
+<div class="line">    |   SolarPropLikeModel.cu</div>
 </div><!-- fragment --><p><b>CUDA Kernel</b> module contains following source files:</p>
 <ul>
 <li><b>AbstractGpuSimulation.hpp</b> - Abstract definition for implementation of model on GPU.</li>
 <li><b>CosmicConstants.cuh</b> - Header file for constants needed for simulations.</li>
 <li><b>CosmicUtils.cuh</b> - Header file for common functions for simulations.</li>
 <li><b>CudaErrorCheck.cuh</b> - Header file for utilities for checking errors.</li>
-<li><b>OneDimensionBpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of 1D B-p model.</li>
-<li><b>OneDimensionBpSimulation.cuh</b> - Header file for GPU implementation of 1D B-p model.</li>
-<li><b>OneDimensionFpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of 1D F-p model.</li>
-<li><b>OneDimensionFpSimulation.cuh</b> - Header file for GPU implementation of 1D F-p model.</li>
-<li><b>ThreeDimensionBpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of Geliosphere 2D B-p model.</li>
-<li><b>ThreeDimensionBpGpuSimulation.cuh</b> - Header file for GPU implementation of Geliosphere 2D B-p model.</li>
-<li><b>TwoDimensionBpGpuSimulation.hpp</b> - Header file for class utilizing GPU implementation of SolarProp-like 2D B-p model.</li>
-<li><b>TwoDimensionBpSimulation.cuh</b> - Header file for GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>OneDimensionBpGpuModel.hpp</b> - Header file for class utilizing GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionBpModel.cuh</b> - Header file for GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionFpGpuModel.hpp</b> - Header file for class utilizing GPU implementation of 1D F-p model.</li>
+<li><b>OneDimensionFpModel.cuh</b> - Header file for GPU implementation of 1D F-p model.</li>
+<li><b>GeliosphereGpuModel.hpp</b> - Header file for class utilizing GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>GeliosphereGpuModel.cuh</b> - Header file for GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>SolarPropLikeGpuModel.hpp</b> - Header file for class utilizing GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>SolarPropLikeModel.cuh</b> - Header file for GPU implementation of SolarProp-like 2D B-p model.</li>
 <li><b>CosmicConstants.cu</b> - Source file for constants needed for simulations.</li>
 <li><b>CosmicUtils.cu</b> - Source file for common functions for simulations.</li>
-<li><b>OneDimensionBpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of 1D B-p model.</li>
-<li><b>OneDimensionBpSimulation.cu</b> - Source file for GPU implementation of 1D B-p model.</li>
-<li><b>OneDimensionFpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of 1D F-p model.</li>
-<li><b>OneDimensionFpSimulation.cu</b> - Source file for GPU implementation of 1D F-p model.</li>
-<li><b>ThreeDimensionBpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of Geliosphere 2D B-p model.</li>
-<li><b>ThreeDimensionBpGpuSimulation.cu</b> - Source file for GPU implementation of Geliosphere 2D B-p model.</li>
-<li><b>TwoDimensionBpGpuSimulation.cpp</b> - Source file for class utilizing GPU implementation of SolarProp-like 2D B-p model.</li>
-<li><b>TwoDimensionBpSimulation.cu</b> - Source file for GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>OneDimensionBpGpuModel.cpp</b> - Source file for class utilizing GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionBpModel.cu</b> - Source file for GPU implementation of 1D B-p model.</li>
+<li><b>OneDimensionFpGpuModel.cpp</b> - Source file for class utilizing GPU implementation of 1D F-p model.</li>
+<li><b>OneDimensionFpModel.cu</b> - Source file for GPU implementation of 1D F-p model.</li>
+<li><b>GeliosphereGpuModel.cpp</b> - Source file for class utilizing GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>GeliosphereGpuModel.cu</b> - Source file for GPU implementation of Geliosphere 2D B-p model.</li>
+<li><b>SolarPropLikeGpuModel.cpp</b> - Source file for class utilizing GPU implementation of SolarProp-like 2D B-p model.</li>
+<li><b>SolarPropLikeModel.cu</b> - Source file for GPU implementation of SolarProp-like 2D B-p model.</li>
 </ul>
 <p>&lt;/details&gt;</p>
 <h2>Utils module</h2>
@@ -342,6 +352,24 @@ $(function() {
 <li><b>ResultsUtils.hpp</b> - Header file for utilities for analyting log files.</li>
 <li><b>FileUtils.cpp</b> - Source file for utilities for manipulating with directories.</li>
 <li><b>ResultsUtils.cpp</b> - Source file for utilities for analyting log files.</li>
+</ul>
+<p>&lt;/details&gt;</p>
+<h2>Visualization</h2>
+<p>&lt;details&gt;</p>
+<div class="fragment"><div class="line">Visualization</div>
+<div class="line">│    </div>
+<div class="line">└───batch_run_geliosphere.py</div>
+<div class="line">└───create_plot.py</div>
+<div class="line">└───create_ulysses_Geliosphere_flux.py</div>
+<div class="line">└───prepare_input_based_on_ulysses.py</div>
+<div class="line">└───prepare_spectra.py</div>
+</div><!-- fragment --><p><b>Visualization</b> directory contains following scripts:</p>
+<ul>
+<li><b>batch_run_geliosphere.py</b> - script used to batch run of Geliosphere.</li>
+<li><b>create_plot.py</b> - script responsible for visualizing Ulysses and Geliosphere energetic spectra.</li>
+<li><b>create_ulysses_Geliosphere_flux.py</b> - script used to replicate figure comparing Ulysses trajectory and Geliosphere 2D model results between 1994 and 1998.</li>
+<li><b>prepare_input_based_on_ulysses.py</b> - script used to prepare input for visualization script from Ulysses trajectory data.</li>
+<li><b>prepare_spectra.py</b> - process spectra from Geliosphere for further visualization.</li>
 </ul>
 <p>&lt;/details&gt;</p>
 <p>&lt;/details&gt; </p>
