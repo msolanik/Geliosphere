@@ -159,11 +159,10 @@ __global__ void trajectorySimulationGeliosphere(trajectoryHistoryGeliosphere *hi
         COmega = COmega + (2.0f * r * deltarh2);
     
         // Equation 36
-        dKper = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(Cb)) - (r * r * COmega / (2.0f * sqrtf(Cb)))) / Cb;
+        dKper = ratio * K0 * beta * Rig * ((2.0f * r * sqrtf(Cb)) - (r * r * COmega / (2.0f * sqrtf(Cb)))) / (3.0f * (5.0f / 3.4f) * Cb);
 
         // Equation 35                
-        dKrr = dKper + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(Cb, 1.5f)) - (r * r * COmega * 3.0f * sqrtf(Cb) / 2.0f)) / powf(Cb, 3.0f));
-        dKrr = dKrr * 5.0f / (3.0f * 3.4f);
+        dKrr = dKper + ((1.0f - ratio) * K0 * beta * Rig * ((2.0f * r * powf(Cb, 1.5f)) - (r * r * COmega * 3.0f * sqrtf(Cb) / 2.0f)) / ( 3.0f * (5.0f / 3.4f) * powf(Cb, 3.0f)));
 
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
@@ -171,7 +170,7 @@ __global__ void trajectorySimulationGeliosphere(trajectoryHistoryGeliosphere *hi
             CKtt = sinf(theta) * cosf(theta) * (omega * omega * r * r / (V * V));
                  
             // Equation 38
-            dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / powf(Cb, 1.5f);
+            dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / (3.0f * (5.0f / 3.4f) * powf(Cb, 1.5f));
 
             // Equation 39
             dKtt2 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * deltarh2;
@@ -192,34 +191,34 @@ __global__ void trajectorySimulationGeliosphere(trajectoryHistoryGeliosphere *hi
             CKtt = CKtt - (r * r * delta0 * delta0 * cos(theta) / (rh * rh * sin3));
                     
             // Equation 38
-            dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / powf(Cb, 1.5f);
+            dKtt1 = (-1.0f * ratio * K0 * beta * Rig * r * r * CKtt) / (3.0f * (5.0f / 3.4f) * powf(Cb, 1.5f));
 
             // Equation 39
             dKtt2 = (1.0f - ratio) * K0 * beta * Rig * r * r * r * r * delta0 * delta0 / (rh * rh);
                     
             // Equation 40
-            dKtt3 = -2.0f * (cosf(theta) / sin3) / powf(Cb, 1.5f);
+            dKtt3 = -2.0f * (cosf(theta) / sin3) / (3.0f * (5.0f / 3.4f) * powf(Cb, 1.5f));
                     
             // Equation 41
-            dKtt4 = 3.0f * CKtt / (sin2 * powf(Cb, 2.5f));
+            dKtt4 = 3.0f * (CKtt / sin2) / (3.0f * (5.0f / 3.4f) * powf(Cb, 2.5f));
                     
             // Equation 42
             dKtt = dKtt1 + (dKtt2 * (dKtt3 - dKtt4));
         }
 
         // Equation 43
-        dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * 3.0 * r * r / powf(Cb, 2.5f);
+        dKrtr = (1.0f - ratio) * K0 * beta * Rig * deltarh * r * r / (3.0f * (5.0f / 3.4f) * powf(Cb, 2.5f));
 
         // Equation 44
         if ((theta > (1.7f * Pi / 180.0f)) && (theta < (178.3f * Pi / 180.0f)))
         {
-            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(Cb, 2.5f));
+            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (3.0f * (5.0f / 3.4f) * rh * powf(Cb, 2.5f));
             dKrtt = -1.0f * dKrtt * delta;
             dKrtt = dKrtt * 3.0f * gamma2 * cosf(theta) / sinf(theta);
         }
         else
         {
-            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (rh * powf(Cb, 2.5f));
+            dKrtt = (1.0f - ratio) * K0 * beta * Rig * r * r * r / (3.0f * (5.0f / 3.4f) * rh * powf(Cb, 2.5f));
             dKrtt = -1.0f * dKrtt * delta0 * cosf(theta) / (sinf(theta) * sinf(theta));
             dKrtt = dKrtt * (1.0f - (2.0f * r * r * deltarh2) + (4.0f * gamma2));
         }

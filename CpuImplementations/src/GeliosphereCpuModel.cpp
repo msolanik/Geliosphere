@@ -175,11 +175,10 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 COmega = COmega + (2.0 * r * deltarh2);
                 
                 // Equation 36
-                dKper = ratio * K0 * beta * Rig * ((2.0 * r * sqrt(Cb)) - (r2 * COmega / (2.0 * sqrt(Cb)))) / Cb;
+                dKper = ratio * K0 * beta * Rig * ((2.0 * r * sqrt(Cb)) - (r2 * COmega / (2.0 * sqrt(Cb)))) / (3.0 * (5.0 / 3.4) * Cb);
 
                 // Equation 35                
-                dKrr = dKper + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(Cb, 1.5)) - (r2 * COmega * 3.0 * sqrt(Cb) / 2.0)) / pow(Cb, 3.0));
-                dKrr = dKrr * 5. / (3. * 3.4);
+                dKrr = dKper + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(Cb, 1.5)) - (r2 * COmega * 3.0 * sqrt(Cb) / 2.0)) / ( 3.0 * (5.0 / 3.4) * pow(Cb, 3.0)));
 
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
@@ -187,7 +186,7 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                     CKtt = sin(theta) * cos(theta) * (omega * omega * r2 / (V * V));
                  
                     // Equation 38
-                    dKtt1 = (-1.0 * ratio * K0 * beta * Rig * r2 * CKtt) / pow(Cb, 1.5);
+                    dKtt1 = (-1.0 * ratio * K0 * beta * Rig * r2 * CKtt) / (3.0 * (5.0 / 3.4) * pow(Cb, 1.5));
 
                     // Equation 39
                     dKtt2 = (1.0 - ratio) * K0 * beta * Rig * r2 * r2 * deltarh2;
@@ -208,34 +207,34 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                     CKtt = CKtt - (r2 * delta0 * delta0 * cos(theta) / (rh * rh * sin3));
                     
                     // Equation 38
-                    dKtt1 = (-1.0 * ratio * K0 * beta * Rig * r2 * CKtt) / pow(Cb, 1.5);
+                    dKtt1 = (-1.0 * ratio * K0 * beta * Rig * r2 * CKtt) / (3.0 * (5.0 / 3.4) * pow(Cb, 1.5));
 
                     // Equation 39
                     dKtt2 = (1.0 - ratio) * K0 * beta * Rig * r2 * r2 * delta0 * delta0 / (rh * rh);
                     
                     // Equation 40
-                    dKtt3 = -2.0 * (cos(theta) / sin3) / pow(Cb, 1.5);
+                    dKtt3 = -2.0 * (cos(theta) / sin3) / (3.0 * (5.0 / 3.4) * pow(Cb, 1.5));
                     
                     // Equation 41
-                    dKtt4 = 3.0 * CKtt / (sin2 * pow(Cb, 2.5));
+                    dKtt4 = 3.0 * (CKtt / sin2) / (3.0 * (5.0 / 3.4) * pow(Cb, 2.5));
                     
                     // Equation 42
                     dKtt = dKtt1 + (dKtt2 * (dKtt3 - dKtt4));
                 }
 
                 // Equation 43
-                dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * 3.0 * r2 / pow(Cb, 2.5);
+                dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * r2 / (3.0 * (5.0 / 3.4) * pow(Cb, 2.5));
 
                 // Equation 44
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
-                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(Cb, 2.5));
+                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / ((3.0 * (5.0 / 3.4) * rh * pow(Cb, 2.5)));
                     dKrtt = -1.0 * dKrtt * delta;
                     dKrtt = dKrtt * 3.0 * gamma2 * cos(theta) / sin(theta);
                 }
                 else
                 {
-                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / (rh * pow(Cb, 2.5));
+                    dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / ((3.0 * (5.0 / 3.4) * rh * pow(Cb, 2.5)));
                     dKrtt = -1.0 * dKrtt * delta0 * cos(theta) / (sin(theta) * sin(theta));
                     dKrtt = dKrtt * (1.0 - (2.0 * r2 * deltarh2) + (4.0 * gamma2));
                 }
