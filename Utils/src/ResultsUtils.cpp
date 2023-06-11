@@ -74,7 +74,6 @@ void ResultsUtils::writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FI
     else if (spectrumType == SPECTRUM_ULYSSES) 
     {
         double ulyssesBins[4] = {0.0, 0.125, 0.250, 2.0};
-        double averageFactor;
         for (int i = 1; i < 3; i++)
         {
             fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), ulyssesBins[i], spectrumValue[i], 
@@ -94,10 +93,8 @@ void ResultsUtils::writeSpectrumToFile(struct spectrumOutput *spectrumOutput, FI
         1.196000e+02, 1.291000e+02, 1.401000e+02, 1.526000e+02, 1.666000e+02, 1.826000e+02, 2.006000e+02, 
         2.211000e+02, 2.451000e+02, 2.741000e+02, 3.096000e+02, 3.536000e+02, 4.091000e+02, 4.821000e+02, 
         5.831000e+02, 7.316000e+02, 9.751000e+02, 1.464000e+03 };
-        double averageFactor;
         for (int i = 1; i < 71; i++)
         {
-            averageFactor = amsBins[i + 1] - amsBins[i];
             fprintf(outputFile, getFormat(spectrumType, spectrumOutput->isCsv).c_str(), amsBins[i], spectrumValue[i], 
                 (spectrumCount[i] != 0.0) ? spectrumValue[i]/(spectrumCount[i]) : 0.0, spectrumCount[i]);
         }        
