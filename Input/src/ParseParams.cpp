@@ -219,6 +219,11 @@ void ParseParams::printParameters(ParamsCarrier *params)
 	spdlog::info("K0:" + std::to_string(params->getFloat("K0", params->getFloat("K0_default", 5e22 * 4.4683705e-27))) + " au^2 / s");
 	spdlog::info("V:" + std::to_string(params->getFloat("V", params->getFloat("V_default", 400 * 6.68458712e-9))) + " au / s");
 	spdlog::info("dt:" + std::to_string(params->getFloat("dt", params->getFloat("dt_default", 5.0f))) + " s");
+	if (isInputSolarPropLikeModel(singleTone->getString("model", "1D Fp")) || isInputGeliosphere2DModel(singleTone->getString("model", "1D Fp")))
+	{
+		spdlog::info("tilt_angle:" + std::to_string(params->getFloat("tilt_angle", -1.0f)));
+		spdlog::info("polarity:" + std::to_string(params->getInt("polarity", -1.0f)));
+	}
 }
 
 std::string ParseParams::getTransformationTableName(std::string modelName)

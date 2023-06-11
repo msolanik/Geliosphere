@@ -15,7 +15,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     ResultsUtils *resultsUtils = new ResultsUtils();
     double w, Rig, p1AU, Tkin, r, p, Tkinw, Rig1AU, Tkininj, theta, thetainj, tt, t2, beta;
     double tem6, tem5, jlis, tem, wJGR, jlisJGR, jlisBurger, wBurger;
-    double speSP[31] = {0}, speJGR[31] = {0}, speN[31] = {0}, speBurger[31] = {0}, ulyssesBin[4] = {0}, ulyssesBinN[4] = {0};
+    double speSP[31] = {0}, speJGR[31] = {0}, speN[31] = {0}, speBurger[31] = {0}, ulyssesBin[4] = {0}, ulyssesBinN[4] = {0}, amsBin[72] = {0}, amsBinN[72] = {0};
     FILE *inputFile = fopen("log.dat", "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
@@ -94,6 +94,14 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
                 ulyssesBinN[ii]++;
             }
         }
+        for (int ii = 1; ii < 71; ii++)
+        {
+            if ((Tkininj > AmsBins[ii]) && (Tkininj < AmsBins[ii+1]))
+            {
+                amsBin[ii] = amsBin[ii] + wBurger;
+                amsBinN[ii]++;
+            }
+        }
     }
     fclose(inputFile);
 
@@ -117,4 +125,9 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     spectrumOutput.isCsv = singleTone->getInt("csv", 0);
     resultsUtils->writeSpectrum(&spectrumOutput, ulyssesBinN, ulyssesBin, SPECTRUM_ULYSSES);
     spdlog::info("Spectrum with Ulysses bins based on Burger has been written to file.");
+    
+    spectrumOutput.fileName = "Ams";
+    spectrumOutput.isCsv = singleTone->getInt("csv", 0);
+    resultsUtils->writeSpectrum(&spectrumOutput, amsBinN, amsBin, SPECTRUM_AMS);
+    spdlog::info("Spectrum with AMS bins based on Burger has been written to file.");
 }
