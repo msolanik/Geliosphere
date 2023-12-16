@@ -3,6 +3,7 @@
 #include "OneDimensionFpAlgorithm.hpp"
 #include "SolarPropLikeAlgorithm.hpp"
 #include "GeliosphereAlgorithm.hpp"
+#include "BatchRun.hpp"
 
 AbstractAlgorithm *CosmicFactory::getAlgorithm(std::string name)
 {
@@ -21,6 +22,10 @@ AbstractAlgorithm *CosmicFactory::getAlgorithm(std::string name)
 	else if (name.compare("2D Geliosphere") == 0)
 	{
 		return new GeliosphereAlgorithm();
+	}
+	else if (name.compare("batch run") == 0)
+	{
+		return new BatchRun();
 	}
 	return NULL;
 }

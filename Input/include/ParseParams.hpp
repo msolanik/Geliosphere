@@ -39,6 +39,9 @@ public:
 	 */
 	ParamsCarrier *getParams();
 
+	void newSettingsLocationCheck(ParamsCarrier *singleTone, std::string settings);
+	void dtSetCheck(ParamsCarrier *singleTone, float newDT);
+	void monthYearCheck(ParamsCarrier *singleTone, int year, int month,std::string currentApplicationPath);
 private:
 	/**
 	 * @brief Instance of ParamsCarrier for placing 
