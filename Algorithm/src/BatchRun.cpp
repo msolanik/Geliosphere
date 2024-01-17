@@ -128,7 +128,8 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
     singleTone->putInt("csv", 1);
     singleTone->putString("model", "2D Geliosphere");
     parse->dtSetCheck(singleTone,1000);
-    //ParamsCarrier* single = new ParamsCarrier();
+    //ParamsCarrier* single = singleTone->instance();
+    std::cout << "singletone inner things: " << singleTone->getString("model", "daco nedobre") <<std::endl;
     std::size_t numRows = data.size();
     std::cout << "Number of rows: " << numRows << std::endl;
     std::string  targetDirectory= "test";    
@@ -142,7 +143,7 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
             parse->monthYearCheck(singleTone, std::stod(data[i][0]), std::stod(data[i][1]), "./" );
             targetDirectory = data[i][0] + "_" + data[i][1] + "_" + data[i][2];
             singleTone->putString("destination", targetDirectory);
-            std::cout << "Destination: " << singleTone->getString("destination", "test") << data[i][0] << "_" << data[i][1] << "_" << data[i][2] << std::endl;
+            std::cout << "Destination: " << singleTone->getString("destination", "test") << " : " << data[i][0] << "_" << data[i][1] << "_" << data[i][2] << std::endl;
             std::cout << "Model: " << singleTone->getString("model", "test") << std::endl;
             AbstractAlgorithm *actualAlgorithm = new GeliosphereAlgorithm();
             actualAlgorithm->runAlgorithm(singleTone);
@@ -154,8 +155,6 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
             test++;
             chdir("../../..");
         }
-                   
-        
     }
     std::cout << "Test: " << test << std::endl;
 }
