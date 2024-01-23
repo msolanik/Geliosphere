@@ -3,6 +3,7 @@ project (Algorithm)
 
 include_directories(include)
 include_directories(../tomlplusplus/include/)
+include_directories(../Factory/include/)
 
 include(FetchContent)
 FetchContent_Declare(

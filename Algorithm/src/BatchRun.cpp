@@ -13,12 +13,13 @@
 #include <filesystem>
 #include "GeliosphereAlgorithm.hpp"
 #include "rapidcsv.h"
-
+#include "InputValidation.hpp"
+#include "AbstractAlgorithmFactory.hpp"
+#include "spdlog/spdlog.h"
 
 using namespace std;
 
 void generateTomlFile(double r, double theta) {
-    //std::cout << "r: " << r << " theta: " << theta << std::endl;
     auto tbl = toml::table{
         { "default_values", toml::table{
             { "uniform_energy_injection_maximum", 3.0 } ,
@@ -57,50 +58,37 @@ void generateTomlFile(double r, double theta) {
 
 void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
 {
-    //rapidcsv::Document doc("../Algorithm/src/geliosphere_batch_input_paramaters.csv", rapidcsv::LabelParams(0, -1));
-    rapidcsv::Document doc("../geliosphere_batch_input_paramaters.csv", rapidcsv::LabelParams(0, -1));
-    
-    std::cout << "velkost nacitaneho suboru" << doc.GetRowCount() <<std::endl;
-    std::cout << "pocet stlpcov" << doc.GetColumnCount() <<std::endl;
-    
-    std::vector<std::string> row = doc.GetRow<std::string>(125);
-    std::cout << "test riadkov : " << row[4] << std::endl;      
-    
-    ParseParams *parse = new ParseParams();
-    
+    InputValidation *inputValidation = new InputValidation();
+    rapidcsv::Document doc("../geliosphere_batch_input_paramaters.csv", rapidcsv::LabelParams(0, -1));    
+     
     singleTone->putInt("csv", 1);
-    singleTone->putString("model", "2D Geliosphere");
-    parse->dtSetCheck(singleTone,1000);
-    std::cout << "singletone inner things: " << singleTone->getString("model", "daco nedobre") <<std::endl;
+    inputValidation->dtSetCheck(singleTone, 1000);
+    
     std::string  targetDirectory= "test";    
-    int test = 0;
-    int opakovanie = 0;
+    AbstractAlgorithm *actualAlgorithm;
+    AbstractAlgorithmFactory *factory = AbstractAlgorithmFactory::CreateFactory(AbstractAlgorithmFactory::TYPE_ALGORITHM::COSMIC);
 
     for (int i = 0; i < doc.GetRowCount() ; i++) {
         std::vector<std::string> data = doc.GetRow<std::string>(i);
+        
         if(std::stod(data[0]) >= 1997 && std::stod(data[0]) <= 1998){
             generateTomlFile(std::stod(data[3]),std::stod(data[4]));
-            parse->newSettingsLocationCheck(singleTone, "./Settings_batch.toml");
-            //std::cout << std::filesystem::absolute("./") << std::endl;
-            parse->monthYearCheck(singleTone, std::stod(data[0]), std::stod(data[1]), "./" );
+            singleTone->putString("model", data[5]);
+            inputValidation->newSettingsLocationCheck(singleTone, "./Settings_batch.toml");
+            inputValidation->monthYearCheck(singleTone, std::stod(data[0]), std::stod(data[1]), "./" );
             targetDirectory = data[0] + "_" + data[1] + "_" + data[2];
             singleTone->putString("destination", targetDirectory);
-            std::cout << "Destination: " << singleTone->getString("destination", "test") << " : " << data[0] << "_" << data[1] << "_" << data[2] << std::endl;
-            std::cout << "Model: " << singleTone->getString("model", "test") << std::endl;
-            AbstractAlgorithm *actualAlgorithm = new GeliosphereAlgorithm();
-            actualAlgorithm->runAlgorithm(singleTone);
-
-            for (int j = 0; j < 5; j++){    
-                std::cout << " " << data[j];
+            
+            actualAlgorithm = factory->getAlgorithm(singleTone->getString("model", "1D Fp"));
+            if (actualAlgorithm == NULL)
+            {
+                spdlog::error("Selected custom model is not defined in factory.");
+                break;
             }
-            std::cout << std::endl;
-            test++;
+            actualAlgorithm->runAlgorithm(singleTone);
             chdir("../../..");
         }
-        opakovanie = i ;
     }
-    std::cout << "Test: " << test << std::endl;
-    std::cout << "I : " << opakovanie << std::endl;
 }
 
 

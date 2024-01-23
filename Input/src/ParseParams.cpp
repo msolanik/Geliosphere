@@ -11,6 +11,7 @@
 #include "ParamsCarrier.hpp"
 #include "MeasureValuesTransformation.hpp"
 #include "TomlSettings.hpp"
+#include "InputValidation.hpp"
 
 int kSetCheck(ParamsCarrier *params, float newK) {
 	if (newK < 0.0)
@@ -33,55 +34,6 @@ int kSetCheck(ParamsCarrier *params, float newK) {
 		return 1;
 }
 
-void  ParseParams::dtSetCheck(ParamsCarrier *singleTone, float newDT ){
-	if (newDT < 3.0 || newDT > 5000.0)
-		{
-			spdlog::error("dt is out of range!(3-5000)");
-			return ;
-		}
-		singleTone->putFloat("dt", newDT);
-}
-
-void ParseParams::newSettingsLocationCheck(ParamsCarrier *singleTone, std::string settings){
-	//std::cout << "Cekujem setting cez funkciu" << std::endl;
-	//if (std::filesystem::exists(settings)) {	
-	if (access(settings.c_str(), F_OK) == 0) {
-		TomlSettings *tomlSettings = new TomlSettings(settings);
-		tomlSettings->parseFromSettings(singleTone);
-	} else {
-		spdlog::warn(settings);
-		spdlog::warn("No settings file exists on entered path.");
-	}
-	//std::cout << "Presiel som cez settings" << std::endl;
-}
-
-void ParseParams::monthYearCheck(ParamsCarrier *singleTone, int year, int month, std::string currentApplicationPath){
-	std::cout << "mont and year check" << std::endl;
-	try
-		{
-			singleTone->putInt("month_option", month);
-			singleTone->putInt("year_option", year);
-			//std::cout << "mont and year check tu sa este dostanem" << getTransformationTableName(singleTone->getString("model", "1D Fp")) << std::endl;
-			MeasureValuesTransformation *measureValuesTransformation = new MeasureValuesTransformation(
-				currentApplicationPath + getTransformationTableName(singleTone->getString("model", "1D Fp")), singleTone->getString("model", "1D Fp"));
-			singleTone->putFloat("K0", measureValuesTransformation->getDiffusionCoefficientValue(month, year));
-			if (isInputSolarPropLikeModel(singleTone->getString("model", "1D Fp")) || isInputGeliosphere2DModel(singleTone->getString("model", "1D Fp")))
-			{
-				singleTone->putFloat("tilt_angle", measureValuesTransformation->getTiltAngle(month, year));
-				singleTone->putInt("polarity", measureValuesTransformation->getPolarity(month, year));
-			}
-			else
-			{
-				singleTone->putFloat("V", measureValuesTransformation->getSolarWindSpeedValue(month, year) * 6.68458712e-9);
-			}
-		}
-		catch(const std::out_of_range&)
-		{
-			spdlog::error("Combination for entered date was not found in input table.");
-		}
-	//std::cout << "rok a mesiac vporiadku" << std::endl;
-}
-
 int ParseParams::parseParams(int argc, char **argv)
 {
 	std::string currentApplicationPath = getApplicationPath(argv);
@@ -91,6 +43,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	std::string newDestination, settings, customModelString;
 	int bilions;
 	singleTone = singleTone->instance();
+	InputValidation *inputValidation = new InputValidation();
 	CLI::App app{"App description"};
 	CLI::Option *forwardModel = app.add_flag("-F,--forward", "Run a 1D forward-in-time model")->group("models");
 	CLI::Option *backwardModel = app.add_flag("-B,--backward", "Run a 1D backward-in-time model")->group("models");
@@ -185,7 +138,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*dtset)
 	{
-		dtSetCheck(singleTone, newDT );
+		inputValidation->dtSetCheck(singleTone, newDT);
 	}
 	if (*kset)
 	{
@@ -213,7 +166,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*settingsOption)
 	{
-		newSettingsLocationCheck(singleTone, settings);
+		inputValidation->newSettingsLocationCheck(singleTone, settings);
 	}
 	else 
 	{
@@ -256,7 +209,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	}
 	if (*monthOption && *yearOption)
 	{
-		monthYearCheck(singleTone, year, month, currentApplicationPath);
+		inputValidation->monthYearCheck(singleTone, year, month, currentApplicationPath);
 	}
 
 	printParameters(singleTone);
@@ -271,50 +224,16 @@ ParamsCarrier *ParseParams::getParams()
 
 void ParseParams::printParameters(ParamsCarrier *params) 
 {
+	InputValidation *inputValidation = new InputValidation();
 	spdlog::info("Chosen model:" + singleTone->getString("model", "1D Fp"));
 	spdlog::info("K0:" + std::to_string(params->getFloat("K0", params->getFloat("K0_default", 5e22 * 4.4683705e-27))) + " au^2 / s");
 	spdlog::info("V:" + std::to_string(params->getFloat("V", params->getFloat("V_default", 400 * 6.68458712e-9))) + " au / s");
 	spdlog::info("dt:" + std::to_string(params->getFloat("dt", params->getFloat("dt_default", 5.0f))) + " s");
-	if (isInputSolarPropLikeModel(singleTone->getString("model", "1D Fp")) || isInputGeliosphere2DModel(singleTone->getString("model", "1D Fp")))
+	if (inputValidation->isInputSolarPropLikeModel(singleTone->getString("model", "1D Fp")) || inputValidation->isInputGeliosphere2DModel(singleTone->getString("model", "1D Fp")))
 	{
 		spdlog::info("tilt_angle:" + std::to_string(params->getFloat("tilt_angle", -1.0f)));
 		spdlog::info("polarity:" + std::to_string(params->getInt("polarity", -1.0f)));
 	}
-}
-
-std::string ParseParams::getTransformationTableName(std::string modelName)
-{
-	if (isInputSolarPropLikeModel(modelName))
-	{
-		return "SolarProp_K0_phi_table.csv";
-	}
-	else if (isInputGeliosphere2DModel(modelName))
-	{
-		return "Geliosphere_K0_phi_table.csv";
-	}
-	else 
-	{
-		return "K0_phi_table.csv";
-	}
-	return NULL;
-}
-
-bool ParseParams::isInputSolarPropLikeModel(std::string modelName)
-{
-	if (modelName.compare("2D SolarProp-like") == 0)
-	{
-		return true;
-	}
-	return false;
-}
-
-bool ParseParams::isInputGeliosphere2DModel(std::string modelName)
-{
-	if (modelName.compare("2D Geliosphere") == 0)
-	{
-		return true;
-	}
-	return false;
 }
 
 std::string ParseParams::getApplicationPath(char **argv)
