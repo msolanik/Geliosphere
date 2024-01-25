@@ -82,6 +82,7 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
             actualAlgorithm = factory->getAlgorithm(singleTone->getString("model", "1D Fp"));
             if (actualAlgorithm == NULL)
             {
+                std::cout << actualAlgorithm << std::endl;
                 spdlog::error("Selected custom model is not defined in factory.");
                 break;
             }

@@ -163,13 +163,10 @@ public:
     	auto it = m.find(key);
     	if (it != m.end())
     	{	
-			std::cout << "existuje hodnota pod klucom : " << it->second.str << std::endl;
-        	// Key already exists, so we need to destruct the existing string
+			// Key already exists, so we need to destruct the existing string
         	if (it->second.type == any_t::string_t)
         	{
-				std::cout << "je to string" << std::endl;
-            	it->second.str = value;
-				std::cout << "hodnota po prepisani " << it->second.str << std::endl;
+				it->second.str = value;
 				return;
       		}
     	}

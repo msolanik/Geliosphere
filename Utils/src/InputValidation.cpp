@@ -119,7 +119,6 @@ void InputValidation::newSettingsLocationCheck(ParamsCarrier *singleTone, std::s
 }
 
 void InputValidation::monthYearCheck(ParamsCarrier *singleTone, int year, int month, std::string currentApplicationPath){
-	std::cout << "mont and year check" << std::endl;
 	try
 		{
 			singleTone->putInt("month_option", month);
