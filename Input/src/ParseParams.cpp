@@ -49,14 +49,13 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *backwardModel = app.add_flag("-B,--backward", "Run a 1D backward-in-time model")->group("models");
 	CLI::Option *solarPropLikeModel = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("models");
 	CLI::Option *geliosphereModel = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("models");
-	CLI::Option *batchRun = app.add_flag("-b,--batchrun","Input batch file")->group("models");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
 #if GPU_ENABLED == 1
 	CLI::Option *cpuOnly = app.add_flag("--cpu-only", "Use only CPU for calculaions");
 #else
 	singleTone->putInt("isCpu", 1);
 #endif		
-	CLI::Option *inputFileBatchR = app.add_option("--file", inputFile, "Input batch file");
+	CLI::Option *batchRun = app.add_option("-b,--batchrun", inputFile,"Input batch file")->group("models");
 	CLI::Option *dtset = app.add_option("-d,--dt", newDT, "Set dt to new value(s)");
 	CLI::Option *kset = app.add_option("-K,--K0", newK, "Set K to new value(cm^2/s)");
 	CLI::Option *vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
@@ -66,16 +65,6 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *yearOption = app.add_option("-y,--year", year, "Set year for using meassured values");
 	CLI::Option *settingsOption = app.add_option("-s,--settings", settings, "Path to .toml file");
 	CLI::Option *customModel = app.add_option("--custom-model", customModelString, "Run custom user-implemented model.");
-	
-	inputFileBatchR->excludes(dtset);
-	inputFileBatchR->excludes(kset);
-	inputFileBatchR->excludes(vset);
-	inputFileBatchR->excludes(destination);
-	inputFileBatchR->excludes(setBilions);
-	inputFileBatchR->excludes(monthOption);
-	inputFileBatchR->excludes(yearOption);
-	inputFileBatchR->excludes(settingsOption);
-	inputFileBatchR->excludes(customModel);
 
 	kset->excludes(monthOption);
 	kset->excludes(yearOption);
