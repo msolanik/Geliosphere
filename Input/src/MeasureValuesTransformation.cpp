@@ -1,7 +1,6 @@
 #include "MeasureValuesTransformation.hpp"
 
 #include "rapidcsv.h"
-
 #include <ctime>
 #include <cmath>
 

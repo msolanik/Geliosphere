@@ -22,6 +22,7 @@ Class documentation can be found [here](https://msolanik.github.io/Geliosphere/a
 | -m | int | Load K0 and V for given month from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D |
 | -y | int | Load K0 and V for given year from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D |
 | -s | string | Set path to settings toml file (default Settings.tml in root folder) |
+| -b | string | Run simulations in batch according to defined input values in input csv file |
 | --custom-model | string | Run custom user-implemented model |
 
 All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.

@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <map>
 #include <stdio.h>
+#include <iostream>
 
 /**
  * @brief ParamsCarrier is responsible for storing parameters for simulations.
@@ -158,6 +159,18 @@ public:
 	 */
 	void putString(std::string key, std::string value)
 	{
+		// Check if the key already exists in the map
+    	auto it = m.find(key);
+    	if (it != m.end())
+    	{	
+			// Key already exists, so we need to destruct the existing string
+        	if (it->second.type == any_t::string_t)
+        	{
+				it->second.str = value;
+				return;
+      		}
+    	}
+
 		any a;
 		a.type = any_t::string_t;
 		new (&(a.str)) std::string(value);
