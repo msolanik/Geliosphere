@@ -56,7 +56,7 @@ void OneDimensionBpGpuModel::setThreadBlockSize()
     case 800:
     case 860:
     case 750:
-        blockSize = 4096;
+        blockSize = 1024;
         threadSize = 256;
         break;
     default:
