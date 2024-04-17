@@ -5,14 +5,16 @@
  * @version 0.1
  * @date 2021-09-25
  * 
- * @copyright Copyright (c) 2021
+ * @copyright Copyright (c) 2021 - 2024
  * 
  */
 
 #ifndef MEASURE_VALUES_TRANSFORMATION_H
 #define MEASURE_VALUES_TRANSFORMATION_H
 
+#include <limits>
 #include <string>
+
 #include "ParamsCarrier.hpp"
 
 /**

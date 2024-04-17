@@ -14,12 +14,12 @@
 #ifndef COSMIC_SINGLETON_H
 #define COSMIC_SINGLETON_H
 
-#include <string>
-#include <sstream>
 #include <algorithm>
-#include <map>
-#include <stdio.h>
 #include <iostream>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
 
 /**
  * @brief ParamsCarrier is responsible for storing parameters for simulations.
@@ -317,6 +317,30 @@ public:
 			return defaultValue;
 		}
 		return defaultValue;
+	}
+
+	/**
+	 * @brief Erase all items from Paramas Carrier except items 
+	 * passed as parameter.
+	 * 
+	 * @param except Items which should not be removed.
+	 *  
+	 */
+	void eraseAllItems(std::set<std::string> except)
+	{
+		std::set<std::string> itemsToErase;
+		for (auto const& x : m)
+		{
+			auto search = except.find(x.first);
+			if (search == except.end())
+			{
+				itemsToErase.insert(x.first);
+			}
+		}
+		for (auto const& x : itemsToErase)
+		{
+			m.erase(x);
+		}
 	}
 };
 

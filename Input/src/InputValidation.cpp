@@ -1,68 +1,24 @@
 
 #include "InputValidation.hpp"
-#include <iostream>
-#include <unistd.h>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
-#include <cstdlib>
 
-#include <string>
-#include <regex>
-#include <unistd.h>
+#include <cstdlib>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <regex>
+#include <sstream>
+#include <string>
+#include <unistd.h>
+#include <vector>
 
 #include "CLI/App.hpp"
 #include "CLI/Option.hpp"
 #include "spdlog/spdlog.h"
 
-#include "ParseParams.hpp"
-#include "ParamsCarrier.hpp"
 #include "MeasureValuesTransformation.hpp"
+#include "ParamsCarrier.hpp"
+#include "ParseParams.hpp"
 #include "TomlSettings.hpp"
-
-
-using namespace std;
-/*
-void generateTomlFile(double r, double theta) {
-    //std::cout << "r: " << r << " theta: " << theta << std::endl;
-    auto tbl = toml::table{
-        { "default_values", toml::table{
-            { "uniform_energy_injection_maximum", 3.0 } ,
-            { "K0", 5e+22 },
-            { "V", 400.0 },
-            { "dt", 50.0 },
-            { "r_injection", r }} 
-        },
-        { "2d_models_common_settings", toml::table{
-            { "theta_injection", theta } ,
-            { "use_uniform_injection", true }}
-        },
-        { "SolarProp_like_model_settings", toml::table{
-            { "SolarProp_ratio", 0.02 } } 
-        },
-        { "Geliosphere_model_settings", toml::table{
-            { "Geliosphere_ratio", 0.2 } ,
-            { "K0_ratio", 1.0 },
-            { "C_delta", 8.7e-05 },
-            { "default_tilt_angle", 0.1 }} 
-        },
-        { "advanced_settings", toml::table{
-            { "remove_log_files_after_simulation", true } } 
-        }
-    };
-    std::ofstream file("./Settings_batch.toml");
-    
-    if (file.is_open()) {
-        file << tbl;
-        file.close();
-    } else {
-        std::cerr << "Error opening file for writing." << std::endl;
-    }
-    
-}*/
-
 
 std::string InputValidation::getTransformationTableName(std::string modelName)
 {
@@ -99,13 +55,53 @@ bool InputValidation::isInputGeliosphere2DModel(std::string modelName)
 	return false;
 }
 
-void  InputValidation::dtSetCheck(ParamsCarrier *singleTone, float newDT ){
-	if (newDT < 3.0 || newDT > 5000.0)
-		{
-			spdlog::error("dt is out of range!(3-5000)");
-			return ;
-		}
-		singleTone->putFloat("dt", newDT);
+void InputValidation::setDt(ParamsCarrier *singleTone, float dt)
+{
+	singleTone->putFloat("dt", dt);
+}
+
+bool InputValidation::checkDt(float dt)
+{
+	if (dt < 3.0 || dt > 5000.0)
+	{
+		return false;
+	}
+	return true;
+}
+
+void InputValidation::setK0(ParamsCarrier *singleTone, float K0)
+{
+	char buffer[80];
+	sprintf(buffer, "%g", K0);
+	singleTone->putString("K0input", buffer);
+	float newK = K0 * 4.4683705e-27;
+	singleTone->putFloat("K0", newK);
+	singleTone->putInt("K0_entered_by_user", 1);
+}
+
+bool InputValidation::checkK0(float K0)
+{
+	if (K0 < 0.0)
+	{
+		return false;
+	}
+	return true;
+}
+
+void InputValidation::setV(ParamsCarrier *singleTone, float V)
+{
+	singleTone->putString("Vinput", std::to_string(V));
+	float newV = V * 6.68458712e-9;
+	singleTone->putFloat("V", newV);
+}
+	
+bool InputValidation::checkV(float V)
+{
+	if (V < 100.0 || V > 1500.0)
+	{
+		return false;
+	}
+	return true;
 }
 
 void InputValidation::newSettingsLocationCheck(ParamsCarrier *singleTone, std::string settings){
@@ -113,9 +109,22 @@ void InputValidation::newSettingsLocationCheck(ParamsCarrier *singleTone, std::s
 		TomlSettings *tomlSettings = new TomlSettings(settings);
 		tomlSettings->parseFromSettings(singleTone);
 	} else {
-		spdlog::warn(settings);
 		spdlog::warn("No settings file exists on entered path.");
 	}
+}
+
+void InputValidation::setNumberOfTestParticles(ParamsCarrier *singleTone, int numberOfTestParticles)
+{
+	singleTone->putInt("millions", numberOfTestParticles);
+}
+
+bool InputValidation::checkNumberOfTestParticles(int numberOfTestParticles)
+{
+	if (numberOfTestParticles <= 0)
+	{
+		return false;
+	}
+	return true;
 }
 
 void InputValidation::monthYearCheck(ParamsCarrier *singleTone, int year, int month, std::string currentApplicationPath){

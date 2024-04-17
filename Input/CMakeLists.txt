@@ -15,14 +15,14 @@ include(FetchContent)
 FetchContent_Declare(
     rapidcsv
     GIT_REPOSITORY https://github.com/d99kris/rapidcsv
-    GIT_TAG        v8.53
+    GIT_TAG        v8.82
 )
 FetchContent_MakeAvailable(rapidcsv)
 
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
-    GIT_TAG        v1.9.2
+    GIT_TAG        v1.13.0
 )
 FetchContent_MakeAvailable(spdlog)
 
