@@ -2,7 +2,7 @@
  * @file BatchRun.hpp
  * @author Tomas Telepcak, Michal Solanik
  * @brief Abstract definition for algorithm
- * @version 1.1.2
+ * @version 1.2.0
  * @date 2024-01-21
  * 
  * @copyright Copyright (c) 2024
@@ -123,6 +123,15 @@ private:
 	 * @return false if values weren not parsed correctly.
 	 */
 	bool parseValues(ParamsCarrier *singleTone, struct batchRunInput* batchRunInput);
+
+	/**
+	 * @brief Retrieve instance of supported model for execution. Some models may require specific input, which 
+	 * may require additional changes to batch mode input.
+	 * 
+	 * @param name Name of the model.
+	 * @return AbstractAlgorithm* Retrieve instance of supported model for execution.
+	 */
+	AbstractAlgorithm* getSupportedModel(std::string name);
 };
 
 #endif

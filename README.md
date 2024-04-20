@@ -31,6 +31,44 @@ Additional information about used models can be found in following articles:
 
 [Accuracy and comparasion results from GPU implementation to Crank-Nicolson model](https://pos.sissa.it/395/1320/pdf)
 
+## Batch mode
+Since version 1.2.0 we support batch processing of simulations. Batch mode requires CSV file as input with following structure:
+```
+year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model
+``` 
+
+| Name | Description | 
+| :--- | ---: |  
+| year | Load K0 and V for given year from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D | 
+| month | Load K0 and V for given month from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D |
+| K0 | Set K0  |
+| V | Set solar wind speed |
+| dt | Set time step |
+| N | Set number of test particles in millions |
+| r | Set default value of r injection used in Geliosphere
+in AU |
+| theta | Set default value of theta injection used in Geliosphere in degrees |
+| pathToCustomSettingsFile | Path to settings file, which content will be used in simulation. |
+| name | Name of the simulation, which is used as folder name for directory containing output files. Name is optional, but have to be unique in input file. 
+| model | Name of the model (Valid values are: 1D Fp|1D Bp|2D SolarProp-like|2D Geliosphere) |
+
+Injection of r and theta are not regular input parameters via CLI. Their values can be modified in settings file. To keep possible conflicts within input file, r and theta injections, we decided to generate new settings file based on default settings with updating r and theta injection values. 
+
+Input validation conditions are same as for input from CLI, validation will fail on following conditions:
+- Input file does not contain unique names - there are duplicates of names in input file,
+- Both month and year are not set at once - only one of them is set,
+- Input file contains unsupported model,
+- Both K0, V and year with month cannot be selected at once.
+
+Following snipet contains example of input CSV file:
+```
+year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model
+1990,11,,,100,2,1.1861,88.34,,1,2D Geliosphere
+1990,12,,,100,2,1.446,88.05,,2,2D Geliosphere
+1991,1,,,100,2,1.7398,88.01,,,2D Geliosphere
+,,5E+022,400,500,100,,,,Test,1D Fp
+```
+
 ## Installation
 <details>
 
@@ -133,6 +171,7 @@ Algorithm
 │    
 └───include
 |   |   AbstractAlgorithm.hpp
+|   |   BatchRun.hpp
 |   |   OneDimensionBpAlgorithm.hpp
 |   |   OneDimensionBpResults.hpp
 |   |   OneDimensionFpAlgorithm.hpp
@@ -143,6 +182,7 @@ Algorithm
 |   |   TwoDimensionBpResults.hpp
 └───src
     |   AbstractAlgorithm.cpp
+    |   BatchRun.cpp
     |   OneDimensionBpAlgorithm.cpp
     |   OneDimensionBpResults.cpp
     |   OneDimensionFpAlgorithm.cpp
@@ -156,6 +196,7 @@ Algorithm
 <strong>Algorithm</strong> module contains following source files:
 
 - <strong>AbstractAlgorithm.hpp</strong> - Header file of abstract definition for algorithm.
+- <strong>BatchRun.hpp</strong> - Header file of implementation of batch run mode.
 - <strong>OneDimensionBpAlgorithm.hpp</strong> - Header file of implementation of 1D B-p model
 - <strong>OneDimensionBpResults.hpp</strong> - Header file of implementation of 1D B-p model analyzer for output data.
 - <strong>OneDimensionFpAlgorithm.hpp</strong> - Header file of implementation of 1D F-p model
@@ -166,9 +207,10 @@ Algorithm
 - <strong>TwoDimensionBpResults.hpp</strong> - Header file of implementation of 2D B-p model analyzer for output data.
 
 - <strong>AbstractAlgorithm.cpp</strong> - Source file of abstract definition for algorithm.
-- <strong>OneDimensionBpAlgorithm.cpp</strong> - Source file of implementation of 1D B-p model
+- <strong>BatchRun.cpp</strong> - Source file of implementation of batch run mode.
+- <strong>OneDimensionBpAlgorithm.cpp</strong> - Source file of implementation of 1D B-p model.
 - <strong>OneDimensionBpResults.cpp</strong> - Source file of implementation of 1D B-p model analyzer for output data.
-- <strong>OneDimensionFpAlgorithm.cpp</strong> - Source file of implementation of 1D F-p model
+- <strong>OneDimensionFpAlgorithm.cpp</strong> - Source file of implementation of 1D F-p model.
 - <strong>OneDimensionFpResults.cpp</strong> - Source file of implementation of 1D F-p model analyzer for output data.
 - <strong>GeliosphereAlgorithm.cpp</strong> - Source file of implementation of Geliosphere 2D B-p model.
 - <strong>SolarPropLikeAlgorithm.cpp</strong> - Source file of implementation of SolarProp-like 2D B-p model.
@@ -195,6 +237,7 @@ Factory
 
 - <strong>AbstractAlgorithmFactory.hpp</strong> - Interface of Abstract Factory Pattern.
 - <strong>CosmicFactory.hpp</strong> - Class represents implementation of Factory Pattern for cosmic algorithms.
+
 - <strong>AbstractAlgorithmFactory.cpp</strong> - Source file for interface of Abstract Factory Pattern.
 - <strong>CosmicFactory.cpp</strong> - Source file of class represents implementation of Factory Pattern for cosmic algorithms.
 
@@ -208,11 +251,13 @@ Factory
 Input
 │    
 └───include
+|   |   InputValidation.hpp
 |   |   MeasureValuesTransformation.hpp
 |   |   ParamsCarrier.hpp
 |   |   ParseParams.hpp
 |   |   TomlSettings.hpp
 └───src
+    |   InputValidation.cpp
     |   MeasureValuesTransformation.cpp
     |   ParamsCarrier.cpp
     |   ParseParams.cpp
@@ -221,10 +266,13 @@ Input
 
 <strong>Input</strong> module contains following source files:
 
+- <strong>InputValidation.hpp</strong> - Header file for class representing validation of input into Geliosphere.
 - <strong>MeasureValuesTransformation.hpp</strong> - Header file for class representing extraction of measured parameters for simulation from table.
 - <strong>ParamsCarrier.hpp</strong> - Header file for universal map-like structure.
 - <strong>ParseParams.hpp</strong> - Header file of parser of arguments from CLI
 - <strong>TomlSettings.hpp</strong> - Header file for class representing parser of values from settings.
+
+- <strong>InputValidation.cpp</strong> - Source file for class representing validation of input into Geliosphere.
 - <strong>MeasureValuesTransformation.cpp</strong> - Source file for class representing extraction of measured parameters for simulation from table.
 - <strong>ParamsCarrier.cpp</strong> - Source file for universal map-like structure.
 - <strong>ParseParams.cpp</strong> - Source file of parser of arguments from CLI

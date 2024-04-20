@@ -11,10 +11,12 @@
 
 #include "spdlog/spdlog.h"
 
-#include "AbstractAlgorithmFactory.hpp"
 #include "GeliosphereAlgorithm.hpp"
+#include "OneDimensionFpAlgorithm.hpp"
+#include "OneDimensionBpAlgorithm.hpp"
 #include "ParamsCarrier.hpp"
 #include "ParseParams.hpp"
+#include "SolarPropLikeAlgorithm.hpp"
 
 BatchRun::BatchRun()
 {
@@ -27,7 +29,6 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
     rapidcsv::Document doc(singleTone->getString("inputBatchFile", "../geliosphere_batch_input_paramaters.csv"), rapidcsv::LabelParams(0, -1), rapidcsv::SeparatorParams(), rapidcsv::ConverterParams(true, -1.0, -1));    
     
     AbstractAlgorithm *actualAlgorithm;
-    AbstractAlgorithmFactory *factory = AbstractAlgorithmFactory::CreateFactory(AbstractAlgorithmFactory::TYPE_ALGORITHM::COSMIC);
 
     if (!validateInputBatchFile(doc))
     {
@@ -50,10 +51,10 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
             continue;    
         }
 
-        actualAlgorithm = factory->getAlgorithm(input.model);
+        actualAlgorithm = getSupportedModel(input.model);
         if (actualAlgorithm == NULL)
         {
-            spdlog::error("Selected model for simulation {} is not defined in factory.", i + 1);
+            spdlog::error("Selected model for simulation {} is not supported in batch mode.", i + 1);
             continue;
         }
         actualAlgorithm->runAlgorithm(singleTone);
@@ -64,6 +65,27 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
         } 
         singleTone->eraseAllItems(excludedItems);
     }
+}
+
+AbstractAlgorithm* BatchRun::getSupportedModel(std::string name)
+{
+    if (name.compare("1D Fp") == 0)
+	{
+		return new OneDimensionFpAlgorithm();
+	}
+	else if (name.compare("1D Bp") == 0)
+	{
+		return new OneDimensionBpAlgorithm();
+	}
+	else if (name.compare("2D SolarProp-like") == 0)
+	{
+		return new SolarPropLikeAlgorithm();
+	}
+	else if (name.compare("2D Geliosphere") == 0)
+	{
+		return new GeliosphereAlgorithm();
+	}
+	return NULL;
 }
 	
 void BatchRun::getValuesForSingleSimulation(struct batchRunInput* batchRunInput, rapidcsv::Document doc, int row)

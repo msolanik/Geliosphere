@@ -2,7 +2,6 @@
 project (Input)
 
 include_directories(include)
-include_directories(../Utils/include)
 
 file(GLOB SOURCES "src/*.cpp")
 set(Input ${SOURCES})  

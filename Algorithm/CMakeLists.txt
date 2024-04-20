@@ -2,8 +2,6 @@
 project (Algorithm)
 
 include_directories(include)
-include_directories(../tomlplusplus/include/)
-include_directories(../Factory/include/)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -12,6 +10,13 @@ FetchContent_Declare(
     GIT_TAG        v1.13.0
 )
 FetchContent_MakeAvailable(spdlog)
+
+FetchContent_Declare(
+    toml11
+    GIT_REPOSITORY https://github.com/ToruNiina/toml11
+    GIT_TAG        v3.7.0
+)
+FetchContent_MakeAvailable(toml11)
 
 file(GLOB SOURCES "src/*.cpp")
 set(Algorithm ${SOURCES})  
@@ -29,6 +34,7 @@ if(CPU_VERSION_ONLY)
     Input::Basic
     cpu_implementations::cpu_implementations
     spdlog::spdlog_header_only
+    toml11
     )
 else()
     target_link_libraries(${PROJECT_NAME}
@@ -36,5 +42,6 @@ else()
     cpu_implementations::cpu_implementations
     Cuda-kernel::Cuda-kernel
     spdlog::spdlog_header_only
+    toml11
     )
 endif()

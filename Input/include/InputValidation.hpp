@@ -2,7 +2,7 @@
  * @file InputValidation.hpp
  * @author Tomas Telepcak, Michal Solanik
  * @brief Utilities for validating input data, creating input settings
- * @version 1.1.2
+ * @version 1.2.0
  * @date 2024-01-21
  * 
  * @copyright Copyright (c) 2024
