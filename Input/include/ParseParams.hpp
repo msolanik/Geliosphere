@@ -55,32 +55,6 @@ private:
 	void printParameters(ParamsCarrier *params);
 
 	/**
-	 * @brief Get name for transformation table.
-	 * 
-	 * @param params Data structure holding input data.
-	 * @return Name of the file containing transformation table. 
-	 
-	std::string getTransformationTableName(std::string modelName);
-	*/
-
-	/**
-	 * @brief Return true for SolarPropLike model.
-	 * 
-	 * @param modelName Name of the model.
-	 
-	bool isInputSolarPropLikeModel(std::string modelName);
-	*/
-
-	/**
-	 * @brief Return true for Geliosphere 2D model.
-	 * 
-	 * @param modelName Name of the model.
-	 
-	bool isInputGeliosphere2DModel(std::string modelName);
-	*/
-
-
-	/**
 	 * @brief Return path where Geliosphere is located.
 	 * 
 	 * @param argv Geliosphere parameters
