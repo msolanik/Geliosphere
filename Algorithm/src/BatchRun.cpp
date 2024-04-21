@@ -26,7 +26,17 @@ BatchRun::BatchRun()
 void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
 {
     std::set<std::string> excludedItems({"default_settings_file", "currentApplicationPath", "csv", "isCpu", "inputBatchFile"});
-    rapidcsv::Document doc(singleTone->getString("inputBatchFile", "../geliosphere_batch_input_paramaters.csv"), rapidcsv::LabelParams(0, -1), rapidcsv::SeparatorParams(), rapidcsv::ConverterParams(true, -1.0, -1));    
+
+    std::string pathToBatchFile = singleTone->getString("inputBatchFile", "../geliosphere_batch_input_paramaters.csv");
+    std::ifstream batchFile(pathToBatchFile.c_str());
+
+    if(!batchFile.good())
+    {
+        spdlog::error("Cannot open input batch file.");
+        return;
+    }
+
+    rapidcsv::Document doc(pathToBatchFile, rapidcsv::LabelParams(0, -1), rapidcsv::SeparatorParams(), rapidcsv::ConverterParams(true, -1.0, -1));    
     
     AbstractAlgorithm *actualAlgorithm;
 

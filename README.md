@@ -32,6 +32,7 @@ Additional information about used models can be found in following articles:
 [Accuracy and comparasion results from GPU implementation to Crank-Nicolson model](https://pos.sissa.it/395/1320/pdf)
 
 ## Batch mode
+<details>
 Since version 1.2.0 we support batch processing of simulations. Batch mode requires CSV file as input with following structure:
 ```
 year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model
@@ -45,11 +46,10 @@ year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model
 | V | Set solar wind speed |
 | dt | Set time step |
 | N | Set number of test particles in millions |
-| r | Set default value of r injection used in Geliosphere
-in AU |
+| r | Set default value of r injection used in Geliosphere in AU |
 | theta | Set default value of theta injection used in Geliosphere in degrees |
 | pathToCustomSettingsFile | Path to settings file, which content will be used in simulation. |
-| name | Name of the simulation, which is used as folder name for directory containing output files. Name is optional, but have to be unique in input file. 
+| name | Name of the simulation, which is used as folder name for directory containing output files. Name is optional, but have to be unique in input file. |
 | model | Name of the model (Valid values are: 1D Fp|1D Bp|2D SolarProp-like|2D Geliosphere) |
 
 Injection of r and theta are not regular input parameters via CLI. Their values can be modified in settings file. To keep possible conflicts within input file, r and theta injections, we decided to generate new settings file based on default settings with updating r and theta injection values. 
