@@ -101,12 +101,53 @@ $(function() {
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-s   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set path to settings toml file (default Settings.tml in root folder)    </td></tr>
 <tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">-b   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run simulations in batch according to defined input values in input csv file    </td></tr>
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">&ndash;custom-model   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run custom user-implemented model   </td></tr>
 </table>
 <p>All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.</p>
 <p>Additional information about used models can be found in following articles:</p>
 <p><a href="https://pos.sissa.it/395/1320/pdf">Accuracy and comparasion results from GPU implementation to Crank-Nicolson model</a></p>
-<h1>Installation</h1>
+<h1>Batch mode</h1>
+<p>&lt;details&gt; Since version 1.2.0 we support batch processing of simulations. Batch mode requires CSV file as input with following structure: </p><div class="fragment"><div class="line">year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model</div>
+</div><!-- fragment --><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadLeft">Name   </th><th class="markdownTableHeadRight">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">year   </td><td class="markdownTableBodyRight">Load K0 and V for given year from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">month   </td><td class="markdownTableBodyRight">Load K0 and V for given month from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">K0   </td><td class="markdownTableBodyRight">Set K0    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">V   </td><td class="markdownTableBodyRight">Set solar wind speed    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">dt   </td><td class="markdownTableBodyRight">Set time step    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">N   </td><td class="markdownTableBodyRight">Set number of test particles in millions    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">r   </td><td class="markdownTableBodyRight">Set default value of r injection used in Geliosphere in AU    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">theta   </td><td class="markdownTableBodyRight">Set default value of theta injection used in Geliosphere in degrees    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">pathToCustomSettingsFile   </td><td class="markdownTableBodyRight">Path to settings file, which content will be used in simulation.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">name   </td><td class="markdownTableBodyRight">Name of the simulation, which is used as folder name for directory containing output files. Name is optional, but have to be unique in input file.   </td></tr>
+</table>
+<p>| model | Name of the model (Valid values are: 1D Fp|1D Bp|2D SolarProp-like|2D Geliosphere) |</p>
+<p>Injection of r and theta are not regular input parameters via CLI. Their values can be modified in settings file. To keep possible conflicts within input file, r and theta injections, we decided to generate new settings file based on default settings with updating r and theta injection values.</p>
+<p>Input validation conditions are same as for input from CLI, validation will fail on following conditions:</p><ul>
+<li>Input file does not contain unique names - there are duplicates of names in input file,</li>
+<li>Both month and year are not set at once - only one of them is set,</li>
+<li>Input file contains unsupported model,</li>
+<li>Both K0, V and year with month cannot be selected at once.</li>
+</ul>
+<p>Following snipet contains example of input CSV file: </p><div class="fragment"><div class="line">year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model</div>
+<div class="line">1990,11,,,100,2,1.1861,88.34,,1,2D Geliosphere</div>
+<div class="line">1990,12,,,100,2,1.446,88.05,,2,2D Geliosphere</div>
+<div class="line">1991,1,,,100,2,1.7398,88.01,,,2D Geliosphere</div>
+<div class="line">,,5E+022,400,500,100,,,,Test,1D Fp</div>
+</div><!-- fragment --><h1>Installation</h1>
 <p>&lt;details&gt;</p>
 <h2>Geliosphere with GPU support</h2>
 <p>Standard installation of the GPU version of Geliosphere requires installation of the Nvidia toolkit, g++ and cmake 3.14+. These packages can be installed via any packaging tool. The following example is provided for the apt-get packaging tool: </p><div class="fragment"><div class="line">sudo apt-get install cuda g++ cmake</div>
@@ -170,6 +211,7 @@ $(function() {
 <div class="line">│    </div>
 <div class="line">└───include</div>
 <div class="line">|   |   AbstractAlgorithm.hpp</div>
+<div class="line">|   |   BatchRun.hpp</div>
 <div class="line">|   |   OneDimensionBpAlgorithm.hpp</div>
 <div class="line">|   |   OneDimensionBpResults.hpp</div>
 <div class="line">|   |   OneDimensionFpAlgorithm.hpp</div>
@@ -180,6 +222,7 @@ $(function() {
 <div class="line">|   |   TwoDimensionBpResults.hpp</div>
 <div class="line">└───src</div>
 <div class="line">    |   AbstractAlgorithm.cpp</div>
+<div class="line">    |   BatchRun.cpp</div>
 <div class="line">    |   OneDimensionBpAlgorithm.cpp</div>
 <div class="line">    |   OneDimensionBpResults.cpp</div>
 <div class="line">    |   OneDimensionFpAlgorithm.cpp</div>
@@ -190,6 +233,7 @@ $(function() {
 </div><!-- fragment --><p><b>Algorithm</b> module contains following source files:</p>
 <ul>
 <li><b>AbstractAlgorithm.hpp</b> - Header file of abstract definition for algorithm.</li>
+<li><b>BatchRun.hpp</b> - Header file of implementation of batch run mode.</li>
 <li><b>OneDimensionBpAlgorithm.hpp</b> - Header file of implementation of 1D B-p model</li>
 <li><b>OneDimensionBpResults.hpp</b> - Header file of implementation of 1D B-p model analyzer for output data.</li>
 <li><b>OneDimensionFpAlgorithm.hpp</b> - Header file of implementation of 1D F-p model</li>
@@ -199,9 +243,10 @@ $(function() {
 <li><b>SolarPropLikeAlgorithm.hpp</b> - Header file of implementation of SolarProp-like 2D B-p model.</li>
 <li><b>TwoDimensionBpResults.hpp</b> - Header file of implementation of 2D B-p model analyzer for output data.</li>
 <li><b>AbstractAlgorithm.cpp</b> - Source file of abstract definition for algorithm.</li>
-<li><b>OneDimensionBpAlgorithm.cpp</b> - Source file of implementation of 1D B-p model</li>
+<li><b>BatchRun.cpp</b> - Source file of implementation of batch run mode.</li>
+<li><b>OneDimensionBpAlgorithm.cpp</b> - Source file of implementation of 1D B-p model.</li>
 <li><b>OneDimensionBpResults.cpp</b> - Source file of implementation of 1D B-p model analyzer for output data.</li>
-<li><b>OneDimensionFpAlgorithm.cpp</b> - Source file of implementation of 1D F-p model</li>
+<li><b>OneDimensionFpAlgorithm.cpp</b> - Source file of implementation of 1D F-p model.</li>
 <li><b>OneDimensionFpResults.cpp</b> - Source file of implementation of 1D F-p model analyzer for output data.</li>
 <li><b>GeliosphereAlgorithm.cpp</b> - Source file of implementation of Geliosphere 2D B-p model.</li>
 <li><b>SolarPropLikeAlgorithm.cpp</b> - Source file of implementation of SolarProp-like 2D B-p model.</li>
@@ -231,21 +276,25 @@ $(function() {
 <div class="fragment"><div class="line">Input</div>
 <div class="line">│    </div>
 <div class="line">└───include</div>
+<div class="line">|   |   InputValidation.hpp</div>
 <div class="line">|   |   MeasureValuesTransformation.hpp</div>
 <div class="line">|   |   ParamsCarrier.hpp</div>
 <div class="line">|   |   ParseParams.hpp</div>
 <div class="line">|   |   TomlSettings.hpp</div>
 <div class="line">└───src</div>
+<div class="line">    |   InputValidation.cpp</div>
 <div class="line">    |   MeasureValuesTransformation.cpp</div>
 <div class="line">    |   ParamsCarrier.cpp</div>
 <div class="line">    |   ParseParams.cpp</div>
 <div class="line">    |   TomlSettings.cpp</div>
 </div><!-- fragment --><p><b>Input</b> module contains following source files:</p>
 <ul>
+<li><b>InputValidation.hpp</b> - Header file for class representing validation of input into Geliosphere.</li>
 <li><b>MeasureValuesTransformation.hpp</b> - Header file for class representing extraction of measured parameters for simulation from table.</li>
 <li><b>ParamsCarrier.hpp</b> - Header file for universal map-like structure.</li>
 <li><b>ParseParams.hpp</b> - Header file of parser of arguments from CLI</li>
 <li><b>TomlSettings.hpp</b> - Header file for class representing parser of values from settings.</li>
+<li><b>InputValidation.cpp</b> - Source file for class representing validation of input into Geliosphere.</li>
 <li><b>MeasureValuesTransformation.cpp</b> - Source file for class representing extraction of measured parameters for simulation from table.</li>
 <li><b>ParamsCarrier.cpp</b> - Source file for universal map-like structure.</li>
 <li><b>ParseParams.cpp</b> - Source file of parser of arguments from CLI</li>
