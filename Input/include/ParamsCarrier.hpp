@@ -14,11 +14,12 @@
 #ifndef COSMIC_SINGLETON_H
 #define COSMIC_SINGLETON_H
 
-#include <string>
-#include <sstream>
 #include <algorithm>
+#include <iostream>
 #include <map>
-#include <stdio.h>
+#include <set>
+#include <sstream>
+#include <string>
 
 /**
  * @brief ParamsCarrier is responsible for storing parameters for simulations.
@@ -158,6 +159,18 @@ public:
 	 */
 	void putString(std::string key, std::string value)
 	{
+		// Check if the key already exists in the map
+    	auto it = m.find(key);
+    	if (it != m.end())
+    	{	
+			// Key already exists, so we need to destruct the existing string
+        	if (it->second.type == any_t::string_t)
+        	{
+				it->second.str = value;
+				return;
+      		}
+    	}
+
 		any a;
 		a.type = any_t::string_t;
 		new (&(a.str)) std::string(value);
@@ -304,6 +317,30 @@ public:
 			return defaultValue;
 		}
 		return defaultValue;
+	}
+
+	/**
+	 * @brief Erase all items from Paramas Carrier except items 
+	 * passed as parameter.
+	 * 
+	 * @param except Items which should not be removed.
+	 *  
+	 */
+	void eraseAllItems(std::set<std::string> except)
+	{
+		std::set<std::string> itemsToErase;
+		for (auto const& x : m)
+		{
+			auto search = except.find(x.first);
+			if (search == except.end())
+			{
+				itemsToErase.insert(x.first);
+			}
+		}
+		for (auto const& x : itemsToErase)
+		{
+			m.erase(x);
+		}
 	}
 };
 
