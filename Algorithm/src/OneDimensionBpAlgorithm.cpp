@@ -25,10 +25,12 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 		OneDimensionBpCpuModel *oneDimensionBpCpuSimulation = new OneDimensionBpCpuModel();
 		oneDimensionBpCpuSimulation->runSimulation(singleTone);
 	}
-
-	AbstractAlgorithm *result;
-	result = new OneDimensionBpResults();
-	result->runAlgorithm(singleTone);
+	if (singleTone->getInt("evaluation",1))
+	{
+		AbstractAlgorithm *result;
+		result = new OneDimensionBpResults();
+		result->runAlgorithm(singleTone);
+	}
 
 	if (singleTone->getInt("remove_log_files_after_simulation", 1))
 	{
