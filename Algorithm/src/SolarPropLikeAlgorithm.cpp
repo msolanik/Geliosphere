@@ -26,7 +26,7 @@ void SolarPropLikeAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 		twoDimensionBpCpuSimulation->runSimulation(singleTone);
 	}
 
-	if (singleTone->getInt("evaluation",1))
+	if (singleTone->getInt("evaluation",0))
 	{
 		AbstractAlgorithm *result;
 		result = new TwoDimensionBpResults();

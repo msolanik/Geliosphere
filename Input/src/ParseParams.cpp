@@ -30,7 +30,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *solarPropLikeModel = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("models");
 	CLI::Option *geliosphereModel = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("models");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
-	CLI::Option *evaluation = app.add_flag("-e,--evaluation", "Evaluation excluded from simulation");
+	CLI::Option *evaluation = app.add_flag("--evaluation", "Evaluation excluded from simulation");
 #if GPU_ENABLED == 1
 	CLI::Option *cpuOnly = app.add_flag("--cpu-only", "Use only CPU for calculaions");
 #else
@@ -68,10 +68,10 @@ int ParseParams::parseParams(int argc, char **argv)
 		return -1;
 	}
 	if(*evaluation){
-		singleTone->putInt("evaluation", 0);
+		singleTone->putInt("evaluation", 1);
 	}
 	else{
-		singleTone->putInt("evaluation", 1);
+		singleTone->putInt("evaluation", 0);
 	}
 	if (*csv)
 	{

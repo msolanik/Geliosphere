@@ -25,7 +25,7 @@ void GeliosphereAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 		GeliosphereCpuModel *threeDimensionBpCpuSimulation = new GeliosphereCpuModel();
 		threeDimensionBpCpuSimulation->runSimulation(singleTone);
 	}
-	if (singleTone->getInt("evaluation",1))
+	if (singleTone->getInt("evaluation",0))
 	{
 		AbstractAlgorithm *result;
 		result = new TwoDimensionBpResults();

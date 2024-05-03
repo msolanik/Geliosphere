@@ -25,7 +25,7 @@ void OneDimensionBpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 		OneDimensionBpCpuModel *oneDimensionBpCpuSimulation = new OneDimensionBpCpuModel();
 		oneDimensionBpCpuSimulation->runSimulation(singleTone);
 	}
-	if (singleTone->getInt("evaluation",1))
+	if (singleTone->getInt("evaluation",0))
 	{
 		AbstractAlgorithm *result;
 		result = new OneDimensionBpResults();

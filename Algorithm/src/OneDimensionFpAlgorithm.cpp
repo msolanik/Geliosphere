@@ -26,7 +26,7 @@ void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 		oneDimensionFpCpuSimulation->runSimulation(singleTone);
 	}
 
-	if (singleTone->getInt("evaluation",1))
+	if (singleTone->getInt("evaluation",0))
 	{
 		AbstractAlgorithm *result;
 		result = new OneDimensionFpResults();
