@@ -8,6 +8,7 @@
 
 #include "ResultsUtils.hpp"
 #include "ResultConstants.hpp"
+#include <string>
 
 void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 {
@@ -16,7 +17,7 @@ void TwoDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
     double w, Rig, p1AU, Tkin, r, p, Tkinw, Rig1AU, Tkininj, theta, thetainj, tt, t2, beta;
     double tem6, tem5, jlis, tem, wJGR, jlisJGR, jlisBurger, wBurger;
     double speSP[31] = {0}, speJGR[31] = {0}, speN[31] = {0}, speBurger[31] = {0}, ulyssesBin[4] = {0}, ulyssesBinN[4] = {0}, amsBin[72] = {0}, amsBinN[72] = {0};
-    FILE *inputFile = fopen("log.dat", "r");
+    FILE *inputFile = fopen(singleTone->getString("pathToLogFile","log.dat").c_str(), "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     int targetArray[] = {numberOfIterations};
     if (numberOfIterations < 0)
