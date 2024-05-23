@@ -10,7 +10,7 @@
 
 void OneDimensionFpAlgorithm::runAlgorithm(ParamsCarrier *singleTone)
 {
-	if (singleTone->getInt("evaluation",1))
+	if (singleTone->getInt("run_simulation",1))
 	{
 		if (!singleTone->getInt("isCpu", 0))
 		{
