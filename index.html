@@ -83,26 +83,28 @@ $(function() {
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">&ndash;cpu-only   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Simulation will be executed on CPU.    </td></tr>
 <tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">&ndash;evaluation   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run only evaluation    </td></tr>
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-h   </td><td class="markdownTableBodyCenter">-   </td><td class="markdownTableBodyRight">Print help for Geliosphere    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-d   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set time step (default value 5.0s)    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-K   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set K0 (default value 5∗10^22cm2/s)    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-V   </td><td class="markdownTableBodyCenter">float   </td><td class="markdownTableBodyRight">Set solar wind speed (default value 400 km/s)    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-p   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set custom path for output in output directory    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-N   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Set number of test particles in millions    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">-m   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Load K0 and V for given month from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyLeft">-y   </td><td class="markdownTableBodyCenter">int   </td><td class="markdownTableBodyRight">Load K0 and V for given year from table based on Usoskin’s tables for 1D, and K0 and tilt angle for 2D    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyLeft">-s   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set path to settings toml file (default Settings.tml in root folder)    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyLeft">-b   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run simulations in batch according to defined input values in input csv file    </td></tr>
+<td class="markdownTableBodyLeft">-s   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Set path to settings toml file (default Settings.tml in root folder)    </td></tr>
 <tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">-b   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run simulations in batch according to defined input values in input csv file    </td></tr>
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyLeft">&ndash;custom-model   </td><td class="markdownTableBodyCenter">string   </td><td class="markdownTableBodyRight">Run custom user-implemented model   </td></tr>
 </table>
 <p>All GPUs from Nvidia Pascal, Amphere, Volta and Turing architectures are supported.</p>
