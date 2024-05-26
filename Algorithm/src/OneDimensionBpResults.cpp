@@ -9,6 +9,8 @@
 #include "ResultsUtils.hpp"
 #include "ResultConstants.hpp"
 
+#include <string>
+
 void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
 {
     spdlog::info("Started to analyze 1D B-p particles.");
@@ -28,7 +30,7 @@ void OneDimensionBpResults::runAlgorithm(ParamsCarrier *singleTone)
         binc[i] = sqrt(binb[i] * exp((tem + dlT) * log(10.0)));
         binw[i] = larg * binc[i];
     }
-    FILE *inputFile = fopen("log.dat", "r");
+    FILE *inputFile = fopen(singleTone->getString("pathToLogFile","log.dat").c_str(), "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     if (numberOfIterations < 0)
     {

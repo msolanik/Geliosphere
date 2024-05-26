@@ -8,6 +8,7 @@
 
 #include "ResultsUtils.hpp"
 #include "ResultConstants.hpp"
+#include <string>
 
 void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
 {
@@ -29,7 +30,7 @@ void OneDimensionFpResults::runAlgorithm(ParamsCarrier *singleTone)
         binw[i] = binb[i + 1] - binb[i];
         binc[i] = (binb[i + 1] + binb[i]) / 2.0;
     }
-    FILE *inputFile = fopen("log.dat", "r");
+    FILE *inputFile = fopen(singleTone->getString("pathToLogFile","log.dat").c_str(), "r");
     int numberOfIterations = resultsUtils->countLines(inputFile) - 1;
     if (numberOfIterations < 0)
     {

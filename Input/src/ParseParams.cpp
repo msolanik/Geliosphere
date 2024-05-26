@@ -16,6 +16,7 @@
 int ParseParams::parseParams(int argc, char **argv)
 {
 	std::string inputFile;
+	std::string pathToLogFile;
 	float newDt, newK0, newV, newMu;
 	int month, year;
 	std::string newDestination, settings, customModelString;
@@ -30,6 +31,7 @@ int ParseParams::parseParams(int argc, char **argv)
 	CLI::Option *solarPropLikeModel = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("models");
 	CLI::Option *geliosphereModel = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("models");
 	CLI::Option *csv = app.add_flag("-c,--csv", "Output will be in .csv");
+	CLI::Option *run_simulation = app.add_option("--evaluation", pathToLogFile,"Simulation excluded, run only evaluation ");
 #if GPU_ENABLED == 1
 	CLI::Option *cpuOnly = app.add_flag("--cpu-only", "Use only CPU for calculaions");
 #else
@@ -65,6 +67,13 @@ int ParseParams::parseParams(int argc, char **argv)
 	{
 		spdlog::error("At least one model must be selected!");
 		return -1;
+	}
+	if(*run_simulation){
+		singleTone->putInt("run_simulation", 0);
+		singleTone->putString("pathToLogFile",pathToLogFile);
+	}
+	else{
+		singleTone->putInt("run_simulation", 1);
 	}
 	if (*csv)
 	{

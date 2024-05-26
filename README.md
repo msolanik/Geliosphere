@@ -13,6 +13,7 @@ Class documentation can be found [here](https://msolanik.github.io/Geliosphere/a
 | -T | - | Run Geliosphere 2D backward-in-time simulation |
 | -c | - | Set .csv output |
 | --cpu-only | - | Simulation will be executed on CPU. |
+| --evaluation | string | Run only evaluation |
 | -h | - | Print help for Geliosphere |
 | -d | float | Set time step (default value 5.0s) |
 | -K | float | Set K0 (default value 5∗10^22cm2/s) |
