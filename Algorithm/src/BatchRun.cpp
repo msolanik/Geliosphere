@@ -60,7 +60,8 @@ void BatchRun::runAlgorithm(ParamsCarrier *singleTone)
             spdlog::error("Unable to parse values for {}. simulation.", i + 1);
             continue;    
         }
-
+        
+        singleTone->putString("model", input.model);
         actualAlgorithm = getSupportedModel(input.model);
         if (actualAlgorithm == NULL)
         {
