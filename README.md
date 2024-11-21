@@ -1,6 +1,6 @@
 # Geliosphere
 
-Geliosphere is application that utilize GPU as a computing unit for cosmic ray modulation in Heliosphere. Contains 1D models of cosmic ray modulation in heliosphere based on [this paper.](https://agupubs.onlinelibrary.wiley.com/doi/pdfdirect/10.1002/2015JA022237)
+Geliosphere is application that utilize GPU as a computing unit for cosmic ray modulation in Heliosphere. Beside GPU-based models, it also contains parallel CPU implementations for all models. Geliosphere contains 2D, and 1D models of cosmic ray modulation in heliosphere. Information about 2D Geliosphere model, with its description can be found in [this paper.](https://www.sciencedirect.com/science/article/abs/pii/S0010465523001923). 1D models are based on [this paper.](https://agupubs.onlinelibrary.wiley.com/doi/pdfdirect/10.1002/2015JA022237).
 
 Class documentation can be found [here](https://msolanik.github.io/Geliosphere/annotated.html).
   
@@ -69,6 +69,7 @@ year,month,K0,V,dt,N,r,theta,pathToCustomSettingsFile,name,model
 1991,1,,,100,2,1.7398,88.01,,,2D Geliosphere
 ,,5E+022,400,500,100,,,,Test,1D Fp
 ```
+</details>
 
 ## Installation
 <details>
