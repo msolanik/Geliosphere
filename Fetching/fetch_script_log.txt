@@ -1,0 +1,239 @@
+
+Script started successfully at 2025-02-12 10:21:08
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+5  2025   6  0  540.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+646   CR  2288  2024:08:23  10h  52.6  41.4  -63.7  64.3  53.4  -75.2
+
+Script started successfully at 2025-02-20 13:15:15
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+5  2025   6  0  540.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 13:18:03
+
+The most up-to-date entry:
+    YEAR DOY HR      1
+22  2025  23  0  9999.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 13:19:53
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 13:33:18
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 13:34:15
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+
+Script started successfully at 2025-02-20 15:32:32
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 15:33:21
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 16:56:38
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 16:56:51
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 16:57:12
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 17:32:53
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 17:36:37
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 17:37:45
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 17:37:59
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 17:38:24
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
+
+Script started successfully at 2025-02-20 17:38:53
+
+The most up-to-date entry:
+   YEAR DOY HR     1
+9  2025  10  0  419.
+
+The most up-to-date entry:
+    Year  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep   Oct   Nov   Dec Annual
+73  2024  764  770  766  759  812  766  728  788  849  None  None  None   None
+
+The most up-to-date entry:
+    Carr   Rot       Start Date  R_av   R_n    R_s  L_av   L_n    L_s
+651   CR  2293  2025:01:06  19h  61.2  53.1  -69.2  74.1  74.3  -74.0
