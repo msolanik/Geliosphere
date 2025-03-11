@@ -15,20 +15,15 @@ import requests
 import pandas as pd
 import urllib3
 import datetime
+import argparse
 
 # Disable the InsecureRequestWarning - http://wso.stanford.edu/Tilts.html site does not have a certificate
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-# Log
-with open("fetch_script_log.txt", "a") as log_file:
-    log_file.write(f"\nScript started successfully at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    # File is automatically closed when the block is exited
 
 # Define the URL
 url_flow_speed = "https://omniweb.gsfc.nasa.gov/cgi/nx1.cgi"
 url_phi = "https://cosmicrays.oulu.fi/phi/Phi_Table_2017.txt"
 url_tilt_angle = "http://wso.stanford.edu/Tilts.html"
-
 
 # Define the payload for OMNIWEB form request
 payload = {
@@ -39,39 +34,24 @@ payload = {
     "end_date": "20250110",    
     "vars": "24", 
 }
-print("\n")
-print(f"Script started successfully at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-print("\n")
 
-# Secure the connection and read responses
-try:
-    response_flow_speed = requests.post(url_flow_speed, data=payload)
-    response_flow_speed.raise_for_status()
-
-    print("Flow speed data connected successfully.")
-    
-except requests.exceptions.RequestException as e:
-    print(f"Error connecting to flow speed data: {e}")
-
-try:
-    response_phi = requests.get(url_phi, verify=False)
-    response_phi.raise_for_status()
-    
-    print("Phi data connected successfully.")
-    
-except requests.exceptions.RequestException as e:
-    print(f"Error connecting to phi data: {e}")
-
-try:
-    response_tilt_angle = requests.get(url_tilt_angle)
-    response_tilt_angle.raise_for_status()
-
-    print("Tilt angle data connected successfully.")
-    
-except requests.exceptions.RequestException as e:
-    print(f"Error connecting to tilt angle data: {e}")
+def connect_to_url(url, method='get', data=None, verify_ssl=True):
+    """Connect to a URL and handle exceptions."""
+    try:
+        if method == 'get':
+            response = requests.get(url, verify=verify_ssl)
+        elif method == 'post':
+            response = requests.post(url, data=data)
+        response.raise_for_status()
+        print(f"{url} connected successfully.")
+        return response
+    except requests.exceptions.RequestException as e:
+        print(f"Error connecting to {url}: {e}")
+        return None
 
 def parse_to_csv(html_content: str, table_start: str, table_end: str, header_start: str, output_file_path: str):
+    """Parse HTML content and save to CSV."""
+
     try:
         # Clean text_data
         text_data = html_content.replace("\x00", "")
@@ -92,8 +72,6 @@ def parse_to_csv(html_content: str, table_start: str, table_end: str, header_sta
 
         if start_index is None or end_index is None:
             raise ValueError("Table boundaries not found.\n\n")            
-        #else:
-        #    print("Table boundaries for "+ output_file_path +" found.")
 
         if header is None:
             print("Warning: No header found, generating default header.")
@@ -108,30 +86,21 @@ def parse_to_csv(html_content: str, table_start: str, table_end: str, header_sta
         df.to_csv(output_file_path, index=False)
         print("Table data were saved to:", output_file_path)
 
-        # Print last row
-        #print("-\nThe most up-to-date entry:\n", df.tail(1), "\n")
-
-        with open("fetch_script_log.txt", "a") as log_file:
-            log_file.write("\nThe most up-to-date entry:\n" + str(df.tail(1)) + "\n")
-
+        with open(args.log_file, "a") as log_file:
+            log_file.write("\nThe most up-to-date entry from " + output_file_path + ":\n" + str(df.tail(1)))
 
         return df.tail(1)
 
     except ValueError as e:
         print(f"Value Error: {e}")
     except Exception as e:
-        print(f"An unspecified error occurred: {e}")  # Handle other errors (e.g., invalid HTML, parsing issues)
+        print(f"An unspecified error occurred: {e}")
 
+def compute_new_entry(last_entry_flow_speed, last_entry_phi, last_entry_tilt_angle):
+    """Compute and append a new entry to an existing CSV."""
 
-# Parsing and saving to .cvs with anchor params and retrieving last entries
-last_entry_flow_speed = parse_to_csv(response_flow_speed.text,"YEAR DOY","</pre>","YEAR DOY","table_data_flow_speed.csv")
-last_entry_phi = parse_to_csv(response_phi.text,"+++","+++","Year  Jan","table_data_phi.csv")
-last_entry_tilt_angle = parse_to_csv(response_tilt_angle.text,"Carr Rot","</pre>","Carr Rot","table_data_tilt_angle.csv")
+    filepath = args.csv_file
 
-
-filepath = 'Geliosphere_K0_phi_table.csv'
-
-def compute_new_entry():
     try:
         df = pd.read_csv(filepath)
 
@@ -139,7 +108,7 @@ def compute_new_entry():
         date = pd.to_datetime(last_entry_tilt_angle['Start'], format='%Y:%m:%d')
 
         carrington_rotation = last_entry_tilt_angle.iloc[0]['Rot']
-        year_week = date.dt.year.iloc[0] + date.dt.day_of_year.iloc[0] / 365
+        year_week = round(date.dt.year.iloc[0] + date.dt.day_of_year.iloc[0] / 365, 7)
         modulation_potentional = last_entry_phi.iloc[0].dropna().iloc[-1] # Last non-NaN value #Geliosphere has some calcs that are yet to be considered
         k0_au2_s = (float(last_entry_flow_speed.iloc[0]['1']) * 6.68459e-9) * (99 / (3 * int(modulation_potentional))) #1D Models
         tilt_angle = last_entry_tilt_angle.iloc[0]['R_av']
@@ -176,12 +145,10 @@ def compute_new_entry():
             'polarity': [polarity]
         })
 
-        # Append the new row
         df = pd.concat([df, new_row], ignore_index=True)
        
         print("\n Last entries: file: ",filepath," \n---------------------------------------------------")
         print(df.tail(5),"\n")
-        #df = df.drop(df.index[-1])
         df.to_csv(filepath, index=False)
 
     except ValueError as e:
@@ -189,9 +156,41 @@ def compute_new_entry():
     except Exception as e:
         print(f"An error occurred when computing new entry: {e}")
 
+def log_script_start():
+    """Log the start of the script."""
 
-#Computing, formating and adding the most-up-to-date entry
-compute_new_entry()
+    with open(args.log_file, "w") as log_file:
+        log_file.write(f"\nScript started successfully at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
-print("fetch_script_log.txt has been updated successfully\n")
-print(filepath, "has been updated successfully\n\n")
+def main():
+    """Main function to orchestrate the script."""
+
+    print("\n")
+    print(f"Script started successfully at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("\n")
+
+    log_script_start()
+
+    response_flow_speed = connect_to_url(url_flow_speed, method='post', data=payload)
+    response_phi = connect_to_url(url_phi, verify_ssl=False)
+    response_tilt_angle = connect_to_url(url_tilt_angle)
+
+    if response_flow_speed and response_phi and response_tilt_angle:
+        last_entry_flow_speed = parse_to_csv(response_flow_speed.text, "YEAR DOY", "</pre>", "YEAR DOY", "table_data_flow_speed.csv")
+        last_entry_phi = parse_to_csv(response_phi.text, "+++", "+++", "Year  Jan", "table_data_phi.csv")
+        last_entry_tilt_angle = parse_to_csv(response_tilt_angle.text, "Carr Rot", "</pre>", "Carr Rot", "table_data_tilt_angle.csv")
+        compute_new_entry(last_entry_flow_speed, last_entry_phi, last_entry_tilt_angle)
+
+        print(args.csv_file, "has been updated successfully")
+
+    print(args.log_file ," has been updated successfully\n")
+
+if __name__ == "__main__":
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Fetch and process data.")
+    parser.add_argument('--csv_file', type=str, default='Geliosphere_K0_phi_table.csv', help="Path to the output CSV file")
+    parser.add_argument('--log_file', type=str, default='fetch_script_log.txt', help="Path to the output log file")
+
+    args = parser.parse_args()
+
+    main()
