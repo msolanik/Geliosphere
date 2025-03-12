@@ -90,6 +90,8 @@ __global__ void trajectorySimulationGeliosphere(trajectoryHistoryGeliosphere *hi
         Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
 
         // Equation 25
+        // Link to Equation 25 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/geliosphere-2d-jupyter-notebook-docs/ModelDocs/geliosphere-model-description.ipynb#25
         if ((theta < (1.7f * Pi / 180.0f)) || (theta > (178.3f * Pi / 180.0f)))
         {
             delta = 0.003f;
