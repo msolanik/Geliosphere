@@ -1,0 +1,36 @@
+{
+	"name": "Dev Container GPU",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+    "hostRequirements": {
+		"gpu": true
+	},
+    "runArgs": [
+        "--gpus=all",
+		"--privileged"
+    ],
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
+	],
+	"customizations": {
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack",
+				"nvidia.nsight-vscode-edition"
+			]
+		}
+	},
+	"remoteEnv": { 
+		"PATH": "${containerEnv:PATH}:/usr/local/cuda/bin",
+		"LD_LIBRARY_PATH": "${containerEnv:LD_LIBRARY_PATH}:/usr/local/cuda/lib64" 
+	},
+    "features": {
+		"ghcr.io/devcontainers/features/nvidia-cuda:1": {
+            "installNvtx": true,
+            "installToolkit": true
+        }
+	}
+}

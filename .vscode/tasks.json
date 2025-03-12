@@ -1,0 +1,127 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build-debug-cpu-only",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "build"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "generate-makefiles-debug-cpu-only"
+        ],
+        "problemMatcher": ["$gcc"],
+        "detail": "Build CPU-only Geliosphere in Debug configuration"
+      },
+      {
+        "label": "build-release-cpu-only",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "build"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "generate-makefiles-release-cpu-only"
+        ],
+        "problemMatcher": ["$gcc"],
+        "detail": "Build CPU-only Geliosphere in Release configuration"
+      },
+      {
+        "label": "build-debug",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "build"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "generate-makefiles-debug-gpu"
+        ],
+        "problemMatcher": ["$gcc"],
+        "detail": "Build Geliosphere in Debug configuration"
+      },
+      {
+        "label": "build-release",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "--build",
+          "build"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "generate-makefiles-release-gpu"
+        ],
+        "problemMatcher": ["$gcc"],
+        "detail": "Build Geliosphere in Release configuration"
+      },
+      {
+        "label": "generate-makefiles-debug-cpu-only",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "-B",
+          "build",
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DCPU_VERSION_ONLY=1"
+        ],
+        "problemMatcher": ["$gcc"]
+      },
+      {
+        "label": "generate-makefiles-release-cpu-only",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "-B",
+          "build",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCPU_VERSION_ONLY=1"
+        ],
+        "problemMatcher": ["$gcc"]
+      },
+      {
+        "label": "generate-makefiles-debug-gpu",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "-B",
+          "build",
+          "-DCMAKE_BUILD_TYPE=Debug",
+        ],
+        "problemMatcher": ["$gcc"]
+      },
+      {
+        "label": "generate-makefiles-release-gpu",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "-B",
+          "build",
+          "-DCMAKE_BUILD_TYPE=Release",
+        ],
+        "problemMatcher": ["$gcc"]
+      }
+    ]
+}
