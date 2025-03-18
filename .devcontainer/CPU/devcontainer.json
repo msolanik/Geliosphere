@@ -3,6 +3,9 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
+	],
 	"customizations": {
 		"vscode": {
 			"settings": {},

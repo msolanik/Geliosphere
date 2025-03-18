@@ -122,6 +122,13 @@
           "-DCMAKE_BUILD_TYPE=Release",
         ],
         "problemMatcher": ["$gcc"]
+      },
+      {
+        "label": "clean-build",
+        "type": "shell",
+        "command": "cmake --build . --target clean && find . -name 'CMakeCache.txt' -delete && find . -name 'CMakeFiles' -type d -exec rm -rf {} + && find . -name 'Makefile' -delete && find . -name 'cmake_install.cmake' -delete && rm -rf ./build/",
+        "problemMatcher": [],
+        "detail": "Remove generated files and remove content of build folder"
       }
     ]
 }
