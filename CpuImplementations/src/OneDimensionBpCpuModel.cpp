@@ -74,29 +74,43 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 			while (r < 100.0002)
 			{
 				// Equation 5
+				// Link to Equation 5 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#5
 				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
 				// Equation 6 in GeV
+				// Link to Equation 6 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#6
 				Rig = (p * c / q) / 1e9;
                 pp = p;
                 
 				// Equation 14
+				// Link to Equation 14 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#14
 				dp = (2.0f * V * pp * dt / (3.0f * r));
 				p -= dp;
 
 				// Equation 7
+				// Link to Equation 7 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#7
 				Kdiff = K0 * beta * Rig;
                 arnum = distribution(generator);
                 
 				// Equation 13
+				// Link to Equation 13 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#13
 				dr = (V + (2.0 * Kdiff / r)) * dt + (arnum * sqrt(2.0 * Kdiff * dt));
 			    r += dr;
 
 				// Equation 6 in J
+				// Link to Equation 6 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#6
                 Rig = p * c / q;
                 Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
                 
 				// Equation 5
+				// Link to Equation 5 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#5
 				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
 				if (beta > 0.01f && Tkin < 200.0f)

@@ -95,6 +95,8 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
             while (r < 100.0)
             {
 				// Equation 5
+                // Link to Equation 5 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#5
 				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
                 // Equation 8 from 
@@ -105,6 +107,8 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 r2 = r * r;
 
                 // Equation 25
+                // Link to Equation 25 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#25
                 if (theta < (1.7 * Pi / 180.) || theta > (178.3 * Pi / 180.0))
                 {
                     delta = 0.003;
@@ -118,15 +122,21 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 deltarh2 = deltarh * deltarh;
 
                 // Equation 24
+                // Link to Equation 24 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#24
                 gamma = (r * omega) * sin(theta) / V;
                 gamma2 = gamma * gamma;
 
                 // Equation 26
+                // Link to Equation 26 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#26
                 Cb = 1.0 + gamma2 + (r2 * deltarh2);
                 Cb2 = Cb * Cb;
                 Bfactor = (5. / 3.4) * r2 / sqrt(Cb);
 
                 // Equation 32  
+                // Link to Equation 32 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#32
                 if (Rig < 0.1)
                 {
                     Kpar = K0 * beta * 0.1 * Bfactor / 3.0;
@@ -137,64 +147,98 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 }
 
                 // Equation 33
+                // Link to Equation 33 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#33
                 Kper = ratio * Kpar;
 
                 // Equation 27
+                // Link to Equation 27 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#27
                 Krr = Kper + ((Kpar - Kper) / Cb);
                 
                 // Equation 28
+                // Link to Equation 28 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#28
                 Ktt = Kper + (r2 * deltarh2 * (Kpar - Kper) / Cb);
                 Kphph = 1.0;
 
                 // Equation 29
+                // Link to Equation 29 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#29
                 Krt = deltarh * (Kpar - Kper) * r / Cb;
                 Krph = 0.0;
                 Ktph = 0.0;
 
                 // Equation 16, where Krph = Ktph = 0, and Kphph = 1 
+                // Link to Equation 16 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#16
                 B11Temp = (Kphph * Krt * Krt) - (2.0 * Krph * Krt * Ktph) + (Krr * Ktph * Ktph) + (Ktt * Krph * Krph) - (Krr * Ktt * Kphph);
                 B11 = 2.0 * B11Temp / ((Ktph * Ktph) - (Ktt * Kphph));
                 B11 = sqrt(B11);
 
                 // Equation 17
+                // Link to Equation 17 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#17
                 B12 = ((Krph * Ktph) - (Krt * Kphph)) / ((Ktph * Ktph) - (Ktt * Kphph));
                 B12 = B12 * sqrt(2.0 * (Ktt - (Ktph * Ktph / Kphph)));
 
                 // Equation 20
+                // Link to Equation 20 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#20
                 B13 = sqrt(2.0) * Krph / sqrt(Kphph);
 
                 // Equation 18
+                // Link to Equation 18 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#18
                 B22 = Ktt - (Ktph * Ktph / Kphph);
                 B22 = sqrt(2.0 * B22) / r;
 
                 // Equation 20
+                // Link to Equation 20 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#20
                 B23 = Ktph * sqrt(2.0 / Kphph) / r;
 
                 // Equation 34
+                // Link to Equation 34 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#34
                 COmega = 2.0 * r * omega * omega * sin(theta) * sin(theta) / (V * V);
                 COmega = COmega + (2.0 * r * deltarh2);
                 
                 // Equation 36
+                // Link to Equation 36 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#36
                 dKper = ratio * K0 * beta * Rig * ((2.0 * r * sqrt(Cb)) - (r2 * COmega / (2.0 * sqrt(Cb)))) / (3.0 * (5.0 / 3.4) * Cb);
 
-                // Equation 35                
+                // Equation 35 
+                // Link to Equation 35 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#35               
                 dKrr = dKper + ((1.0 - ratio) * K0 * beta * Rig * ((2.0 * r * pow(Cb, 1.5)) - (r2 * COmega * 3.0 * sqrt(Cb) / 2.0)) / ( 3.0 * (5.0 / 3.4) * pow(Cb, 3.0)));
 
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
                     // Equation 37
+                    // Link to Equation 37 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#37
                     CKtt = sin(theta) * cos(theta) * (omega * omega * r2 / (V * V));
                  
                     // Equation 38
+                    // Link to Equation 38 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#38
                     dKtt1 = (-1.0 * ratio * K0 * beta * Rig * r2 * CKtt) / (3.0 * (5.0 / 3.4) * pow(Cb, 1.5));
 
                     // Equation 39
+                    // Link to Equation 39 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#39
                     dKtt2 = (1.0 - ratio) * K0 * beta * Rig * r2 * r2 * deltarh2;
                     
                     // Equation 41
+                    // Link to Equation 41 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#41
                     dKtt4 = 3.0 * CKtt / pow(Cb, 2.5);
                     
                     // Equation 42
+                    // Link to Equation 42 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#42
                     dKtt = dKtt1 - (dKtt2 * dKtt4);
                 }
                 else
@@ -203,29 +247,45 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                     sin3 = sin(theta) * sin(theta) * sin(theta);
 
                     // Equation 37
+                    // Link to Equation 37 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#37
                     CKtt = sin(theta) * cos(theta) * (omega * omega * r2 / (V * V));
                     CKtt = CKtt - (r2 * delta0 * delta0 * cos(theta) / (rh * rh * sin3));
                     
                     // Equation 38
+                    // Link to Equation 38 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#38
                     dKtt1 = (-1.0 * ratio * K0 * beta * Rig * r2 * CKtt) / (3.0 * (5.0 / 3.4) * pow(Cb, 1.5));
 
                     // Equation 39
+                    // Link to Equation 39 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#39
                     dKtt2 = (1.0 - ratio) * K0 * beta * Rig * r2 * r2 * delta0 * delta0 / (rh * rh);
                     
                     // Equation 40
+                    // Link to Equation 40 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#40
                     dKtt3 = -2.0 * (cos(theta) / sin3) / (3.0 * (5.0 / 3.4) * pow(Cb, 1.5));
                     
                     // Equation 41
+                    // Link to Equation 41 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#41
                     dKtt4 = 3.0 * (CKtt / sin2) / (3.0 * (5.0 / 3.4) * pow(Cb, 2.5));
                     
                     // Equation 42
+                    // Link to Equation 42 in Jupyter Notebook Documentation: 
+                    // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#42
                     dKtt = dKtt1 + (dKtt2 * (dKtt3 - dKtt4));
                 }
 
                 // Equation 43
+                // Link to Equation 43 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#43
                 dKrtr = (1.0 - ratio) * K0 * beta * Rig * deltarh * r2 / (3.0 * (5.0 / 3.4) * pow(Cb, 2.5));
 
                 // Equation 44
+                // Link to Equation 44 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#44
                 if ((theta > (1.7 * Pi / 180.)) && (theta < (178.3 * Pi / 180.0)))
                 {
                     dKrtt = (1.0 - ratio) * K0 * beta * Rig * r2 * r / ((3.0 * (5.0 / 3.4) * rh * pow(Cb, 2.5)));
@@ -240,6 +300,8 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 }
 
                 // Equation 21
+                // Link to Equation 21 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#21
                 dr = ((-1.0 * V) + (2.0 * Krr / r) + dKrr) * dt;
                 dr = dr + (dKrtt * dt / r) + (Krt * cos(theta) * dt / (r * sin(theta)));
                 dr = dr + (distribution(generator) * B11 * sqrt(dt));
@@ -247,12 +309,16 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 dr = dr + (distribution(generator) * B13 * sqrt(dt));
 
                 // Equation 22
+                // Link to Equation 22 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#22
                 dtheta = (Ktt * cos(theta)) / (r2 * sin(theta));
                 dtheta = (dtheta * dt) + (dKtt * dt / r2);
                 dtheta = dtheta + (dKrtr * dt) + (2.0 * Krt * dt / r);
                 dtheta = dtheta + (distribution(generator) * B22 * sqrt(dt)) + (distribution(generator) * B23 * sqrt(dt));
 
                 // Equation 23
+                // Link to Equation 23 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#23
 				alfa = (Tkin + T0 + T0)/(Tkin + T0);
                 dTkin = -2.0 * V * alfa * Tkin * dt / (3.0 * r);
 
@@ -300,9 +366,13 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
                 DriftSheetR = polarity * konvF * (1.0 / (3.0 * A)) * Rig * beta * r * gamma * fprime / Cb;
 
                 // Equation 21
+                // Link to Equation 21 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#21
                 dr = dr + ((DriftR + DriftSheetR) * dt);
                 
                 // Equation 22
+                // Link to Equation 22 in Jupyter Notebook Documentation: 
+                // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/geliosphere-model-description.ipynb#22
                 dtheta = dtheta + (DriftTheta * dt / r);
 
                 r = r + dr;

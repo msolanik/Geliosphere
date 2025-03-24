@@ -73,24 +73,36 @@ __global__ void trajectorySimulation(float *pinj, trajectoryHistoryOneDimensionF
 	while (r < 100.0002f)
 	{
 		// Equation 5
+        // Link to Equation 5 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#5
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		
 		// Equation 6
+        // Link to Equation 6 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#6
 		Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
 		
 		// Equation 11
+        // Link to Equation 11 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#11
 		sumac += ((4.0f * V / (3.0f * r)) * dt);
 		
 		// Equation 10
+        // Link to Equation 10 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#10
 		pp = p;
 		p -= (2.0f * V * pp * dt / (3.0f * r));
 	
 		// Equation 7
+        // Link to Equation 7 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#7
 		Kdiff = K0 * beta * Rig;
 		if (generate)
 		{
 			generated[idx] = curand_box_muller(&cuState[idx]);
 			// Equation 9
+			// Link to Equation 9 in Jupyter Notebook Documentation: 
+			// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#9
 			dr = (V + (2.0f * Kdiff / r)) * dt + (generated[idx].x * sqrtf(2.0f * Kdiff * dt));
 			r += dr;
 			generate = false;
@@ -98,11 +110,15 @@ __global__ void trajectorySimulation(float *pinj, trajectoryHistoryOneDimensionF
 		else
 		{
 			// Equation 9
+			// Link to Equation 9 in Jupyter Notebook Documentation: 
+			// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#9
 			dr = (V + (2.0f * Kdiff / r)) * dt + (generated[idx].y * sqrtf(2.0f * Kdiff * dt));
 			r += dr;
 			generate = true;
 		}
 		// Equation 6 in J
+        // Link to Equation 6 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#6
 		Rig = p * c / q;
 		Tkin = (sqrtf((T0 * T0 * q * q * 1e9f * 1e9f) + (q * q * Rig * Rig)) - (T0 * q * 1e9f)) / (q * 1e9f);
 		if (beta > 0.01f && Tkin < 100.0f)
