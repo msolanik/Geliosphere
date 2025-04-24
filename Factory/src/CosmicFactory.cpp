@@ -18,6 +18,7 @@ AbstractAlgorithm *CosmicFactory::getAlgorithm(std::string name)
 	else if (name.compare("2D SolarProp-like") == 0)
 	{
 		return new SolarPropLikeAlgorithm();
+		
 	}
 	else if (name.compare("2D Geliosphere") == 0)
 	{

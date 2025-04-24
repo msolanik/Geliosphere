@@ -1,5 +1,5 @@
 
-Script started successfully at 2025-03-11 14:34:15
+Script started successfully at 2025-03-11 14:52:10
 
 The most up-to-date entry from table_data_flow_speed.csv:
    YEAR DOY HR     1

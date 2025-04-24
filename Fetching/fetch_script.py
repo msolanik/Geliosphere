@@ -2,9 +2,9 @@
 # @author: Marek Hamracek
 #
 #
-#   SETTING UP CRON
+# SETTING UP CRON
 #
-#       crontab -e
+#   crontab -e
 #       0 10 1 * * /path/to/python3 /path/to/fetch_script.py    #First day of any month at 10 AM
 #                                                               #Replace /path/to/
 #
