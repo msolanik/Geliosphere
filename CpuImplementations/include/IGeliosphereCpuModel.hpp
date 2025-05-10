@@ -2,9 +2,7 @@
 #define I_GELIOSPHERE_CPU_MODEL_H
 
 class IGeliosphereCpuModel {
-protected:
-
-
+public:
     virtual ~IGeliosphereCpuModel() = default;
 };
 

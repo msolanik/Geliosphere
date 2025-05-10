@@ -7,8 +7,8 @@
  * 
  * @copyright Copyright (c) 2022
  * 
- */
 
+*/
 #ifndef BP_CPU_ONE_DIMENSION_SIMULATION_H
 #define BP_CPU_ONE_DIMENSION_SIMULATION_H
 
@@ -25,19 +25,11 @@ struct SimulationOutput {
 	double w;
 };
 
-/**
- * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface 
- * to define support functions for running implementation of 1D B-p model.
- * 
- */
+
 class OneDimensionBpCpuModel : public AbstractCpuModel, public IOneDimensionBpCpuModel
 {
 public:
-    /**
-	 * @brief Definition of simulation runner.
-	 * 
-	 * @param singleTone data structure containing input parameters.
-	 */
+
 	void runSimulation(ParamsCarrier *singleTone);
 
 protected:    
@@ -58,3 +50,4 @@ private:
 };
 
 #endif
+ 
