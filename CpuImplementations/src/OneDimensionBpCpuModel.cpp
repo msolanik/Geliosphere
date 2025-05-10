@@ -5,7 +5,6 @@ unoptimized duration: 35 min with O3 flag for: time ./Geliosphere -B -d 5 -N 1
 
 30m17s
 
--O3 -march=native -flto -funroll-loops
 */
 #include "OneDimensionBpCpuModel.hpp"
 #include "FileUtils.hpp"
@@ -16,6 +15,9 @@ unoptimized duration: 35 min with O3 flag for: time ./Geliosphere -B -d 5 -N 1
 #include <thread>
 #include <random>
 
+// Constants to avoid repeated calls
+const double C_Q = c / q;
+const double C_Q_1E9 = C_Q / 1e9;
 
 
 void OneDimensionBpCpuModel::runSimulation(ParamsCarrier *singleTone)
@@ -68,12 +70,15 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 	double Tkin, Tkininj, Rig, beta;
 	double w;
 	double p, dp, pp, Kdiff;
-
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
 
-	std::vector<SimulationOutput> localOutputs;
+    // cache TLS references to avoid __tls_get_addr overhead
+    auto& gen = generator; 
+    auto& dist = distribution; //avoids repeated __tls_get_addr lookup for thread-local variables
+
+
 
 	for (int energy = 0; energy < 101; energy++)
 	{
@@ -83,25 +88,27 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 			Tkin = Tkininj;
 
 			Rig = RigFromTkin(Tkin);
-			p = Rig * 1e9 * q / c;
+			//p = Rig * 1e9 * q / c;
+			p = Rig / C_Q_1E9;
 			r = rInit;
 
 			while (r < 100.0002)
 			{
 				beta = Beta(Tkin);
-				Rig = (p * c / q) / 1e9;
+				//Rig = (p * c / q) / 1e9;
+				Rig = p * C_Q_1E9;
 				pp = p;
 				dp = Dp(V, pp, r);
 				p -= dp;
 
 				Kdiff = Kdiffr(beta, Rig);
-				arnum = distribution(generator);
-
+				arnum = dist(gen);  // much faster than distribution(generator);
+				//arnum = distribution(generator);
 				dr = Dr(V, Kdiff, r, dt, arnum);
 				r += dr;
 
-				Rig = p * c / q;
-
+				// Rig = p * c / q;
+				Rig = p * C_Q;
 				//Tkin = TkinFromRig(Rig);
 				Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
 				beta = Beta(Tkin);
@@ -114,7 +121,6 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 						outputMutex.lock();
 						outputQueue.push({Tkin, Tkininj, r, w});
 						outputMutex.unlock();
-
 
 						break;
 					}
