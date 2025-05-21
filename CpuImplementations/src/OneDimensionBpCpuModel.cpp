@@ -60,7 +60,7 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
     double w = 0;
     double p = 0, dp = 0, pp = 0, Kdiff = 0;
 
-	// Constants to avoid repeated calls
+
 	const double C_Q = c / q;
 	const double C_Q_1E9 = C_Q / 1e9;
 	const double t0Term = T0 * T0 * q * q * 1e18;
@@ -70,12 +70,12 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
 
-    // cache TLS references to avoid __tls_get_addr overhead
+
     auto& gen = generator; 
-    auto& dist = distribution; //avoids repeated __tls_get_addr lookup for thread-local variables
+    auto& dist = distribution; 
 
 	std::vector<SimulationOutput> localOutputs;
-	localOutputs.reserve(101 * 250);  // avoiding reallocations and segmentation fault caused by it
+	localOutputs.reserve(101 * 250); 
 
 	for (int energy = 0; energy < 101; energy++)
 	{
@@ -85,29 +85,28 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 			Tkin = Tkininj;
 
 			Rig = RigFromTkin(Tkin);
-			//p = Rig * 1e9 * q / c;
+
 			p = Rig / C_Q_1E9;
 			r = rInit;
 
 			while (r < 100.0002)
 			{
 				beta = Beta(Tkin);
-				//Rig = (p * c / q) / 1e9;
+
 				Rig = p * C_Q_1E9;
 				pp = p;
 				dp = Dp(V, pp, r);
 				p -= dp;
 
 				Kdiff = Kdiffr(beta, Rig);
-				arnum = dist(gen);  // much faster than distribution(generator);
-				//arnum = distribution(generator);
+				arnum = dist(gen); 
+
 				dr = Dr(V, Kdiff, r, dt, arnum);
 				r += dr;
 
-				// Rig = p * c / q;
+
 				Rig = p * C_Q;
-				//Tkin = TkinFromRig(Rig);
-				//Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
+
 				Tkin = (sqrt(t0Term + (q * q * Rig * Rig)) - (T0 * q1e9)) / q1e9;
 				beta = Beta(Tkin);
 
@@ -116,12 +115,9 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 					if ((r > 100.0f) && ((r - dr) < 100.0f))
 					{
 						w = W(p);
-						//outputMutex.lock();
-						//outputQueue.push({Tkin, Tkininj, r, w});
-						//outputMutex.unlock();
 
 						localOutputs.emplace_back(SimulationOutput{Tkin, Tkininj, r, w});
-						//localOutputs.emplace_back(Tkin, Tkininj, r, w);
+
 						break;
 					}
 				}
@@ -144,12 +140,6 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
         {
             outputQueue.push(output);
         }
-		//outputMutex.lock();
-		//for (const auto& output : localOutputs)
-		//{
-		//	outputQueue.push(output);
-		//}
-		//outputMutex.unlock();
     }	  
 }
 
@@ -162,11 +152,6 @@ double OneDimensionBpCpuModel::RigFromTkin(double Tkin)
 {
     return sqrt(Tkin * (Tkin + 2.0 * T0));
 }
-
-//double OneDimensionBpCpuModel::RigFromMomentum(double p)
-//{
-//   return (p * c / q) / 1e9;
-//}
 
 double OneDimensionBpCpuModel::Kdiffr(double beta, double Rig)
 {
@@ -182,11 +167,6 @@ double OneDimensionBpCpuModel::Dr(double V, double Kdiff, double r, double dt, d
 {
     return (V + (2.0 * Kdiff / r)) * dt + (rand * sqrt(2.0 * Kdiff * dt));
 }
-
-//double OneDimensionBpCpuModel::TkinFromRig(double Rig)
-//{
-//    return (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
-//}
 
 double OneDimensionBpCpuModel::W(double p)
 {

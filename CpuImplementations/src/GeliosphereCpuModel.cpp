@@ -244,9 +244,7 @@ void GeliosphereCpuModel::simulation(int threadNumber, unsigned int availableThr
 
                 if (r > 100.0)
                 {
-                    //outputMutex.lock();
-                    //outputQueue.push({Tkininj, Tkin, r, w, thetainj, theta});
-                    //outputMutex.unlock();
+                    
                     localOutputs.emplace_back(SimulationOutput{Tkininj, Tkin, r, w, thetainj, theta});
                     
                     break;

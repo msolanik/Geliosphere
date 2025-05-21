@@ -86,7 +86,7 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 				Rig = RigFromTkin(Tkin);
 				Kdiff = Kdiffr(beta, Rig);
 				arnum = dist(gen);
-				//arnum = distribution(generator);
+
 				dr = Dr(V, Kdiff, r, dt, arnum);
 				dp = Dp(V, p, r);
 				cfactor = Cfactor(V, r);
@@ -103,10 +103,9 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 
 				if (beta > 0.01 && Tkin < 100.0) {
 					if ((r - 1.0) / ((r - dr) - 1.0) < 0.0) {
-						//outputMutex.lock();
-						//outputQueue.push({pinj, p, r, w, sumac});
+
 						localOutputs.emplace_back(SimulationOutput{pinj, p, r, w, sumac});
-						//outputMutex.unlock();
+
 					}
 				}
 				if (beta < 0.01) break;
