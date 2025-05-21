@@ -84,24 +84,36 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 			while (r < 100.0002)
 			{
 				// Equation 5
+				// Link to Equation 5 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#5
 				beta = sqrt(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 
 				// Equation 6
+				// Link to Equation 6 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#6
 				Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
 
 				// Equation 7
+				// Link to Equation 7 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#7
 				Kdiff = K0 * beta * Rig;
 
 				arnum = distribution(generator);
 
 				// Equation 9
+				// Link to Equation 9 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#9
 				dr = (V + (2.0 * Kdiff / r)) * dt;
 				dr = dr + (arnum * sqrt(2.0 * Kdiff * dt));
 
 				// Equation 10
+				// Link to Equation 10 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#10
 				dp = 2.0 * V * p * dt / (3.0 * r);
 
 				// Equation 11
+				// Link to Equation 11 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#11
 				cfactor = 4.0 * V / (3.0 * r);
 				sumac = sumac + (cfactor * dt);
 
@@ -112,6 +124,8 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 				p = p - dp;
 
 				// Equation 6 in J
+				// Link to Equation 6 in Jupyter Notebook Documentation: 
+				// https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#6
 				Rig = p * c / q;
 				Tkin = sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9);
 				Tkin = Tkin / (q * 1e9); 

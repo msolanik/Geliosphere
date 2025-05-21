@@ -107,6 +107,8 @@ __global__ void trajectorySimulationSolarPropLike(trajectoryHistorySolarPropLike
 		Rig = sqrtf(Tkin * (Tkin + (2.0f * T0)));
 		
 		// Equation 5
+        // Link to Equation 5 in Jupyter Notebook Documentation: 
+        // https://nbviewer.org/github/msolanik/Geliosphere/blob/main/ModelDocs/1D_models_description.ipynb#5
 		beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
 		
 		// Equation 44 from 
