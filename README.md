@@ -429,3 +429,23 @@ Visualization
 </details>
 
 </details>
+
+
+## Debuging
+
+<details>
+ To simplify debuging process, we decided to create some support for debugging in Visual Studio Code. In current form, we provide two forms - Tasks for VS Code, and DevContainer configuration. Debug launch configuration for VS Code is based on present tasks - separatly for CPU-only version and for GPU. 
+
+ List of available tasks:
+- <strong>build-debug-cpu-only</strong> - Build CPU-only Geliosphere in Debug configuration. 
+- <strong>build-release-cpu-only</strong> - Build CPU-only Geliosphere in Release configuration. 
+- <strong>build-debug</strong> - Build Geliosphere in Debug configuration. 
+- <strong>build-release</strong> - Build Geliosphere in Release configuration. 
+- <strong>generate-makefiles-debug-cpu-only</strong> - Generate Makefiles for CPU-only Geliosphere in Debug configuration. 
+- <strong>generate-makefiles-release-cpu-only</strong> - Generate Makefiles for CPU-only Geliosphere in Release configuration. 
+- <strong>generate-makefiles-debug-gpu</strong> - Generate Makefiles for Geliosphere in Debug configuration. 
+- <strong>generate-makefiles-release-gpu</strong> - Generate Makefiles for Geliosphere in Release configuration. 
+- <strong>clean-build</strong> - Remove generated files and remove the content of the build folder. 
+
+[DevContainers](https://containers.dev/) is a specification that allows us to define the development environment inside of the container. Instructions for setting up Dev Containers can be found [here](https://code.visualstudio.com/docs/devcontainers/containers). The basic form, besides access to Docker, requires to have installed the extension for Remote Development, which can be found [here](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers). We included standard basic extensions used during the development, these are installed automatically with the starting of DevContainer. However, the build time for a container with GPU support is significantly long(~30 min.), but it is only a one-time matter. We decided not to set up Git, as this can be set in a container, or there are approaches described in the Guide for installing and setting up DevContainers for other approaches with Git. 
+</details>
