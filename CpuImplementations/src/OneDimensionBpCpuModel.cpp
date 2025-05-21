@@ -7,6 +7,8 @@
 #include <thread>
 #include <random>
 
+
+
 void OneDimensionBpCpuModel::runSimulation(ParamsCarrier *singleTone)
 {
 	srand(time(NULL));
@@ -53,13 +55,28 @@ void OneDimensionBpCpuModel::runSimulation(ParamsCarrier *singleTone)
 
 void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
-	double r, dr, arnum;
-	double Tkin, Tkininj, Rig, beta;
-	double w;
-	double p, dp, pp, Kdiff;
+    double r = 0, dr = 0, arnum = 0;
+    double Tkin = 0, Tkininj = 0, Rig = 0, beta = 0;
+    double w = 0;
+    double p = 0, dp = 0, pp = 0, Kdiff = 0;
+
+
+	const double C_Q = c / q;
+	const double C_Q_1E9 = C_Q / 1e9;
+	const double t0Term = T0 * T0 * q * q * 1e18;
+	const double q1e9 = q * 1e9;
+
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
+
+
+    auto& gen = generator; 
+    auto& dist = distribution; 
+
+	std::vector<SimulationOutput> localOutputs;
+	localOutputs.reserve(101 * 250); 
+
 	for (int energy = 0; energy < 101; energy++)
 	{
 		for (int particlePerEnergy = 0; particlePerEnergy < 250; particlePerEnergy++)
@@ -67,64 +84,92 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 			Tkininj = getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + particlePerEnergy, 0.0001, uniformEnergyInjectionMaximum, 10000);
 			Tkin = Tkininj;
 
-			Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
-			p = Rig * 1e9 * q / c;		
+			Rig = RigFromTkin(Tkin);
+
+			p = Rig / C_Q_1E9;
 			r = rInit;
 
 			while (r < 100.0002)
 			{
-				// Equation 5
-				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
+				beta = Beta(Tkin);
 
-				// Equation 6 in GeV
-				Rig = (p * c / q) / 1e9;
-                pp = p;
-                
-				// Equation 14
-				dp = (2.0f * V * pp * dt / (3.0f * r));
+				Rig = p * C_Q_1E9;
+				pp = p;
+				dp = Dp(V, pp, r);
 				p -= dp;
 
-				// Equation 7
-				Kdiff = K0 * beta * Rig;
-                arnum = distribution(generator);
-                
-				// Equation 13
-				dr = (V + (2.0 * Kdiff / r)) * dt + (arnum * sqrt(2.0 * Kdiff * dt));
-			    r += dr;
+				Kdiff = Kdiffr(beta, Rig);
+				arnum = dist(gen); 
 
-				// Equation 6 in J
-                Rig = p * c / q;
-                Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
-                
-				// Equation 5
-				beta = sqrtf(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
+				dr = Dr(V, Kdiff, r, dt, arnum);
+				r += dr;
+
+
+				Rig = p * C_Q;
+
+				Tkin = (sqrt(t0Term + (q * q * Rig * Rig)) - (T0 * q1e9)) / q1e9;
+				beta = Beta(Tkin);
 
 				if (beta > 0.01f && Tkin < 200.0f)
-		        {
-			        if ((r > 100.0f) && ((r - dr) < 100.0f))
-			        {
-						// Equation under Equation 6 from 
-            			// Yamada et al. "A stochastic view of the solar modulation phenomena of cosmic rays" GEOPHYSICAL RESEARCH LETTERS, VOL. 25, NO.13, PAGES 2353-2356, JULY 1, 1998
-            			// https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1029/98GL51869
-						w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
-						w = (pow(w, -1.85) / p) / 1e45;
-						
-						outputMutex.lock();
-						outputQueue.push({Tkin, Tkininj, r, w});
-						outputMutex.unlock();
-                        break;
+				{
+					if ((r > 100.0f) && ((r - dr) < 100.0f))
+					{
+						w = W(p);
+
+						localOutputs.emplace_back(SimulationOutput{Tkin, Tkininj, r, w});
+
+						break;
 					}
 				}
-                else if (beta < 0.01f)
-                {
-                    break;
-                }
-                if (r < 0.3f)
-                {
-                    r -= dr;
-                    p = pp;
-                }
-			} 
+				else if (beta < 0.01f)
+				{
+					break;
+				}
+
+				if (r < 0.3f)
+				{
+					r -= dr;
+					p = pp;
+				}
+			}
 		}	  
-	}		  
+	}	
+    {
+        std::lock_guard<std::mutex> lock(outputMutex);
+        for (const auto& output : localOutputs)
+        {
+            outputQueue.push(output);
+        }
+    }	  
+}
+
+double OneDimensionBpCpuModel::Beta(double Tkin)
+{
+    return sqrt(Tkin * (Tkin + 2.0 * T0)) / (Tkin + T0);
+}
+
+double OneDimensionBpCpuModel::RigFromTkin(double Tkin)
+{
+    return sqrt(Tkin * (Tkin + 2.0 * T0));
+}
+
+double OneDimensionBpCpuModel::Kdiffr(double beta, double Rig)
+{
+    return K0 * beta * Rig;
+}
+
+double OneDimensionBpCpuModel::Dp(double V, double p, double r)
+{
+    return (2.0 * V * p * dt / (3.0 * r));
+}
+
+double OneDimensionBpCpuModel::Dr(double V, double Kdiff, double r, double dt, double rand)
+{
+    return (V + (2.0 * Kdiff / r)) * dt + (rand * sqrt(2.0 * Kdiff * dt));
+}
+
+double OneDimensionBpCpuModel::W(double p)
+{
+    double w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
+    return (pow(w, -1.85) / p) / 1e45;
 }

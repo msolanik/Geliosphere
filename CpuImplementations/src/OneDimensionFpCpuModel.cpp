@@ -27,7 +27,7 @@ void OneDimensionFpCpuModel::runSimulation(ParamsCarrier *singleTone)
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int targetIterations = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 250.0));
 	setContants(singleTone);
-	for (int iteration = 0; targetIterations < targetIterations; iteration++)
+	for (int iteration = 0; iteration < targetIterations; iteration++)
 	{
 		spdlog::info("Processed: {:03.2f}%", (float) iteration / ((float) targetIterations / 100.0));
 		std::vector<std::thread> threads;
@@ -56,86 +56,116 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 	double Tkin, Tkininj, Rig, beta;
 	double w;
 	double Tkinw, p, rp, dp, pp, pinj, cfactor, sumac;
+
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
-	for (int energy = 0; energy < 101; energy++)
-	{
-		for (int particlePerEnergy = 0; particlePerEnergy < 250; particlePerEnergy++)
-		{
+
+	auto& gen = generator; 
+    auto& dist = distribution;
+
+	std::vector<SimulationOutput> localOutputs;
+	localOutputs.reserve(101);
+
+	for (int energy = 0; energy < 101; energy++) {
+		for (int particlePerEnergy = 0; particlePerEnergy < 250; particlePerEnergy++) {
 			Tkininj = getTkinInjection(((availableThreads * iteration + threadNumber) * 250) + particlePerEnergy, 0.0001, uniformEnergyInjectionMaximum, 10000);
 			Tkin = Tkininj;
 
 			Tkinw = Tkin * 1e9 * q;						
-			Rig = sqrt(Tkinw * (Tkinw + (2.0 * T0w))) / q;
+			Rig = RigFromTkinJoule(Tkin);
 			p = Rig * q / c;
 			pinj = p;
 
-			// Equation under Equation 6 from 
-            // Yamada et al. "A stochastic view of the solar modulation phenomena of cosmic rays" GEOPHYSICAL RESEARCH LETTERS, VOL. 25, NO.13, PAGES 2353-2356, JULY 1, 1998
-            // https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1029/98GL51869
-			w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
-			w = pow(w, -1.85) / p;
-			w = w / 1e45;
-
+			w = W(p);
 			sumac = 0.0;
 			r = 100.0001;
 
-			while (r < 100.0002)
-			{
-				// Equation 5
-				beta = sqrt(Tkin * (Tkin + T0 + T0)) / (Tkin + T0);
+			while (r < 100.0002) {
+				beta = Beta(Tkin);
+				Rig = RigFromTkin(Tkin);
+				Kdiff = Kdiffr(beta, Rig);
+				arnum = dist(gen);
 
-				// Equation 6
-				Rig = sqrt(Tkin * (Tkin + (2.0 * T0)));
-
-				// Equation 7
-				Kdiff = K0 * beta * Rig;
-
-				arnum = distribution(generator);
-
-				// Equation 9
-				dr = (V + (2.0 * Kdiff / r)) * dt;
-				dr = dr + (arnum * sqrt(2.0 * Kdiff * dt));
-
-				// Equation 10
-				dp = 2.0 * V * p * dt / (3.0 * r);
-
-				// Equation 11
-				cfactor = 4.0 * V / (3.0 * r);
-				sumac = sumac + (cfactor * dt);
+				dr = Dr(V, Kdiff, r, dt, arnum);
+				dp = Dp(V, p, r);
+				cfactor = Cfactor(V, r);
+				sumac += cfactor * dt;
 
 				rp = r;
 				pp = p;
 
-				r = r + dr;
-				p = p - dp;
+				r += dr;
+				p -= dp;
 
-				// Equation 6 in J
 				Rig = p * c / q;
-				Tkin = sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9);
-				Tkin = Tkin / (q * 1e9); 
+				Tkin = TkinFromRig(Rig);
 
-				if (beta > 0.01 & Tkin < 100.0)
-				{
-					if ((r - 1.0) / ((r - dr) - 1.0) < 0.0)
-					{
-						outputMutex.lock();
-						outputQueue.push({pinj, p, r, w, sumac});
-						outputMutex.unlock();
+				if (beta > 0.01 && Tkin < 100.0) {
+					if ((r - 1.0) / ((r - dr) - 1.0) < 0.0) {
+
+						localOutputs.emplace_back(SimulationOutput{pinj, p, r, w, sumac});
+
 					}
 				}
+				if (beta < 0.01) break;
+				if (r < 0.1) { r = rp; p = pp; }
+			}
+		}
+	}
+	
+	
+	std::lock_guard<std::mutex> lock(outputMutex);
+	for (const auto& output : localOutputs)
+	{
+		outputQueue.push(output);
+	}
+	 
+}
 
-				if (beta < 0.01)
-				{
-					break;
-				}
-				if (r < 0.1)
-				{
-					r = rp;
-					p = pp;
-				}
-			} 
-		}	  
-	}		  
+double OneDimensionFpCpuModel::Beta(double Tkin)
+{
+	return sqrt(Tkin * (Tkin + 2.0 * T0)) / (Tkin + T0);
+}
+
+double OneDimensionFpCpuModel::RigFromTkin(double Tkin)
+{
+	return sqrt(Tkin * (Tkin + 2.0 * T0));
+}
+
+double OneDimensionFpCpuModel::RigFromTkinJoule(double Tkin)
+{
+	double Tkinw = Tkin * 1e9 * q;
+	return sqrt(Tkinw * (Tkinw + 2.0 * T0w)) / q;
+}
+
+double OneDimensionFpCpuModel::Kdiffr(double beta, double Rig)
+{
+	return K0 * beta * Rig;
+}
+
+double OneDimensionFpCpuModel::Dp(double V, double p, double r)
+{
+	return 2.0 * V * p * dt / (3.0 * r);
+}
+
+double OneDimensionFpCpuModel::Dr(double V, double Kdiff, double r, double dt, double rand)
+{
+	return (V + 2.0 * Kdiff / r) * dt + (rand * sqrt(2.0 * Kdiff * dt));
+}
+
+double OneDimensionFpCpuModel::Cfactor(double V, double r)
+{
+	return 4.0 * V / (3.0 * r);
+}
+
+double OneDimensionFpCpuModel::TkinFromRig(double Rig)
+{
+	return (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
+}
+
+double OneDimensionFpCpuModel::W(double p)
+{
+	double w = (m0 * m0 * c * c * c * c) + (p * p * c * c);
+	return pow(w, -1.85) / p / 1e45;
 }

@@ -13,6 +13,7 @@
 #define BP_CPU_ONE_DIMENSION_SIMULATION_H
 
 #include "AbstractCpuModel.hpp"
+#include "IOneDimensionBpCpuModel.hpp"
 
 #include <mutex>
 #include <queue>
@@ -22,6 +23,10 @@ struct SimulationOutput {
 	double Tkininj;
 	double r;
 	double w;
+
+    // Constructor
+	//SimulationOutput(double Tkin_, double Tkininj_, double r_, double w_)
+    //: Tkin(Tkin_), Tkininj(Tkininj_), r(r_), w(w_) {}
 };
 
 /**
@@ -29,7 +34,7 @@ struct SimulationOutput {
  * to define support functions for running implementation of 1D B-p model.
  * 
  */
-class OneDimensionBpCpuModel : public AbstractCpuModel
+class OneDimensionBpCpuModel : public AbstractCpuModel, public IOneDimensionBpCpuModel
 {
 public:
     /**
@@ -38,6 +43,18 @@ public:
 	 * @param singleTone data structure containing input parameters.
 	 */
 	void runSimulation(ParamsCarrier *singleTone);
+
+protected:    
+    // Implemented from interface
+    double Beta(double Tkin) override;
+    double RigFromTkin(double Tkin) override;
+    //double RigFromMomentum(double p) override;
+    double Kdiffr(double beta, double Rig) override;
+    double Dp(double V, double p, double r) override;
+    double Dr(double V, double Kdiff, double r, double dt, double rand) override;
+    //double TkinFromRig(double Rig) override;
+    double W(double p) override;
+
 private:
     void simulation(int threadNumber, unsigned int availableThreads, int iteration);
     std::mutex outputMutex;
