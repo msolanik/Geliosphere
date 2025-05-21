@@ -424,7 +424,21 @@ $(function() {
 <li><b>prepare_spectra.py</b> - process spectra from Geliosphere for further visualization.</li>
 </ul>
 <p>&lt;/details&gt;</p>
-<p>&lt;/details&gt; </p>
+<p>&lt;/details&gt;</p>
+<h1>Debuging</h1>
+<p>&lt;details&gt; To simplify debuging process, we decided to create some support for debugging in Visual Studio Code. In current form, we provide two forms - Tasks for VS Code, and DevContainer configuration. Debug launch configuration for VS Code is based on present tasks - separatly for CPU-only version and for GPU.</p>
+<p>List of available tasks:</p><ul>
+<li><b>build-debug-cpu-only</b> - Build CPU-only Geliosphere in Debug configuration.</li>
+<li><b>build-release-cpu-only</b> - Build CPU-only Geliosphere in Release configuration.</li>
+<li><b>build-debug</b> - Build Geliosphere in Debug configuration.</li>
+<li><b>build-release</b> - Build Geliosphere in Release configuration.</li>
+<li><b>generate-makefiles-debug-cpu-only</b> - Generate Makefiles for CPU-only Geliosphere in Debug configuration.</li>
+<li><b>generate-makefiles-release-cpu-only</b> - Generate Makefiles for CPU-only Geliosphere in Release configuration.</li>
+<li><b>generate-makefiles-debug-gpu</b> - Generate Makefiles for Geliosphere in Debug configuration.</li>
+<li><b>generate-makefiles-release-gpu</b> - Generate Makefiles for Geliosphere in Release configuration.</li>
+<li><b>clean-build</b> - Remove generated files and remove the content of the build folder.</li>
+</ul>
+<p><a href="https://containers.dev/">DevContainers</a> is a specification that allows us to define the development environment inside of the container. Instructions for setting up Dev Containers can be found <a href="https://code.visualstudio.com/docs/devcontainers/containers">here</a>. The basic form, besides access to Docker, requires to have installed the extension for Remote Development, which can be found <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers">here</a>. We included standard basic extensions used during the development, these are installed automatically with the starting of DevContainer. However, the build time for a container with GPU support is significantly long(~30 min.), but it is only a one-time matter. We decided not to set up Git, as this can be set in a container, or there are approaches described in the Guide for installing and setting up DevContainers for other approaches with Git. &lt;/details&gt; </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
