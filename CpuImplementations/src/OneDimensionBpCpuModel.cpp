@@ -1,11 +1,3 @@
-/*
-unoptimized duration: 35 min with O3 flag for: time ./Geliosphere -B -d 5 -N 1
-
-32m20s
-
-30m17s
-
-*/
 #include "OneDimensionBpCpuModel.hpp"
 #include "FileUtils.hpp"
 #include "Constants.hpp"
@@ -15,9 +7,6 @@ unoptimized duration: 35 min with O3 flag for: time ./Geliosphere -B -d 5 -N 1
 #include <thread>
 #include <random>
 
-// Constants to avoid repeated calls
-const double C_Q = c / q;
-const double C_Q_1E9 = C_Q / 1e9;
 
 
 void OneDimensionBpCpuModel::runSimulation(ParamsCarrier *singleTone)
@@ -66,10 +55,17 @@ void OneDimensionBpCpuModel::runSimulation(ParamsCarrier *singleTone)
 
 void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int availableThreads, int iteration)
 {
-	double r, dr, arnum;
-	double Tkin, Tkininj, Rig, beta;
-	double w;
-	double p, dp, pp, Kdiff;
+    double r = 0, dr = 0, arnum = 0;
+    double Tkin = 0, Tkininj = 0, Rig = 0, beta = 0;
+    double w = 0;
+    double p = 0, dp = 0, pp = 0, Kdiff = 0;
+
+	// Constants to avoid repeated calls
+	const double C_Q = c / q;
+	const double C_Q_1E9 = C_Q / 1e9;
+	const double t0Term = T0 * T0 * q * q * 1e18;
+	const double q1e9 = q * 1e9;
+
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
@@ -78,7 +74,8 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
     auto& gen = generator; 
     auto& dist = distribution; //avoids repeated __tls_get_addr lookup for thread-local variables
 
-
+	std::vector<SimulationOutput> localOutputs;
+	localOutputs.reserve(101 * 250);  // avoiding reallocations and segmentation fault caused by it
 
 	for (int energy = 0; energy < 101; energy++)
 	{
@@ -110,7 +107,8 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 				// Rig = p * c / q;
 				Rig = p * C_Q;
 				//Tkin = TkinFromRig(Rig);
-				Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
+				//Tkin = (sqrt((T0 * T0 * q * q * 1e9 * 1e9) + (q * q * Rig * Rig)) - (T0 * q * 1e9)) / (q * 1e9);
+				Tkin = (sqrt(t0Term + (q * q * Rig * Rig)) - (T0 * q1e9)) / q1e9;
 				beta = Beta(Tkin);
 
 				if (beta > 0.01f && Tkin < 200.0f)
@@ -118,10 +116,12 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 					if ((r > 100.0f) && ((r - dr) < 100.0f))
 					{
 						w = W(p);
-						outputMutex.lock();
-						outputQueue.push({Tkin, Tkininj, r, w});
-						outputMutex.unlock();
+						//outputMutex.lock();
+						//outputQueue.push({Tkin, Tkininj, r, w});
+						//outputMutex.unlock();
 
+						localOutputs.emplace_back(SimulationOutput{Tkin, Tkininj, r, w});
+						//localOutputs.emplace_back(Tkin, Tkininj, r, w);
 						break;
 					}
 				}
@@ -137,7 +137,20 @@ void OneDimensionBpCpuModel::simulation(int threadNumber, unsigned int available
 				}
 			}
 		}	  
-	}		  
+	}	
+    {
+        std::lock_guard<std::mutex> lock(outputMutex);
+        for (const auto& output : localOutputs)
+        {
+            outputQueue.push(output);
+        }
+		//outputMutex.lock();
+		//for (const auto& output : localOutputs)
+		//{
+		//	outputQueue.push(output);
+		//}
+		//outputMutex.unlock();
+    }	  
 }
 
 double OneDimensionBpCpuModel::Beta(double Tkin)

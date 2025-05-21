@@ -12,11 +12,13 @@ void OneDimensionFpCpuModel::runSimulation(ParamsCarrier *singleTone)
 	spdlog::info("Starting initialization of 1D F-p simulation.");
 	srand(time(NULL));
 	std::string destination = singleTone->getString("destination", "");
-	if (destination.empty()) {
+	if (destination.empty())
+	{
 		destination = getDirectoryName(singleTone);
-		spdlog::info("Destination is not specified - using generated name: " + destination);
+		spdlog::info("Destination is not specified - using generated name for destination: " + destination);
 	}
-	if (!createDirectory("1DFP", destination)) {
+	if (!createDirectory("1DFP", destination))
+	{
 		spdlog::error("Directory for 1D F-p simulations cannot be created.");
 		return;
 	}
@@ -25,18 +27,22 @@ void OneDimensionFpCpuModel::runSimulation(ParamsCarrier *singleTone)
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	int targetIterations = ceil((double)singleTone->getInt("millions", 1) * 1000000.0 / ((double)nthreads * 101.0 * 250.0));
 	setContants(singleTone);
-	for (int iteration = 0; iteration < targetIterations; iteration++) {
-		spdlog::info("Processed: {:03.2f}%", (float)iteration / ((float)targetIterations / 100.0));
+	for (int iteration = 0; iteration < targetIterations; iteration++)
+	{
+		spdlog::info("Processed: {:03.2f}%", (float) iteration / ((float) targetIterations / 100.0));
 		std::vector<std::thread> threads;
-		for (int i = 0; i < (int)nthreads; i++) {
-			threads.emplace_back(&OneDimensionFpCpuModel::simulation, this, i, nthreads, iteration);
+		for (int i = 0; i < (int)nthreads; i++)
+		{
+			threads.emplace_back(std::thread(&OneDimensionFpCpuModel::simulation, this, i, nthreads, iteration));
 		}
-		for (auto &th : threads) {
+		for (auto &th : threads)
+		{
 			th.join();
 		}
-		while (!outputQueue.empty()) {
-			SimulationOutput simulationOutput = outputQueue.front();
-			fprintf(file, "%g %g %g %g %g\n", simulationOutput.pinj, simulationOutput.p, simulationOutput.r, simulationOutput.w, simulationOutput.sumac);
+		while (!outputQueue.empty())
+		{
+			struct SimulationOutput simulationOutput = outputQueue.front();
+			fprintf(file, " %g  %g  %g  %g %g \n", simulationOutput.pinj, simulationOutput.p, simulationOutput.r, simulationOutput.w, simulationOutput.sumac);
 			outputQueue.pop();
 		}
 	}
@@ -54,6 +60,12 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 	thread_local std::random_device rd{};
 	thread_local std::mt19937 generator(rd());
 	thread_local std::normal_distribution<float> distribution(0.0f, 1.0f);
+
+	auto& gen = generator; 
+    auto& dist = distribution;
+
+	std::vector<SimulationOutput> localOutputs;
+	localOutputs.reserve(101);
 
 	for (int energy = 0; energy < 101; energy++) {
 		for (int particlePerEnergy = 0; particlePerEnergy < 250; particlePerEnergy++) {
@@ -73,7 +85,8 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 				beta = Beta(Tkin);
 				Rig = RigFromTkin(Tkin);
 				Kdiff = Kdiffr(beta, Rig);
-				arnum = distribution(generator);
+				arnum = dist(gen);
+				//arnum = distribution(generator);
 				dr = Dr(V, Kdiff, r, dt, arnum);
 				dp = Dp(V, p, r);
 				cfactor = Cfactor(V, r);
@@ -90,9 +103,10 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 
 				if (beta > 0.01 && Tkin < 100.0) {
 					if ((r - 1.0) / ((r - dr) - 1.0) < 0.0) {
-						outputMutex.lock();
-						outputQueue.push({pinj, p, r, w, sumac});
-						outputMutex.unlock();
+						//outputMutex.lock();
+						//outputQueue.push({pinj, p, r, w, sumac});
+						localOutputs.emplace_back(SimulationOutput{pinj, p, r, w, sumac});
+						//outputMutex.unlock();
 					}
 				}
 				if (beta < 0.01) break;
@@ -100,6 +114,14 @@ void OneDimensionFpCpuModel::simulation(int threadNumber, unsigned int available
 			}
 		}
 	}
+	
+	
+	std::lock_guard<std::mutex> lock(outputMutex);
+	for (const auto& output : localOutputs)
+	{
+		outputQueue.push(output);
+	}
+	 
 }
 
 double OneDimensionFpCpuModel::Beta(double Tkin)

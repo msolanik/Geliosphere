@@ -23,6 +23,10 @@ struct SimulationOutput {
 	double Tkininj;
 	double r;
 	double w;
+
+    // Constructor
+	//SimulationOutput(double Tkin_, double Tkininj_, double r_, double w_)
+    //: Tkin(Tkin_), Tkininj(Tkininj_), r(r_), w(w_) {}
 };
 
 /**

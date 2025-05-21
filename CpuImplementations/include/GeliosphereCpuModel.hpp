@@ -1,24 +1,13 @@
-/**
- * @file GeliosphereCpuModel.hpp
- * @author Michal Solanik
- * @brief CPU implementation for Geliosphere 2D model
- * @version 0.2
- * @date 2022-07-07
- *
- * @copyright Copyright (c) 2022
- *
- */
-
 #ifndef BP_CPU_THREE_DIMENSION_SIMULATION_H
 #define BP_CPU_THREE_DIMENSION_SIMULATION_H
 
 #include "AbstractCpuModel.hpp"
+#include "IGeliosphereCpuModel.hpp"
 
 #include <mutex>
 #include <queue>
 
-struct SimulationOutput
-{
+struct SimulationOutput {
     double Tkininj;
     double Tkin;
     double r;
@@ -27,20 +16,19 @@ struct SimulationOutput
     double theta;
 };
 
-/**
- * @brief Class implements @ref AbstractAlgorithm "AbstractAlgorithm" interface
- * to define support functions for running implementation of Geliosphere 2D B-p model.
- *
- */
-class GeliosphereCpuModel : public AbstractCpuModel
-{
+class GeliosphereCpuModel : public AbstractCpuModel, public IGeliosphereCpuModel {
 public:
-    /**
-     * @brief Definition of simulation runner.
-     *
-     * @param singleTone data structure containing input parameters.
-     */
     void runSimulation(ParamsCarrier *singleTone);
+
+protected:
+    double Beta(double Tkin) override;
+    double RigFromTkin(double Tkin) override;
+    double W(double p) override;
+    double GetMomentum(double Rig) override;
+    double LarmorRadius(double Rig, double Bfield) override;
+    double AlphaH(double Larmor, double r) override;
+    double ComputeF(double theta, double alphaH) override;
+    double ComputeFPrime(double theta, double alphaH) override;
 
 private:
     void simulation(int threadNumber, unsigned int availableThreads, int iteration);
