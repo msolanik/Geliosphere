@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.0.3-devel-ubuntu20.04
+FROM nvidia/cuda:11.6.1-devel-ubuntu20.04
 
 RUN rm /etc/apt/sources.list.d/cuda.list
 RUN rm -vf /var/lib/apt/lists/*
