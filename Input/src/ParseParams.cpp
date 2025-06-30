@@ -15,51 +15,25 @@
 
 int ParseParams::parseParams(int argc, char **argv)
 {
-	std::string inputFile;
-	std::string pathToLogFile;
-	float newDt, newK0, newV, newMu;
-	int month, year;
-	std::string newDestination, settings, customModelString;
-	int numberOfTestParticles;
-	
+	ParseConfig config;
 	singleTone = singleTone->instance();
-	std::string currentApplicationPath = getApplicationPath(argv);
-	singleTone->putString("currentApplicationPath", currentApplicationPath);
+	config.currentApplicationPath = getApplicationPath(argv);
+	singleTone->putString("currentApplicationPath", config.currentApplicationPath);
 	
 	CLI::App app{"App description"};
 	
-	// Setup CLI options
-	setupCliOptions(app, inputFile, pathToLogFile, newDt, newK0, newV, month, year,
-		newDestination, settings, customModelString, numberOfTestParticles);
+	// Initialize state machine
+	ParseState currentState = ParseState::SETUP;
 	
-	// Setup option relationships
-	setupOptionRelationships();
-
-	spdlog::info("Started to parsing input parameters");
-	CLI11_PARSE(app, argc, argv);
+	// Run state machine
+	while (currentState != ParseState::COMPLETE && currentState != ParseState::ERROR) {
+		currentState = executeState(currentState, config, app, argc, argv);
+	}
 	
-	// Validate that at least one model is selected
-	if (!*forwardModel && !*backwardModel && !*solarPropLikeModel && !*geliosphereModel && !*batchRun)
-	{
-		spdlog::error("At least one model must be selected!");
+	if (currentState == ParseState::ERROR) {
 		return -1;
 	}
-
-	// Process different option categories
-	int result;
 	
-	result = processGeneralOptions(pathToLogFile, newDestination);
-	if (result == -1) return -1;
-	
-	result = processValueOptions(newDt, newK0, newV, numberOfTestParticles);
-	if (result == -1) return -1;
-	
-	result = processModelOptions(customModelString, inputFile);
-	if (result == -1) return -1;
-	
-	result = processSettingsOptions(settings, month, year, currentApplicationPath);
-	if (result == -1) return -1;
-
 	printParameters(singleTone);
 	return 1;
 }
@@ -92,32 +66,177 @@ std::string ParseParams::getApplicationPath(char **argv)
     return m[0]; 
 }
 
-void ParseParams::setupCliOptions(CLI::App& app, std::string& inputFile, std::string& pathToLogFile,
-	float& newDt, float& newK0, float& newV, int& month, int& year,
-	std::string& newDestination, std::string& settings, std::string& customModelString,
-	int& numberOfTestParticles)
+ParseParams::ParseState ParseParams::executeState(ParseState currentState, ParseConfig& config, CLI::App& app, int argc, char** argv)
+{
+	switch (currentState) {
+		case ParseState::SETUP:
+			return handleSetupState(config, app);
+		case ParseState::PARSING:
+			return handleParsingState(app, argc, argv);
+		case ParseState::VALIDATION:
+			return handleValidationState();
+		case ParseState::PROCESSING:
+			return handleProcessingState(config);
+		default:
+			return ParseState::ERROR;
+	}
+}
+
+ParseParams::ParseState ParseParams::handleSetupState(ParseConfig& config, CLI::App& app)
+{
+	// Setup CLI options
+	setupCliOptions(app, config);
+	
+	// Setup option relationships
+	setupOptionRelationships();
+	
+	return ParseState::PARSING;
+}
+
+ParseParams::ParseState ParseParams::handleParsingState(CLI::App& app, int argc, char** argv)
+{
+	spdlog::info("Started to parsing input parameters");
+	try {
+		app.parse(argc, argv);
+	} catch (const CLI::ParseError &e) {
+		app.exit(e);
+		return ParseState::ERROR;
+	}
+	
+	return ParseState::VALIDATION;
+}
+
+ParseParams::ParseState ParseParams::handleValidationState()
+{
+	// Validate that at least one model is selected
+	if (!*forwardModel && !*backwardModel && !*solarPropLikeModel && !*geliosphereModel && !*batchRun) {
+		spdlog::error("At least one model must be selected!");
+		return ParseState::ERROR;
+	}
+	
+	return ParseState::PROCESSING;
+}
+
+ParseParams::ParseState ParseParams::handleProcessingState(const ParseConfig& config)
+{
+	InputValidation *inputValidation = new InputValidation();
+	
+	// Process general options
+	if (*run_simulation) {
+		singleTone->putInt("run_simulation", 0);
+		singleTone->putString("pathToLogFile", config.pathToLogFile);
+	} else {
+		singleTone->putInt("run_simulation", 1);
+	}
+	
+	if (*csv) {
+		singleTone->putInt("csv", 1);
+	}
+	
+#if GPU_ENABLED == 1
+	if (*cpuOnly) {
+		singleTone->putInt("isCpu", 1);
+	}
+#endif
+
+	if (*destination) {
+		singleTone->putString("destination", config.newDestination);
+	}
+	
+	// Process value options with validation
+	if (*dtset) {
+		if (!inputValidation->checkDt(config.newDt)) {
+			spdlog::error("dt is out of range!(3-5000)");
+			return ParseState::ERROR;
+		}
+		inputValidation->setDt(singleTone, config.newDt);
+	}
+	
+	if (*kset) {
+		if (!inputValidation->checkK0(config.newK0)) {
+			spdlog::error("K0 is out of range!(>0)");
+			return ParseState::ERROR;
+		}
+		if (config.newK0 < 1e19 || config.newK0 > 1e23) {
+			spdlog::warn("K0 is out of recommended range!(1e19-1e23 cm^2/s)");
+		}
+		inputValidation->setK0(singleTone, config.newK0);
+	}
+	
+	if (*setNumberOfTestParticles) {
+		if (!inputValidation->checkNumberOfTestParticles(config.numberOfTestParticles)) {
+			spdlog::error("Number of test particles must be greater than 0!");
+			return ParseState::ERROR;
+		}
+		inputValidation->setNumberOfTestParticles(singleTone, config.numberOfTestParticles);
+	}
+	
+	if (*vset) {
+		if (!inputValidation->checkV(config.newV)) {
+			spdlog::error("V is out of range!(100-1500 km/s)");
+			return ParseState::ERROR;
+		}
+		inputValidation->setV(singleTone, config.newV);
+	}
+	
+	// Process model options
+	if (*forwardModel) {
+		singleTone->putString("model", "1D Fp");
+	} else if (*backwardModel) {
+		singleTone->putString("model", "1D Bp");
+	} else if (*solarPropLikeModel) {
+		singleTone->putString("model", "2D SolarProp-like");
+	} else if (*geliosphereModel) {
+		singleTone->putString("model", "2D Geliosphere");
+	} else if (*customModel) {
+		singleTone->putString("model", config.customModelString);
+	} else if (*batchRun) {
+		singleTone->putString("model", "batch run");
+		singleTone->putString("inputBatchFile", config.inputFile);
+		return ParseState::COMPLETE; // Special case - batch run returns early
+	}
+	
+	// Process settings options
+	if (*settingsOption) {
+		inputValidation->newSettingsLocationCheck(singleTone, config.settings);
+	} else {
+		if (access(config.settings.c_str(), F_OK) == 0) {
+			TomlSettings *tomlSettings = new TomlSettings(config.currentApplicationPath + "Settings.toml");
+			tomlSettings->parseFromSettings(singleTone);
+		} else {
+			spdlog::warn("No settings file exists on default path.");
+		}
+	}
+	
+	if (*monthOption && *yearOption) {
+		inputValidation->monthYearCheck(singleTone, config.year, config.month, config.currentApplicationPath);
+	}
+	
+	return ParseState::COMPLETE;
+}
+void ParseParams::setupCliOptions(CLI::App& app, ParseConfig& config)
 {
 	forwardModel = app.add_flag("-F,--forward", "Run a 1D forward-in-time model")->group("models");
 	backwardModel = app.add_flag("-B,--backward", "Run a 1D backward-in-time model")->group("models");
 	solarPropLikeModel = app.add_flag("-E,--solarprop-like-model", "Run a SolarProp-like 2D backward model")->group("models");
 	geliosphereModel = app.add_flag("-T,--geliosphere-2d-model", "Run a Geliosphere 2D backward model")->group("models");
 	csv = app.add_flag("-c,--csv", "Output will be in .csv");
-	run_simulation = app.add_option("--evaluation", pathToLogFile,"Simulation excluded, run only evaluation ");
+	run_simulation = app.add_option("--evaluation", config.pathToLogFile, "Simulation excluded, run only evaluation ");
 #if GPU_ENABLED == 1
 	cpuOnly = app.add_flag("--cpu-only", "Use only CPU for calculaions");
 #else
 	singleTone->putInt("isCpu", 1);
 #endif		
-	batchRun = app.add_option("-b,--batchrun", inputFile,"Input batch file")->group("models");
-	dtset = app.add_option("-d,--dt", newDt, "Set dt to new value(s)");
-	kset = app.add_option("-K,--K0", newK0, "Set K to new value(cm^2/s)");
-	vset = app.add_option("-V,--V", newV, "Set V to new value(km/s)");
-	destination = app.add_option("-p,--path", newDestination, "Set destination folder name");
-	setNumberOfTestParticles = app.add_option("-N,--number-of-test-particles", numberOfTestParticles, "Set number of test particles in millions(round up due to GPU execution)");
-	monthOption = app.add_option("-m,--month", month, "Set month for using meassured values");
-	yearOption = app.add_option("-y,--year", year, "Set year for using meassured values");
-	settingsOption = app.add_option("-s,--settings", settings, "Path to .toml file");
-	customModel = app.add_option("--custom-model", customModelString, "Run custom user-implemented model.");
+	batchRun = app.add_option("-b,--batchrun", config.inputFile, "Input batch file")->group("models");
+	dtset = app.add_option("-d,--dt", config.newDt, "Set dt to new value(s)");
+	kset = app.add_option("-K,--K0", config.newK0, "Set K to new value(cm^2/s)");
+	vset = app.add_option("-V,--V", config.newV, "Set V to new value(km/s)");
+	destination = app.add_option("-p,--path", config.newDestination, "Set destination folder name");
+	setNumberOfTestParticles = app.add_option("-N,--number-of-test-particles", config.numberOfTestParticles, "Set number of test particles in millions(round up due to GPU execution)");
+	monthOption = app.add_option("-m,--month", config.month, "Set month for using meassured values");
+	yearOption = app.add_option("-y,--year", config.year, "Set year for using meassured values");
+	settingsOption = app.add_option("-s,--settings", config.settings, "Path to .toml file");
+	customModel = app.add_option("--custom-model", config.customModelString, "Run custom user-implemented model.");
 }
 
 void ParseParams::setupOptionRelationships()
@@ -134,144 +253,4 @@ void ParseParams::setupOptionRelationships()
 		dtset, setNumberOfTestParticles, kset, vset, monthOption, yearOption);
 
 	monthOption->requires(yearOption);
-}
-
-int ParseParams::processGeneralOptions(const std::string& pathToLogFile, const std::string& newDestination)
-{
-	if(*run_simulation){
-		singleTone->putInt("run_simulation", 0);
-		singleTone->putString("pathToLogFile",pathToLogFile);
-	}
-	else{
-		singleTone->putInt("run_simulation", 1);
-	}
-	
-	if (*csv)
-	{
-		singleTone->putInt("csv", 1);
-	}
-	
-#if GPU_ENABLED == 1
-	if (*cpuOnly)
-	{
-		singleTone->putInt("isCpu", 1);
-	}
-#endif
-
-	if (*destination)
-	{
-		singleTone->putString("destination", newDestination);
-	}
-	
-	return 1;
-}
-
-int ParseParams::processValueOptions(float newDt, float newK0, float newV, int numberOfTestParticles)
-{
-	InputValidation *inputValidation = new InputValidation();
-	
-	if (*dtset)
-	{
-		if (!inputValidation->checkDt(newDt))
-		{
-			spdlog::error("dt is out of range!(3-5000)");
-			return -1;
-		}
-		inputValidation->setDt(singleTone, newDt);
-	}
-	
-	if (*kset)
-	{
-		if (!inputValidation->checkK0(newK0))
-		{
-			spdlog::error("K0 is out of range!(>0)");
-			return -1;
-		}
-		if (newK0 < 1e19 || newK0 > 1e23)
-		{
-			spdlog::warn("K0 is out of recommended range!(1e19-1e23 cm^2/s)");
-		}
-		inputValidation->setK0(singleTone, newK0);
-	}
-	
-	if (*setNumberOfTestParticles)
-	{
-		if (!inputValidation->checkNumberOfTestParticles(numberOfTestParticles))
-		{
-			spdlog::error("Number of test particles must be greater than 0!");
-			return -1;
-		}
-		inputValidation->setNumberOfTestParticles(singleTone, numberOfTestParticles);
-	}
-	
-	if (*vset)
-	{
-		if (!inputValidation->checkV(newV))
-		{
-			spdlog::error("V is out of range!(100-1500 km/s)");
-			return -1;
-		}
-		inputValidation->setV(singleTone, newV);
-	}
-	
-	return 1;
-}
-
-int ParseParams::processModelOptions(const std::string& customModelString, const std::string& inputFile)
-{
-	if (*forwardModel)
-	{
-		singleTone->putString("model", "1D Fp");
-	}
-	else if (*backwardModel)
-	{
-		singleTone->putString("model", "1D Bp");
-	}
-	else if (*solarPropLikeModel)
-	{
-		singleTone->putString("model", "2D SolarProp-like");
-	}
-	else if (*geliosphereModel)
-	{
-		singleTone->putString("model", "2D Geliosphere");
-	}
-	else if (*customModel)
-	{
-		singleTone->putString("model", customModelString);
-	}
-	else if (*batchRun)
-	{
-		singleTone->putString("model", "batch run");
-		singleTone->putString("inputBatchFile", inputFile);
-		return 1; // Special case - batch run returns early
-	}
-	
-	return 1;
-}
-
-int ParseParams::processSettingsOptions(const std::string& settings, int month, int year, 
-	const std::string& currentApplicationPath)
-{
-	InputValidation *inputValidation = new InputValidation();
-	
-	if (*settingsOption)
-	{
-		inputValidation->newSettingsLocationCheck(singleTone, settings);
-	}
-	else 
-	{
-		if (access(settings.c_str(), F_OK) == 0) {
-			TomlSettings *tomlSettings = new TomlSettings(currentApplicationPath + "Settings.toml");
-			tomlSettings->parseFromSettings(singleTone);
-		} else {
-			spdlog::warn("No settings file exists on default path.");
-		}
-	}
-	
-	if (*monthOption && *yearOption)
-	{
-		inputValidation->monthYearCheck(singleTone, year, month, currentApplicationPath);
-	}
-	
-	return 1;
 }

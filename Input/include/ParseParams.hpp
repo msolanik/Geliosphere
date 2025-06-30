@@ -65,25 +65,37 @@ private:
 	std::string getApplicationPath(char **argv);
 
 	/**
+	 * @brief Parse state enumeration for state machine pattern.
+	 */
+	enum class ParseState {
+		SETUP,
+		PARSING, 
+		VALIDATION,
+		PROCESSING,
+		COMPLETE,
+		ERROR
+	};
+
+	/**
+	 * @brief Configuration structure to hold parsing parameters.
+	 */
+	struct ParseConfig {
+		std::string inputFile;
+		std::string pathToLogFile;
+		float newDt, newK0, newV;
+		int month, year;
+		std::string newDestination, settings, customModelString;
+		int numberOfTestParticles;
+		std::string currentApplicationPath;
+	};
+
+	/**
 	 * @brief Setup CLI options for the application.
 	 * 
 	 * @param app CLI::App instance to setup options on
-	 * @param inputFile Reference to input file string
-	 * @param pathToLogFile Reference to log file path string
-	 * @param newDt Reference to new dt value
-	 * @param newK0 Reference to new K0 value
-	 * @param newV Reference to new V value
-	 * @param month Reference to month value
-	 * @param year Reference to year value
-	 * @param newDestination Reference to destination string
-	 * @param settings Reference to settings string
-	 * @param customModelString Reference to custom model string
-	 * @param numberOfTestParticles Reference to number of test particles
+	 * @param config Configuration structure containing all parsing parameters
 	 */
-	void setupCliOptions(CLI::App& app, std::string& inputFile, std::string& pathToLogFile,
-		float& newDt, float& newK0, float& newV, int& month, int& year,
-		std::string& newDestination, std::string& settings, std::string& customModelString,
-		int& numberOfTestParticles);
+	void setupCliOptions(CLI::App& app, ParseConfig& config);
 
 	/**
 	 * @brief Setup option relationships (excludes, requires).
@@ -91,45 +103,50 @@ private:
 	void setupOptionRelationships();
 
 	/**
-	 * @brief Process general options like csv, run_simulation, destination.
+	 * @brief Execute state machine transition.
 	 * 
-	 * @param pathToLogFile Log file path
-	 * @param newDestination Destination path
-	 * @return 1 on success, -1 on failure
+	 * @param currentState Current parsing state
+	 * @param config Configuration structure
+	 * @param app CLI app instance
+	 * @param argc Argument count
+	 * @param argv Argument values
+	 * @return Next state
 	 */
-	int processGeneralOptions(const std::string& pathToLogFile, const std::string& newDestination);
+	ParseState executeState(ParseState currentState, ParseConfig& config, CLI::App& app, int argc, char** argv);
 
 	/**
-	 * @brief Process value options like dt, K0, V, numberOfTestParticles.
+	 * @brief Setup state handler.
 	 * 
-	 * @param newDt New dt value
-	 * @param newK0 New K0 value
-	 * @param newV New V value
-	 * @param numberOfTestParticles Number of test particles
-	 * @return 1 on success, -1 on failure
+	 * @param config Configuration structure
+	 * @param app CLI app instance
+	 * @return Next state
 	 */
-	int processValueOptions(float newDt, float newK0, float newV, int numberOfTestParticles);
+	ParseState handleSetupState(ParseConfig& config, CLI::App& app);
 
 	/**
-	 * @brief Process model selection options.
+	 * @brief Parsing state handler.
 	 * 
-	 * @param customModelString Custom model string
-	 * @param inputFile Input file for batch run
-	 * @return 1 on success, -1 on failure
+	 * @param app CLI app instance
+	 * @param argc Argument count
+	 * @param argv Argument values
+	 * @return Next state
 	 */
-	int processModelOptions(const std::string& customModelString, const std::string& inputFile);
+	ParseState handleParsingState(CLI::App& app, int argc, char** argv);
 
 	/**
-	 * @brief Process settings and time-related options.
+	 * @brief Validation state handler.
 	 * 
-	 * @param settings Settings file path
-	 * @param month Month value
-	 * @param year Year value
-	 * @param currentApplicationPath Current application path
-	 * @return 1 on success, -1 on failure
+	 * @return Next state
 	 */
-	int processSettingsOptions(const std::string& settings, int month, int year, 
-		const std::string& currentApplicationPath);
+	ParseState handleValidationState();
+
+	/**
+	 * @brief Processing state handler.
+	 * 
+	 * @param config Configuration structure
+	 * @return Next state
+	 */
+	ParseState handleProcessingState(const ParseConfig& config);
 
 	// CLI option pointers - stored as class members to be accessible across functions
 	CLI::Option *forwardModel;
