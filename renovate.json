@@ -5,7 +5,8 @@
     {
       "groupName": "CMake dependencies",
       "matchManagers": ["regex"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchUpdateTypes": ["minor", "patch"],
+      "assignees": ["msolanik"]
     },
     {
       "matchUpdateTypes": ["major"],
