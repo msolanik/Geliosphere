@@ -19,7 +19,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCPU_VERSION_ONLY=1
       - name: Build
         run: |
           cmake --build build -- -j$(nproc)
