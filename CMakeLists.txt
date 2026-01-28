@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
+cmake_policy(VERSION 3.14)
 set( CMAKE_VERBOSE_MAKEFILE on )
-# set the project name
+
 project(Geliosphere)
 option(CPU_VERSION_ONLY "Build only CPU version" OFF)
 

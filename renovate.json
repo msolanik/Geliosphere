@@ -1,0 +1,25 @@
+{
+  "extends": ["config:base"],
+  "dependencyDashboard": true,
+  "packageRules": [
+    {
+      "groupName": "CMake dependencies",
+      "matchManagers": ["regex"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "assignees": ["msolanik"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["CMakeLists\\.txt"],
+      "matchStrings": [
+        "GIT_REPOSITORY\\s+(?<depName>https://github.com/[^\\s]+)[\\s\\S]*?GIT_TAG\\s+(?<currentValue>[\\w\\.\\-]+)"
+      ],
+      "datasourceTemplate": "github-tags"
+    }
+  ]
+}
