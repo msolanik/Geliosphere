@@ -19,3 +19,4 @@ jobs:
           repositories: 'msolanik/Geliosphere'
         env:
           LOG-LEVEL: 'debug'
+
