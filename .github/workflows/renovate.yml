@@ -16,5 +16,7 @@ jobs:
         with:
           configurationFile: renovate.json
           token: ${{ secrets.RENOVATE_TOKEN }}
+          repositories: 'msolanik/Geliosphere'
         env:
           LOG-LEVEL: 'debug'
+
