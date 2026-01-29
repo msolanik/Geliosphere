@@ -1,6 +1,9 @@
 {
   "extends": ["config:base"],
   "dependencyDashboard": true,
+  "repositories": [
+    "msolanik/Geliosphere"
+  ],
   "packageRules": [
     {
       "groupName": "CMake dependencies",
