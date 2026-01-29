@@ -20,7 +20,7 @@
     {
       "fileMatch": ["CMakeLists\\.txt"],
       "matchStrings": [
-        "GIT_REPOSITORY\\s+(?<depName>https://github.com/[^\\s]+)[\\s\\S]*?GIT_TAG\\s+(?<currentValue>[\\w\\.\\-]+)"
+        "GIT_REPOSITORY\\s+https://github.com/(?<depName>[^/\\s]+/[^/\\s]+)(?:\\.git)?[\\s\\S]*?GIT_TAG\\s+(?<currentValue>[\\w\\.\\-]+)"
       ],
       "datasourceTemplate": "github-tags"
     }
