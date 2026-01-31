@@ -4,10 +4,16 @@
   "repositories": [
     "msolanik/Geliosphere"
   ],
+  "dependencyDashboardAutoclose": true,
+  "prConcurrentLimit": 1,
+  "ignorePaths": [
+    "Visualization/**",
+    "ModelDocs/**"
+  ],
   "packageRules": [
     {
-      "groupName": "CMake dependencies",
-      "matchManagers": ["regex"],
+      "groupName": "Docker and CMake dependencies",
+      "matchManagers": ["regex", "dockerfile"],
       "matchUpdateTypes": ["minor", "patch"],
       "assignees": ["msolanik"]
     },
@@ -20,7 +26,7 @@
     {
       "fileMatch": ["CMakeLists\\.txt"],
       "matchStrings": [
-        "GIT_REPOSITORY\\s+https://github.com/(?<depName>[^/\\s]+/[^/\\s]+)(?:\\.git)?[\\s\\S]*?GIT_TAG\\s+(?<currentValue>[\\w\\.\\-]+)"
+        "GIT_REPOSITORY\\s+https://github.com/(?<depName>[^/\\s]+/[^/.\\s]+)(?:\\.git)?[\\s\\S]*?GIT_TAG\\s+(?<currentValue>[\\w\\.\\-]+)"
       ],
       "datasourceTemplate": "github-tags"
     }
