@@ -40,6 +40,7 @@ __device__ __constant__ float rh =  0.0046367333333333f;
 __device__ __constant__ float rInit =  1.0f; 
 __device__ __constant__ bool useUniformInjection = true; 
 
+
 void setConstants(ParamsCarrier *singleTone)
 {
 	if (singleTone->getString("model", "1D Fp").compare("2D SolarProp-like") == 0)
