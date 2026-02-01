@@ -1,6 +1,7 @@
 name: CI GPU Build
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ main ]
     paths:
