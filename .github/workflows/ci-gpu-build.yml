@@ -22,6 +22,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4    
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y git unzip
       - name: Install CMake
         uses: lukka/get-cmake@latest
         with:
