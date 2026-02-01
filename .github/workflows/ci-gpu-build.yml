@@ -1,0 +1,35 @@
+name: CI GPU Build
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "CUDAKernel/**"
+      - "CUDAKernel/CMakeLists.txt"
+  push:
+    branches: [ main ]
+    paths:
+      - "CUDAKernel/**"
+      - "CUDAKernel/CMakeLists.txt"
+
+jobs:
+  build-cuda:
+    name: Build (CUDA)
+    runs-on: ubuntu-latest
+    container:
+      image: nvidia/cuda:11.6.1-devel-ubuntu20.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4    
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.22.1"
+      - name: Configure (GPU)
+        run: |
+          mkdir build
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build (GPU)
+        run: |
+          cmake --build build -- -j$(nproc)
