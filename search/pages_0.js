@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['geliosphere_1',['Geliosphere',['../index.html',1,'']]]
+  ['geliosphere_0',['Geliosphere',['../index.html',1,'']]]
 ];
