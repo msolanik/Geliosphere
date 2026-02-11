@@ -11,8 +11,6 @@
 #include <unistd.h>
 #include <vector>
 
-#include "CLI/App.hpp"
-#include "CLI/Option.hpp"
 #include "spdlog/spdlog.h"
 
 #include "MeasureValuesTransformation.hpp"
